@@ -10,3 +10,5 @@
 **No app source, production services, CI status or operational readiness claimed.**
 
 - Design addendum: scoped RBAC/ABAC, request access grants, field security, PostgreSQL RLS, physical reference DDL, 28 negative authorization cases and standard Codex authorization-design Agent Skill. Reference SQL has not been applied or tested.
+
+- Documented Master Data **Connections** screen, reusable credentials vs separate Sync Pipeline, four-step Connection wizard, five-step Sync wizard, six Mermaid sequences, API/security contracts, 20 test cases and versioned reference SQL 005. All are design, not implemented/tested.

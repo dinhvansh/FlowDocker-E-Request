@@ -30,3 +30,6 @@ No real employee records, bank details, Entra delta tokens, client secrets, Epic
 - [Agent Skills format](https://github.com/agentskills/agentskills/blob/main/docs/specification.mdx)
 - [Microsoft Graph delta](https://learn.microsoft.com/en-us/graph/delta-query-overview)
 - [Epicor REST](https://www.epicor.com/en-us/products/enterprise-resource-planning-erp/kinetic/tools-and-technology/open-rest-api/)
+
+## Connection Manager procedure (when task involves connectors/UX)
+Read docs/30–33 and db/design/005_connections_extension.sql. Distinguish Connection, Source and Sync Pipeline. Never implement a one-click 'connect and sync everything' feature. Connector config and credentials must be versioned; real test verifies bounded READ with an approved account; credential rotation has staged test/promotion and rollback; disable requires impact analysis. Sync pipeline mapping, dry run and activation are separate governance steps. Unimplemented design does not equal connected source.

@@ -55,3 +55,6 @@ Card summary + safe details + two decisions + deep link to full request. Once de
 
 ## Responsive/accessibility
 Desktop-first admin studios with keyboard navigation, low-complexity mobile reading/approval screens, focus labels, validation summary, non-color status indicators, loading/empty/error states. Admin graph editor mobile support can be read-only in V1, but actual approval pages should be responsive.
+
+## Administration > Master Data > Connections (V1 design)
+Navigation: Administration → Master Data → **Connections** | Sources & Pipelines | Mappings | Run History | Data Quality | Local Catalog. Connections supports status/health list, filters, New Connection wizard 4 steps, detail tabs Overview/Configuration/Access/Used By/Health/Audit and actions Test/Create Sync/Rotate/Edit/Disable. After Save+Activate, direct to a separate 5-step Create Sync wizard; connection activation does not start a sync. Source discovery, field mapping, Full/Incremental choice, dry-run, publish paused, initial sync, then enable schedule are separate actions. Full interaction contracts: [Tiếng Việt](33-CONNECTIONS-USER-FLOWS-VI.md) and [detailed UX](30-CONNECTIONS-UX-FLOWS.md); 6 [sequence diagrams](31-CONNECTIONS-SEQUENCE-DIAGRAMS.md).

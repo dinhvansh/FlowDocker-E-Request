@@ -53,3 +53,6 @@ Before claiming P0/P1 complete, review [Authorization Architecture](20-AUTHORIZA
 
 ## Master Data integration prerequisite
 A new P0/P1 parallel workstream before Payment/Trip **real-data UAT**: (1) discover ERP read-only views/REST BAQ and identity/HR sources, (2) implement staged, versioned canonical masters and mapping, (3) build reliable Graph delta + ERP cursor-or-full-reconciliation workers, (4) add operator conflict/freshness UI, (5) test master lookups and task revocation/reassignment. See docs/25–29 and db/design/003–004. The first isolated workflow POC may use synthetic catalog data, but must not claim working company master sync.
+
+## Master Data Connection Manager gating (V1)
+Before declaring Master Data integration DONE: build secure Connection Manager 4-step wizard and real connection test, candidate secret vault and rotation, versioned endpoint settings, role-scoped configuration/health/audit, impact-aware disable; then separate Sync Wizard 5-step entity discover/mapping/mode/dry-run/publish paused/initial sync/enable schedule. Prove CON-01..CON-20 from [Connection Test Matrix](32-CONNECTIONS-API-DATA-CONTRACT.md), including Epicor SELECT-only and rejected cross-tenant access. Reference [Connections UX](30-CONNECTIONS-UX-FLOWS.md) and [Sequences](31-CONNECTIONS-SEQUENCE-DIAGRAMS.md). Design only until evidence exists.

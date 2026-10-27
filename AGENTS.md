@@ -46,3 +46,6 @@ For every change to users, departments, roles, request data, workflow task assig
 
 ## Mandatory Master Data Integration Skill
 When building forms with lookups, org/manager assignment, identity mappings, vendors, companies, cost centers, finance master, external connectors, scheduled sync or worker: read [Master Data Skill](.agents/skills/master-data-integration/SKILL.md) and docs/25–29. Use canonical PostgreSQL master, safe source key mapping, durable checkpoints, quality quarantine, soft inactivation and authorization. Epicor integration is READ-ONLY and has no verified schema/API yet. Never assume a particular source cursor or mutate ERP. Reference 003/004 SQL is **not a deployed migration**.
+
+## Required Connection Manager implementation review
+Before implementing Administration → Master Data → Connections or any new connector, read docs/30–33, db/design/005_connections_extension.sql, and the master-data-integration skill. Connection is a reusable secure auth/endpoint profile; source/pipeline are separate entities. Implement real bounded Test Connection (network, TLS, auth, permissioned read), version-bound credential testing, least-privilege vault reference, staged credential rotation, dependency impact on Disable, and separate Sync Wizard/initial sync. No mock connection test can be called DONE; no source writes.

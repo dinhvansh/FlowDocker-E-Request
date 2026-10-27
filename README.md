@@ -76,3 +76,15 @@ Codex project skill: [`.agents/skills/authorization-design/SKILL.md`](.agents/sk
 [Source ownership and architecture](docs/25-MASTER-DATA-ARCHITECTURE.md) · [Connector/delta/full sync](docs/26-MASTER-DATA-SYNC-CONTRACTS.md) · [Governance/freshness](docs/27-MASTER-DATA-GOVERNANCE.md) · [5 sequence diagrams](docs/28-MASTER-DATA-SEQUENCES.md) · [35 test scenarios](docs/29-MASTER-DATA-TEST-PLAN.md). Reference SQL: [003 schema](db/design/003_master_data_schema.sql) and [004 RLS](db/design/004_master_data_rls.sql). [Codex Skill](.agents/skills/master-data-integration/SKILL.md).
 
 Entra identity, HR-owned organization data (actual source unknown), Epicor read-only business master, and internal policy catalogs are proposed sources; there are no live credentials or implemented connectors. Form.io and workflow rules query tenant-scoped E-Request canonical masters, never the upstream servers directly.
+
+## Connection Manager and guided Sync Setup — UX design
+
+Connections is **separate** from Sync Pipelines. A reusable endpoint/credential profile is created with a 4-step wizard: Select Connector → Configure → Real Test → Save/Activate. An independent 5-step Sync Wizard selects approved data entities → discovers fields → maps canonical schema → chooses Full/Incremental and schedule → dry-run/publish/initial sync. No test/save action starts an automatic sync.
+
+- [Thiết kế Connections tiếng Việt](docs/33-CONNECTIONS-USER-FLOWS-VI.md)
+- [Detailed UX and operations](docs/30-CONNECTIONS-UX-FLOWS.md)
+- [Six Connection sequence diagrams](docs/31-CONNECTIONS-SEQUENCE-DIAGRAMS.md)
+- [API/data/security/acceptance contracts](docs/32-CONNECTIONS-API-DATA-CONTRACT.md)
+- [SQL reference 005](db/design/005_connections_extension.sql)
+
+**Status: design only**; no live connection, secret vault, UI, migrations or tests claimed.

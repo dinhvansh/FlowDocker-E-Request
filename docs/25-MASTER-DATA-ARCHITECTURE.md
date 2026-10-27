@@ -70,3 +70,6 @@ Each canonical **field** has an `owning_source`; precedence is configured, not a
 
 ## Links
 [Sync contracts](26-MASTER-DATA-SYNC-CONTRACTS.md) · [Governance/freshness](27-MASTER-DATA-GOVERNANCE.md) · [Sequences](28-MASTER-DATA-SEQUENCES.md) · [Tests](29-MASTER-DATA-TEST-PLAN.md) · [Reference DDL](../db/design/003_master_data_schema.sql) · [Agent skill](../.agents/skills/master-data-integration/SKILL.md).
+
+## Connection Manager boundary (design addendum)
+A **Connection** is reusable endpoint + encrypted-vault credential reference + versioned real-test state, not a synchronized entity. One Connection can supply many `master_sources`, each serving independently configured and checkpointed pipelines. Connection testing does not fetch full source data, advance delta tokens or start a pipeline. A separate wizard discovers approved fields, maps schema, selects Full/Incremental, performs dry run, then publishes a paused pipeline. See [Connections UX](30-CONNECTIONS-UX-FLOWS.md), [Connection API/DB](32-CONNECTIONS-API-DATA-CONTRACT.md) and [SQL extension](../db/design/005_connections_extension.sql). The earlier source.secret_reference design is to be consolidated through a versioned Connection vault reference during migration; never duplicate live secrets.

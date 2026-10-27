@@ -96,3 +96,6 @@ These values do not promise a security revocation time; fast account termination
 - [Graph manager API](https://learn.microsoft.com/en-us/graph/api/user-list-manager?view=graph-rest-1.0)
 - [Epicor REST API](https://www.epicor.com/en-us/products/enterprise-resource-planning-erp/kinetic/tools-and-technology/open-rest-api/)
 - [Epicor BAQ](https://www.epicor.com/en-us/products/enterprise-resource-planning-erp/kinetic/tools-and-technology/business-activity-queries/)
+
+## Connection setup is separate from pipeline run
+Connection life cycle, versioned secret, health checks, dependency impact and real Test Connection are specified in [Connections UX](30-CONNECTIONS-UX-FLOWS.md) and [API/Data Contracts](32-CONNECTIONS-API-DATA-CONTRACT.md). A test must not update a pipeline run cursor. One active connection can supply multiple entity-specific pipelines with independent mapping/checkpoints. Initial sync only begins after a pipeline is explicitly published and run; enable recurring schedule separately. Refer to [sequence diagrams](31-CONNECTIONS-SEQUENCE-DIAGRAMS.md).
