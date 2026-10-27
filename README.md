@@ -22,6 +22,8 @@ FlowDocker E-Request is a proposed self-hosted enterprise request portal. Employ
 
 **Important boundaries:** This is a separate application design and does **not** use the existing E-Office Workflow Runtime V2. Graph editing does not by itself imply that every diagram is executable; publish-time compilation/validation and a tested Temporal executor are required. A custom Teams card is **not** an item in Microsoft's native Teams Approvals app.
 
+**Tiếng Việt:** [Tổng quan thiết kế E-Request](docs/VI-TONG-QUAN.md) · **For Codex:** [First vertical slice handoff](docs/19-POC-HANDOFF.md).
+
 ## Documentation map
 
 | Topic | Document |
