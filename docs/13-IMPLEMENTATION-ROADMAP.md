@@ -46,3 +46,7 @@ flowchart LR
 
 ## First engineering task recommendation
 Implement **vertical slice** `Publish form → submit Payment Request → IF amount → web approve → persist audit` on real PostgreSQL/Temporal with no Teams/PDF mocks in the signoff path. Then add Teams and artifacts. This validates the highest-risk integration early.
+
+
+## P0 prerequisite — Authorization and physical DB security
+Before claiming P0/P1 complete, review [Authorization Architecture](20-AUTHORIZATION-ARCHITECTURE.md), [Permission Matrix](21-PERMISSION-MATRIX.md), [Physical Schema](22-DATA-LAYER-PHYSICAL-DESIGN.md), [PostgreSQL RLS](23-POSTGRESQL-RLS-OPERATIONS.md) and [Test Plan](24-AUTHORIZATION-TEST-PLAN.md). Convert [reference SQL](../db/design/) to reviewed migration(s), define runtime/worker/migrator GRANTs, validate actor-specific access/field masks and test under the real non-owner role. All documents are **design only** until code/tests exist.

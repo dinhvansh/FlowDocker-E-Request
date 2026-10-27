@@ -67,3 +67,17 @@ Ngưỡng duyệt bao nhiêu tiền, ai là HOD/CEO theo bộ phận, chính sá
 
 ## 9. Cần Codex làm gì tiếp?
 Đọc [AGENTS.md](../AGENTS.md), [Architecture](02-ARCHITECTURE.md), [POC Handoff](19-POC-HANDOFF.md) và [Acceptance Tests](14-ACCEPTANCE-TESTS.md), sau đó thực hiện một vertical slice thật trước: Form → Submit → IF/ELSE → Human Task → Web Approval với PostgreSQL + Temporal.
+
+
+## 10. Tầng dữ liệu và phân quyền (bổ sung)
+Tách `RBAC + quyền theo phạm vi + điều kiện theo task/trạng thái + Field-level Security + PostgreSQL RLS`. Manager không được xem mọi request chỉ vì là Manager: cần task đang được giao hoặc quyền đọc cấp riêng. Finance chỉ được xem thông tin nhạy cảm khi xử lý đúng nghiệp vụ; Tenant Admin không mặc định được xem dữ liệu ngân hàng. Dữ liệu request JSONB phải lọc trường ở backend trước khi trả về Web/Teams/export.
+
+- [Thiết kế Authorization](20-AUTHORIZATION-ARCHITECTURE.md)
+- [Ma trận phân quyền](21-PERMISSION-MATRIX.md)
+- [Thiết kế tầng PostgreSQL](22-DATA-LAYER-PHYSICAL-DESIGN.md)
+- [RLS & DB runtime](23-POSTGRESQL-RLS-OPERATIONS.md)
+- [Bộ kiểm thử 28 tình huống](24-AUTHORIZATION-TEST-PLAN.md)
+- [SQL schema/RLS tham chiếu](../db/design/)
+- [Agent Skill dành cho Codex](../.agents/skills/authorization-design/SKILL.md)
+
+**Chỉ là thiết kế**; chưa áp dụng migration/chạy test, nên không coi là đã bảo mật được production.

@@ -39,3 +39,7 @@ Use **DONE** only for verified implemented+tested outcomes and **IN PROGRESS / N
 
 ## Initial assignment
 After owner agreement, POC the Form.io JS Core builder/render package and Synergy Codes CE with Temporal using real PostgreSQL tasks. Prove a Payment Request IF/ELSE route on a disposable environment, then proceed according to roadmap.
+
+
+## Mandatory Authorization Skill (added 2026-10-27)
+For every change to users, departments, roles, request data, workflow task assignment, Teams approvals, Finance, downloads, exports, SQL and API guards, **read [`.agents/skills/authorization-design/SKILL.md`](.agents/skills/authorization-design/SKILL.md)** first. Follow docs/20 through docs/24 and db/design reference SQL. Maintain deny-by-default, tenant-scoped composite FKs, active-task assignee binding, field-level JSONB projection, audit/outbox and PostgreSQL RLS. RLS is defense in depth and cannot prevent a compromised shared DB role from spoofing untrusted session GUCs. Never claim reference DDL is a production migration.

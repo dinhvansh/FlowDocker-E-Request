@@ -64,3 +64,10 @@ FlowDocker E-Request is a proposed self-hosted enterprise request portal. Employ
 See [Implementation Roadmap](docs/13-IMPLEMENTATION-ROADMAP.md) for the phase-by-phase acceptance gates.
 
 Copyright / project license: **not yet selected**. Do not assume that upstream OSS licenses automatically license this repository's original code or docs.
+
+
+## Detailed data-layer and authorization design (new)
+
+Before implementation, read the [Authorization architecture](docs/20-AUTHORIZATION-ARCHITECTURE.md), [Permission matrix](docs/21-PERMISSION-MATRIX.md), [Physical data layer](docs/22-DATA-LAYER-PHYSICAL-DESIGN.md), [PostgreSQL RLS operations](docs/23-POSTGRESQL-RLS-OPERATIONS.md) and [Negative-first authorization tests](docs/24-AUTHORIZATION-TEST-PLAN.md).
+
+Codex project skill: [`.agents/skills/authorization-design/SKILL.md`](.agents/skills/authorization-design/SKILL.md), following the [Agent Skills format](https://github.com/agentskills/agentskills). Reference PostgreSQL DDL: [001_core_schema.sql](db/design/001_core_schema.sql) and [002_rls_policies.sql](db/design/002_rls_policies.sql). **These SQL files are reference designs, not applied migrations or security-verified policies.**

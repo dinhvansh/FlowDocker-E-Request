@@ -30,3 +30,7 @@ Custom Teams Bot, native Approvals sync, PDF, ONLYOFFICE, digital signing, ERP w
 
 ## Acceptance checkpoint
 `DONE` only if admin can publish graph and form, employee can submit two test amount variants, manager can approve via actual API/Web, and Temporal history proves the right branch from immutable request data. Any missing SDK feature must be listed as blocker and scoped custom implementation.
+
+
+## Required data-layer work before POC signoff
+Read [Agent Skill](../.agents/skills/authorization-design/SKILL.md). Build/validate schema from `db/design/001_core_schema.sql` and RLS baseline from `db/design/002_rls_policies.sql` only after reviewing production gaps. Provide real additive migrations, non-owner runtime database roles, scoped authorization command service, field-masked request serializers, tenant-safe FK and two-tenant/same-tenant negative tests from [Test Plan](24-AUTHORIZATION-TEST-PLAN.md). Neither SQL design file is an executed migration.

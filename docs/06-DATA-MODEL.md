@@ -62,3 +62,7 @@ Event history and approved artifacts cannot be silently deleted. Authorized arch
 
 ## Migration plan
 Prisma (or another selected migration tool) additive migrations; no destructive reset against shared environments; backup/rehearse schema updates; test tenant isolation via two-org fixture.
+
+
+## Physical authorization-aware relational design
+**This file remains the logical overview.** The authoritative proposed physical additions are in [Physical Data Layer](22-DATA-LAYER-PHYSICAL-DESIGN.md), including `roles`, `permissions`, `role_permissions`, scoped `user_role_assignments`, `request_access_grants`, `approval_task_assignees`, `form_field_policies`, tenant-safe composite FKs, SQL indexes and uniqueness. Consult [Authorization Architecture](20-AUTHORIZATION-ARCHITECTURE.md), [Permission Matrix](21-PERMISSION-MATRIX.md), [RLS Operations](23-POSTGRESQL-RLS-OPERATIONS.md) and [001/002 SQL reference](../db/design/). No migrations have been executed.

@@ -89,3 +89,7 @@ Use stable error codes `FORM_VALIDATION_FAILED`, `FORM_VERSION_UNAVAILABLE`, `WO
 
 ## Nonfunctional API rules
 Request limits, file quotas, pagination and rate limits. All mutation endpoints require audit, idempotency and authorization tests. Publish endpoints require explicit permissions and validation errors suitable for Studio UI.
+
+
+## Detailed authorization contract
+Every query is limited by tenant, resource ownership/explicit active grants, request state and classification. Backend validates active Entra-to-local identity and roles/scopes **from current database state**, not only stale JWT group claims. Apply the [permission matrix](21-PERMISSION-MATRIX.md) and [authorization architecture](20-AUTHORIZATION-ARCHITECTURE.md) consistently to `GET /requests`, counts, exports, attachments, request revisions, task decisions, payment commands and admin authoring. Never serialize full `request_revisions.data_jsonb` without a field projection. Request IDs from the browser are untrusted, task decisions require exact active assignee and revision/version, and a different prior terminal decision returns conflict. PostgreSQL policies [002 RLS](../db/design/002_rls_policies.sql) provide defense in depth, not an API bypass.

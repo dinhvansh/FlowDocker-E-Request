@@ -37,3 +37,7 @@ IDOR/cross-tenant guessing; approval race; replayed Teams card; stale workflow g
 
 ## Minimum evidence
 Backend unit and PostgreSQL integration with two tenants, Playwright browser tests, Temporal worker crash/retry/replay, Teams sandbox E2E, file upload security checks, dependency/SBOM scan, backup+restore and a production-like UAT signoff. Release gate fails if any P0 authorization or double-decision test fails.
+
+
+## Authorization/data-layer acceptance gate (new)
+See [Authorization Architecture](20-AUTHORIZATION-ARCHITECTURE.md), [Permission Matrix](21-PERMISSION-MATRIX.md), [Physical Data Layer](22-DATA-LAYER-PHYSICAL-DESIGN.md), [RLS Operations](23-POSTGRESQL-RLS-OPERATIONS.md), [Authorization Negative Tests](24-AUTHORIZATION-TEST-PLAN.md). A passing UI E2E is **not** evidence of SQL row/field isolation. Production requires applied migration, least-privilege DB grants, tested non-owner/non-BYPASSRLS role, two-tenant and same-tenant cross-owner denial, masked sensitive JSONB data, Teams/Web race, request grant revocation and backup/recovery evidence.

@@ -8,3 +8,5 @@
 - Deferred ONLYOFFICE collaborative Word review and digital signing to V2.
 
 **No app source, production services, CI status or operational readiness claimed.**
+
+- Design addendum: scoped RBAC/ABAC, request access grants, field security, PostgreSQL RLS, physical reference DDL, 28 negative authorization cases and standard Codex authorization-design Agent Skill. Reference SQL has not been applied or tested.
