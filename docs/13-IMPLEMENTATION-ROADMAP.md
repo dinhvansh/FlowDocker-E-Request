@@ -50,3 +50,6 @@ Implement **vertical slice** `Publish form → submit Payment Request → IF amo
 
 ## P0 prerequisite — Authorization and physical DB security
 Before claiming P0/P1 complete, review [Authorization Architecture](20-AUTHORIZATION-ARCHITECTURE.md), [Permission Matrix](21-PERMISSION-MATRIX.md), [Physical Schema](22-DATA-LAYER-PHYSICAL-DESIGN.md), [PostgreSQL RLS](23-POSTGRESQL-RLS-OPERATIONS.md) and [Test Plan](24-AUTHORIZATION-TEST-PLAN.md). Convert [reference SQL](../db/design/) to reviewed migration(s), define runtime/worker/migrator GRANTs, validate actor-specific access/field masks and test under the real non-owner role. All documents are **design only** until code/tests exist.
+
+## Master Data integration prerequisite
+A new P0/P1 parallel workstream before Payment/Trip **real-data UAT**: (1) discover ERP read-only views/REST BAQ and identity/HR sources, (2) implement staged, versioned canonical masters and mapping, (3) build reliable Graph delta + ERP cursor-or-full-reconciliation workers, (4) add operator conflict/freshness UI, (5) test master lookups and task revocation/reassignment. See docs/25–29 and db/design/003–004. The first isolated workflow POC may use synthetic catalog data, but must not claim working company master sync.

@@ -81,3 +81,10 @@ Tách `RBAC + quyền theo phạm vi + điều kiện theo task/trạng thái + 
 - [Agent Skill dành cho Codex](../.agents/skills/authorization-design/SKILL.md)
 
 **Chỉ là thiết kế**; chưa áp dụng migration/chạy test, nên không coi là đã bảo mật được production.
+
+## 11. Master Data Hub — nguồn dữ liệu và đồng bộ
+**Mới thiết kế, chưa tích hợp/chạy đồng bộ.** Nguồn dự kiến: Microsoft Entra Graph (định danh đăng nhập), HRIS/file HR được duyệt (mã nhân viên, phòng ban, người quản lý; chưa xác nhận nguồn thực tế), Epicor REST/BAQ hoặc SQL Server chỉ SELECT (Company, Vendor, Cost Center, mã Finance); các chính sách công tác do E-Request quản lý. Không để Form.io trực tiếp truy vấn ERP.
+
+Luồng: Nguồn → Connector → Staging → Validate/Mapping → PostgreSQL canonical → API lookup → Form & Workflow. Incremental dùng Graph delta hoặc cursor đã được kiểm chứng; nếu không có thì full snapshot + diff + reconcile. Có retry, quarantine dữ liệu lỗi, quản lý token/checkpoint, bảo vệ dữ liệu nhân sự, ngăn vô hiệu hóa hàng loạt và không đổi lịch sử duyệt khi Manager đổi.
+
+[Kiến trúc Master](25-MASTER-DATA-ARCHITECTURE.md) · [Sync](26-MASTER-DATA-SYNC-CONTRACTS.md) · [Governance](27-MASTER-DATA-GOVERNANCE.md) · [5 sơ đồ](28-MASTER-DATA-SEQUENCES.md) · [35 bài test](29-MASTER-DATA-TEST-PLAN.md) · [SQL](../db/design/003_master_data_schema.sql) · [Skill Codex](../.agents/skills/master-data-integration/SKILL.md).

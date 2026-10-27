@@ -71,3 +71,8 @@ Copyright / project license: **not yet selected**. Do not assume that upstream O
 Before implementation, read the [Authorization architecture](docs/20-AUTHORIZATION-ARCHITECTURE.md), [Permission matrix](docs/21-PERMISSION-MATRIX.md), [Physical data layer](docs/22-DATA-LAYER-PHYSICAL-DESIGN.md), [PostgreSQL RLS operations](docs/23-POSTGRESQL-RLS-OPERATIONS.md) and [Negative-first authorization tests](docs/24-AUTHORIZATION-TEST-PLAN.md).
 
 Codex project skill: [`.agents/skills/authorization-design/SKILL.md`](.agents/skills/authorization-design/SKILL.md), following the [Agent Skills format](https://github.com/agentskills/agentskills). Reference PostgreSQL DDL: [001_core_schema.sql](db/design/001_core_schema.sql) and [002_rls_policies.sql](db/design/002_rls_policies.sql). **These SQL files are reference designs, not applied migrations or security-verified policies.**
+
+## Master Data Hub: sources and synchronization (DESIGN, not yet running)
+[Source ownership and architecture](docs/25-MASTER-DATA-ARCHITECTURE.md) · [Connector/delta/full sync](docs/26-MASTER-DATA-SYNC-CONTRACTS.md) · [Governance/freshness](docs/27-MASTER-DATA-GOVERNANCE.md) · [5 sequence diagrams](docs/28-MASTER-DATA-SEQUENCES.md) · [35 test scenarios](docs/29-MASTER-DATA-TEST-PLAN.md). Reference SQL: [003 schema](db/design/003_master_data_schema.sql) and [004 RLS](db/design/004_master_data_rls.sql). [Codex Skill](.agents/skills/master-data-integration/SKILL.md).
+
+Entra identity, HR-owned organization data (actual source unknown), Epicor read-only business master, and internal policy catalogs are proposed sources; there are no live credentials or implemented connectors. Form.io and workflow rules query tenant-scoped E-Request canonical masters, never the upstream servers directly.

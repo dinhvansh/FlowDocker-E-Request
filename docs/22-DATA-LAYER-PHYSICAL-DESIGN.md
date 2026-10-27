@@ -65,3 +65,6 @@ erDiagram
 
 ## Schema forward compatibility
 V2 (ONLYOFFICE) adds document review sessions, track change metadata and signature artifacts, **not** required for V1. New expense modules link to parent request via a validated request relationship table.
+
+## Master Data physical extension (design-only)
+Existing users/departments are insufficient for durable source integration. New proposed tables in [003 Master DDL](../db/design/003_master_data_schema.sql) model sources, pipelines, checkpoints, run history, bounded staging, external-key maps, canonical companies/vendors/cost centers/employee profiles, effective org assignments and exception review. [004 Master RLS](../db/design/004_master_data_rls.sql) denies most direct reads; approved canonical lookups use tenant/company scope. Refer to [Master Data Architecture](25-MASTER-DATA-ARCHITECTURE.md) and [Sync Contracts](26-MASTER-DATA-SYNC-CONTRACTS.md). No migration was applied.

@@ -36,3 +36,8 @@ PostgreSQL, Next.js/React, TypeScript, shadcn/ui; Valkey and SeaweedFS are candi
 
 ## Decision policy
 Write an ADR before changing a core boundary. Every ADR has context, options, decision, consequences, date, reviewer, and compatibility/migration plan. Architecture diagrams and API contracts must be updated in the same PR.
+
+## ADR-011: Master Data Hub (proposed; field ownership requires source-owner signoff)
+Canonical E-Request master entities are fed read-only via Entra Graph, HR-approved source (actual system to discover), Epicor REST/BAQ or read-only SQL and approved local catalogs. Durable staging, idempotent promotion, mappings, soft delete, reconciliation and freshness/assignment checks are required. Form Studio references only safe internal lookup domains. [Architecture](25-MASTER-DATA-ARCHITECTURE.md) · [Sync Contracts](26-MASTER-DATA-SYNC-CONTRACTS.md).
+
+**Still open:** HR system and authoritative manager/department, ERP company/vendor/finance field keys, safe incremental cursor, Graph permissions, stale-data thresholds, mapping owner, country/cost center policy. No source integration is marked implemented.
