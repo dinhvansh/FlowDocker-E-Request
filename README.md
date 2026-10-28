@@ -1,9 +1,26 @@
 # FlowDocker E-Request
 
-> **Status: DESIGN / PLANNING — no application code or production deployment yet.**  
+> **Status: frontend PR 1 prototype in progress.** Master Data Builder và Permission Builder chạy với dữ liệu tổng hợp trong trình duyệt; chưa có backend hay production deployment.
 > Product: Enterprise Request Management Platform · Scope: V1 Payment Request, Business Trip, dynamic forms, conditional workflows, Web/Teams approvals and PDF archive.
 
 FlowDocker E-Request is a proposed self-hosted enterprise request portal. Employees submit business requests from administrator-defined forms, and published, versioned workflows assign approvals with IF/ELSE branching. Approvers can act through the web portal or a custom Microsoft Teams bot; final records and PDFs are archived with access control and audit trails.
+
+## Frontend PR 1 — chạy local
+
+Yêu cầu Node.js 24 và npm 11 (phiên bản đã kiểm thử):
+
+```bash
+npm install
+npm run dev
+```
+
+Mở `http://localhost:5173`. Kiểm tra bằng `npm run build`, `npm run typecheck`, `npm run lint`, `npm test`. Ứng dụng hiện có điều hướng, theme sáng/tối, Master Data Builder và Permission Builder tương tác với mock service typed trong `localStorage`. Nút Publish bị vô hiệu hóa; Test Access chỉ mô phỏng. Connections/Flow Studio là PR 2, Application Builder là PR 3. Xem [UX và ranh giới PR 1](docs/51-PR1-FRONTEND-UX-AND-IMPLEMENTATION.md).
+
+Sau khi cập nhật `vite.config.ts` hoặc Tailwind, hãy dừng rồi chạy lại dev server trên cổng 5173 và tải lại trang. Vite đang chạy từ cấu hình cũ có thể render component shadcn/ui mà không biên dịch utility CSS, khiến button và dropdown bị mất kiểu dáng.
+
+Giao diện dùng trắng–đỏ và font Inter (Latin + tiếng Việt) đóng gói cùng ứng dụng. `@flowdocker/ui` dùng source shadcn/ui tạo bằng CLI trên Radix cho Button, Badge, Input, Checkbox, Select, Dialog, Tabs và Table; các Builder vẫn gọi qua API component chung của FlowDocker. Các ô chọn không mở menu mặc định của Chrome.
+
+UI primitives có [isolated examples](packages/ui/examples/main.tsx) tại `npm run examples:ui` (cổng Vite in ra terminal); không cần backend.
 
 ## Key architectural choices
 
@@ -55,7 +72,7 @@ FlowDocker E-Request is a proposed self-hosted enterprise request portal. Employ
 
 ## Scope and assumptions
 
-- This repository currently documents an **implementation plan**, not finished or tested software.
+- Phần nghiệp vụ E-Request và backend vẫn là **thiết kế/chưa kiểm thử**; frontend PR 1 là prototype cục bộ, không phải phần mềm production.
 - Example employees, names, monetary thresholds and policies are placeholders; business owners must confirm real rules.
 - Microsoft Teams approvals in V1 refer to a **custom Teams Bot + Adaptive Cards**, not the native Approvals application.
 - V1 does not require ONLYOFFICE. The optional V2 document review module must undergo separate licensing/compliance review.
