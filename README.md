@@ -88,3 +88,15 @@ Connections is **separate** from Sync Pipelines. A reusable endpoint/credential 
 - [SQL reference 005](db/design/005_connections_extension.sql)
 
 **Status: design only**; no live connection, secret vault, UI, migrations or tests claimed.
+
+## Node-based Master Data Flow Studio (NEW DESIGN 2026-10-28)
+**Replaces a mapping-only wizard with an n8n-style drag-and-drop graph editor, without embedding n8n code.** UI built with candidate MIT `@xyflow/react`; custom typed batch runtime separates **Source → RAW/STAGING** from **Transform/Join/Field Mapping → Validate → Canonical Upsert**. Supports optional Parse JSON, Split Items, visual source JSON → target field drag/drop, node-level input/output previews, safe Dry Run, immutable graph versions and retries. Approval Workflow Studio stays a separate product module.
+
+- [Tiếng Việt: Flow Studio node & kéo mapping](docs/38-SYNC-FLOW-STUDIO-VI.md)
+- [Detailed Flow Studio UX/architecture](docs/34-MASTER-DATA-FLOW-STUDIO.md)
+- [Visual Mapper and typed execution contracts](docs/35-MAPPING-EDITOR-EXECUTION.md)
+- [5 Flow Sequence Diagrams](docs/36-SYNC-FLOW-SEQUENCES.md)
+- [27 QA scenarios](docs/37-SYNC-FLOW-QA-PLAN.md)
+- [Graph/version/lineage SQL reference 006](db/design/006_node_sync_graphs.sql)
+
+**Status: design only, nothing running.** n8n Sustainable Use License does not grant blanket rights to embed n8n editor/runtime in a resold product.

@@ -105,3 +105,6 @@ See [Connections API/Data](32-CONNECTIONS-API-DATA-CONTRACT.md). Proposed capabi
 
 ## 8. API/DB states and test gates
 [API/Data Contract](32-CONNECTIONS-API-DATA-CONTRACT.md) · [6 Sequence Diagrams](31-CONNECTIONS-SEQUENCE-DIAGRAMS.md) · [Master Data QA](29-MASTER-DATA-TEST-PLAN.md). No UI, backend, vault or SQL migrations were run for this specification.
+
+## UPDATE 2026-10-28 — Visual Sync Flow Studio replaces mapping-only screens
+Connection Wizard remains exactly separate: select connector → configure → **real Test** → save/activate. The previous 5-step Create Sync Wizard becomes a short onboarding flow that opens an **n8n-style Master Data Flow Studio**. Operators drag Source, optional Parse JSON, Split Items, Filter, Lookup/Join, Field Mapper, Validate and Master Upsert nodes onto a React Flow canvas; map JSON tree fields by drag-drop; test node or dry-run with sanitized batches; publish immutable flow PAUSED; run initial sync, then enable schedule. See [Flow Studio UX](34-MASTER-DATA-FLOW-STUDIO.md), [Visual Mapper](35-MAPPING-EDITOR-EXECUTION.md), [sequences](36-SYNC-FLOW-SEQUENCES.md) and [Vietnamese design](38-SYNC-FLOW-STUDIO-VI.md). The existing 5-step wizard is a guided shortcut, not the only authoring UI.

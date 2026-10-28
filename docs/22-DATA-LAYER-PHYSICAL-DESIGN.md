@@ -71,3 +71,6 @@ Existing users/departments are insufficient for durable source integration. New 
 
 ## Connection data model extension (reference only)
 [005_connections_extension.sql](../db/design/005_connections_extension.sql) adds versioned `master_connections`, `master_connection_versions`, `master_connection_test_runs` and the `master_sources.connection_id` FK. Auth secret content lives in an external vault; PostgreSQL holds opaque reference only. Existing `master_sources.secret_reference` requires planned safe backfill/deprecation (no dual credentials). These reference DDL statements contain no executable production GRANT/RLS policies for the new tables; migration/authorization test required. See [Connections API/Data](32-CONNECTIONS-API-DATA-CONTRACT.md).
+
+## Visual sync flow graph extension (reference only)
+Proposed [006_node_sync_graphs.sql](../db/design/006_node_sync_graphs.sql) adds `master_flow_definitions`, immutable `master_flow_versions`, `master_flow_run_bindings`, `master_flow_node_executions` and `master_flow_batch_apply_ledger`. These connect to existing `master_sync_pipelines/runs`, pin every run to an exact mapping/graph version and preserve bounded staging/apply metrics; no deployed migration, GRANT/RLS or executed test exists. See [Flow Studio](34-MASTER-DATA-FLOW-STUDIO.md) and [Execution Contract](35-MAPPING-EDITOR-EXECUTION.md).

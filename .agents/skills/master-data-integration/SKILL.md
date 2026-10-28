@@ -33,3 +33,6 @@ No real employee records, bank details, Entra delta tokens, client secrets, Epic
 
 ## Connection Manager procedure (when task involves connectors/UX)
 Read docs/30–33 and db/design/005_connections_extension.sql. Distinguish Connection, Source and Sync Pipeline. Never implement a one-click 'connect and sync everything' feature. Connector config and credentials must be versioned; real test verifies bounded READ with an approved account; credential rotation has staged test/promotion and rollback; disable requires impact analysis. Sync pipeline mapping, dry run and activation are separate governance steps. Unimplemented design does not equal connected source.
+
+## Visual Sync Flow Studio addendum
+Read docs/34–38 and db/design/006_node_sync_graphs.sql when designing sync editors or transformation workers. Node-based flow with Source, optional Parse JSON, Split Items, RAW/STAGING boundary, Filter, Join, typed Drag Field Mapper, Validate/Quarantine, Master Upsert. Test Node and Dry Run are readonly in relation to canonical masters/checkpoints. Runtime uses versioned typed allowlist handlers with idempotent bounded batches and source lineage, not admin-authored JavaScript or arbitrary SQL. Approval workflow editor is separate. n8n editor/runtime must not be copied or embedded without commercial license review; React Flow MIT is an option for original UI.
