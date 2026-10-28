@@ -2893,3 +2893,52 @@ a {
   max-width: 100%;
   margin: 8px 0;
 }
+/* Owner-approved compact UI typography: same as the Form Studio pane buttons. */
+:root {
+  --fd-font-ui: "Inter", Arial, sans-serif;
+  --fd-font-ui-size: 12px;
+  --fd-font-ui-weight: 400;
+  --fd-font-ui-line-height: 18px;
+}
+.fd-app {
+  font-family: var(--fd-font-ui);
+  font-size: var(--fd-font-ui-size);
+  font-weight: var(--fd-font-ui-weight);
+}
+.fd-app
+  :is(
+    button,
+    input,
+    textarea,
+    select,
+    label,
+    [role="tab"],
+    [role="combobox"],
+    [role="menuitem"],
+    [role="option"],
+    [data-slot="field-label"],
+    [data-slot="field-description"],
+    .fd-field-hint,
+    .fd-tabs button,
+    .fd-table th,
+    .fd-table td
+  ),
+:is(
+    [data-slot="select-content"],
+    [data-slot="select-item"],
+    [data-slot="select-label"],
+    [data-slot="dialog-content"]
+  )
+  :is(button, input, textarea, label, [role="option"]),
+:is([data-slot="select-item"], [data-slot="select-label"]) {
+  font-family: var(--fd-font-ui);
+  font-size: var(--fd-font-ui-size);
+  font-weight: var(--fd-font-ui-weight);
+  line-height: var(--fd-font-ui-line-height);
+}
+.fd-app button :is(strong, small),
+.fd-app :is(input, textarea)::placeholder {
+  font-family: var(--fd-font-ui);
+  font-size: var(--fd-font-ui-size);
+  font-weight: var(--fd-font-ui-weight);
+}

@@ -72,3 +72,10 @@ Browser QA found and fixed two real issues: Enter on a palette button was interc
 **XONG:** interactive frontend refactor, shared canvas, typed inspector, local synthetic payment scenario and the executed checks above. Reusable public APIs are documented in the form-builder README; isolated source builds and tests independently. Preserve bundled upstream notices. No SurveyJS/Fillout/Form.io runtime package or copied assets were added.
 
 **ĐANG LÀM / pending owner:** visual acceptance and any follow-up from review. No participant usability study, formal screen-reader audit, 100+ field performance study, backend enforcement or production release is claimed. This report provides task evidence, not a percentage of another product. No automatic merge. The parked Form.io benchmark remains only in a named local stash on its prior branch.
+
+## Owner typography follow-up
+
+Owner approved the typography of the two Form Studio pane buttons for shared UI. Added global shared tokens: Inter, 12px, weight 400, line-height 18px. Applied to buttons, navigation controls, tabs, inputs, labels, table cells and select/dialog portal controls; headings retain their hierarchy. Control hit areas and keyboard behavior are unchanged. This is a shared UI primitive change with no schema/API impact.
+
+Chromium computed-style sampling on Forms, Master Data, Permissions, Applications, Connections and Flow Studio confirmed Inter/12px/400 across sampled visible controls. Screenshot: `output/playwright/compact-ui-typography-1440.png`. Typecheck, lint/i18n, format check and app build passed; build retains its existing main chunk warning. This is owner preference evidence, not a user study.
+Validation follow-up: initial default-worker run hit the existing 5-second canvas interaction timeout (52/53); rerun with `npm test -- --reporter=dot --maxWorkers=2` passed 11 files / 53 tests. No test assertions or timeout settings changed for this typography update.
