@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Edge } from "@xyflow/react";
 import type { FlowNode } from "@flowdocker/flow-canvas";
-import { validateGraph } from "./flow-studio";
+import { validateGraph } from "./flow-validation";
 
 const categories = [
   "Source",
