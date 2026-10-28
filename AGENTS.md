@@ -34,6 +34,8 @@ This repo contains design documentation and a **frontend PR 1 prototype with syn
 ## Git process
 Inspect branch status/main/working tree before mutation; preserve unrelated changes; use focused PRs, explicit commits and acceptance evidence. Do not silently merge implementation PRs unless authorized.
 
+Owner requirement: finish and verify each planned PR slice, commit it and push its branch to GitHub before starting the next slice. Report the pushed branch/commit and distinguish a pushed branch from an opened pull request. Do not leave completed slices only on the local machine.
+
 ## Reporting convention
 Use **DONE** only for verified implemented+tested outcomes and **IN PROGRESS / NOT DONE** for everything else. Docs being committed are not proof the system exists.
 
@@ -82,3 +84,16 @@ Never go straight from prompt to generated dashboard HTML with a giant hero and 
 
 ## ADR-016: Choose the UI toolkit that FITS the UX — Ant Design is NOT mandatory
 **Owner instruction 2026-10-28.** FIRST read [UI Stack Selection Principles](docs/50-UI-STACK-SELECTION-PRINCIPLES.md) alongside the five-stage UX skill and screen redesign brief. Do NOT assume Ant Design is the required platform framework. Compare libraries against each screen's interactions, information density, keyboard/accessibility, bundle impact, design freedom, maintenance/license and reusable FlowDocker ownership. Prefer task-appropriate headless/composable primitives wrapped in `@flowdocker/*` components. Candidate POC: shadcn/ui + one base layer (Radix **or** Base UI), TanStack Table for data-grid logic, React Flow for node canvas, dnd-kit for field mapping, design tokens and Storybook. These are **candidates, not mandatory installed packages**. An Ant Design component may be used when justified by real UX/testing; avoid forcing the entire product into Ant visual design or mixing overlapping primitive systems without architecture review.
+
+## Mandatory shadcn/ui skill — owner requirement
+For all UI implementation, read [the official shadcn skill](.agents/skills/shadcn/SKILL.md) and the relevant linked rules alongside the FlowDocker UX/component skills. The current selected foundation is shadcn/ui (new-york), Radix, Tailwind v4 and Lucide; preserve React Flow for graph canvases.
+
+- Reuse the public `@flowdocker/ui` components first. Add upstream primitives under `packages/ui/src/components/ui` and expose shared typed wrappers when needed; avoid separate copies per screen.
+- Inspect `components.json` and run `npx shadcn@latest info --json` before component additions; use `npx shadcn@latest docs <component>` for current APIs. Do not blindly rerun init, change the primitive base or overwrite customized components.
+- Preserve FlowDocker semantic tokens, existing public contracts, Vietnamese/English translations, keyboard accessibility and reduced-motion support. Use shared variants and tokens to keep screens consistent.
+- The vendored skill comes from [shadcn-ui/ui](https://github.com/shadcn-ui/ui/tree/main/skills/shadcn). Preserve upstream attribution; skill examples are reference material, not application source.
+
+## Mandatory bilingual UI — owner requirement
+Every new or modified screen/component must support Vietnamese and English through `@flowdocker/i18n`. This applies to navigation, visible labels, buttons, dialogs, placeholders, tooltips, accessible names, loading/empty/error states, notifications, validation and simulation results. Keep whole sentences and parameterized messages in the shared dictionaries; do not concatenate translated fragments or freeze translations at module load/state initialization. Translate presentation only: keep API enums, technical IDs, user-entered data and persisted domain values unchanged. New demo node labels may declare optional labelKey/detailKey; unknown/custom node text stays verbatim.
+
+Run `npm run i18n:check` (also included in `npm run lint`) and test changed journeys in both languages before reporting completion. The check detects direct JSX text, literal UI attributes and missing literal translation keys; dynamic messages and new third-party accessible labels still require review. Preserve the language picker design: flag + VI/EN code in the trigger, native language names with flags in its menu and a tinted selected row, language preference persistence, current draft input and reduced-motion behavior. See docs/54-BILINGUAL-I18N-FOUNDATION.md.

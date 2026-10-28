@@ -1,3 +1,4 @@
+import { useI18n } from "@flowdocker/i18n";
 import { useState } from "react";
 import { Plus, Shield, ShieldCheck } from "lucide-react";
 import {
@@ -68,6 +69,8 @@ export function PermissionBuilder({
   loading,
   error,
 }: PermissionBuilderProps) {
+  const { t } = useI18n();
+
   const [selectedId, setSelectedId] = useState(roles[0]?.id ?? "");
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState("matrix");
@@ -118,35 +121,40 @@ export function PermissionBuilder({
     <section className="fd-screen">
       <div className="fd-page-toolbar">
         <div>
-          <div className="fd-overline">BẢO MẬT / PHÂN QUYỀN</div>
-          <h1>Permission Builder</h1>
-          <p>Thiết lập vai trò, phạm vi dữ liệu và kiểm thử truy cập giả lập</p>
+          <div className="fd-overline">{t("BẢO MẬT / PHÂN QUYỀN")}</div>
+          <h1>{t("Permission Builder")}</h1>
+          <p>
+            {t(
+              "Thiết lập vai trò, phạm vi dữ liệu và kiểm thử truy cập giả lập",
+            )}
+          </p>
         </div>
         <div className="fd-toolbar-actions">
-          <Badge tone="warning">Không thực thi quyền thật</Badge>
+          <Badge tone="warning">{t("Không thực thi quyền thật")}</Badge>
           <Button variant="primary" onClick={() => setModal(true)}>
-            <Plus size={16} /> Tạo vai trò
+            <Plus size={16} />
+            {t("Tạo vai trò")}
           </Button>
         </div>
       </div>
-      {error && <Notice tone="danger">{error}</Notice>}
-      {message && <Notice>{message}</Notice>}
+      {error && <Notice tone="danger">{t(error)}</Notice>}
+      {message && <Notice>{t(message)}</Notice>}
       <div className="fd-workbench fd-permission-layout">
         <aside className="fd-pane fd-entity-list">
           <div className="fd-pane-title">
-            <strong>Vai trò</strong>
+            <strong>{t("Vai trò")}</strong>
             <span>{roles.length}</span>
           </div>
           <div className="fd-pane-pad">
             <SearchInput
-              label="Tìm vai trò..."
+              label={t("Tìm vai trò...")}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
           <div className="fd-entity-scroll">
             {loading ? (
-              "Đang tải..."
+              t("Đang tải...")
             ) : filtered.length ? (
               filtered.map((r) => (
                 <button
@@ -161,19 +169,20 @@ export function PermissionBuilder({
                   <Shield size={17} />
                   <span>
                     <strong>{r.name}</strong>
-                    <small>{scopes[r.scope]}</small>
+                    <small>{t(scopes[r.scope])}</small>
                   </span>
                 </button>
               ))
             ) : (
-              <EmptyState title="Không tìm thấy vai trò" />
+              <EmptyState title={t("Không tìm thấy vai trò")} />
             )}
           </div>
           <div className="fd-pane-help">
-            <strong>Mặc định từ chối</strong>
+            <strong>{t("Mặc định từ chối")}</strong>
             <p>
-              Ma trận chỉ là bản nháp giao diện. Quyền thật cần PDP/PEP và RLS
-              phía máy chủ.
+              {t(
+                "Ma trận chỉ là bản nháp giao diện. Quyền thật cần PDP/PEP và RLS phía máy chủ.",
+              )}
             </p>
           </div>
         </aside>
@@ -188,13 +197,14 @@ export function PermissionBuilder({
                       tone={role.status === "PUBLISHED" ? "success" : "warning"}
                     >
                       {role.status === "PUBLISHED"
-                        ? "Đã phát hành"
-                        : "Bản nháp"}
+                        ? t("Đã phát hành")
+                        : t("Bản nháp")}
                     </Badge>
                   </div>
                   <div className="fd-object-meta">
-                    {role.description} <span>·</span> v{role.version}{" "}
-                    <span>·</span> {scopes[role.scope]}
+                    {role.description} <span>·</span>
+                    {t("v")}
+                    {role.version} <span>·</span> {t(scopes[role.scope])}
                   </div>
                 </div>
                 <div className="fd-toolbar-actions">
@@ -205,21 +215,22 @@ export function PermissionBuilder({
                       )
                     }
                   >
-                    <ShieldCheck size={16} /> Kiểm tra
+                    <ShieldCheck size={16} />
+                    {t("Kiểm tra")}
                   </Button>
                   <Button
                     disabled
-                    title="Cần reviewer và backend PDP/PEP để phát hành"
+                    title={t("Cần reviewer và backend PDP/PEP để phát hành")}
                   >
-                    Phát hành · cần backend
+                    {t("Phát hành · cần backend")}
                   </Button>
                 </div>
               </div>
               <Tabs
                 tabs={[
-                  { id: "matrix", label: "Quyền thao tác" },
-                  { id: "fields", label: "Bảo vệ trường" },
-                  { id: "versions", label: "Phiên bản" },
+                  { id: "matrix", label: t("Quyền thao tác") },
+                  { id: "fields", label: t("Bảo vệ trường") },
+                  { id: "versions", label: t("Phiên bản") },
                 ]}
                 active={tab}
                 onChange={setTab}
@@ -228,10 +239,11 @@ export function PermissionBuilder({
                 <div className="fd-content">
                   <div className="fd-section-heading">
                     <div>
-                      <h3>Ma trận tài nguyên & hành động</h3>
+                      <h3>{t("Ma trận tài nguyên & hành động")}</h3>
                       <p>
-                        Chỉ hiển thị hành động trong catalog mẫu; chưa xác minh
-                        backend handler.
+                        {t(
+                          "Chỉ hiển thị hành động trong catalog mẫu; chưa xác minh backend handler.",
+                        )}
                       </p>
                     </div>
                   </div>
@@ -239,9 +251,9 @@ export function PermissionBuilder({
                     <table className="fd-table fd-matrix">
                       <thead>
                         <tr>
-                          <th>TÀI NGUYÊN</th>
+                          <th>{t("TÀI NGUYÊN")}</th>
                           {actions.map((a) => (
-                            <th key={a}>{labels[a]}</th>
+                            <th key={a}>{t(labels[a])}</th>
                           ))}
                         </tr>
                       </thead>
@@ -249,14 +261,14 @@ export function PermissionBuilder({
                         {resources.map((res) => (
                           <tr key={res.resource}>
                             <td>
-                              <strong>{res.label}</strong>
+                              <strong>{t(res.label)}</strong>
                               <small>{res.resource}</small>
                             </td>
                             {actions.map((a) => (
                               <td key={a}>
                                 {res.actions.includes(a) ? (
                                   <Checkbox
-                                    aria-label={`${res.label}: ${labels[a]}`}
+                                    aria-label={`${t(res.label)}: ${t(labels[a])}`}
                                     checked={(
                                       role.grants[res.resource] ?? []
                                     ).includes(a)}
@@ -275,10 +287,11 @@ export function PermissionBuilder({
                     </table>
                   </div>
                   <div className="fd-scope-section">
-                    <h3>Phạm vi dữ liệu</h3>
+                    <h3>{t("Phạm vi dữ liệu")}</h3>
                     <p>
-                      Phạm vi này được dùng trong mô phỏng. Server phải kiểm tra
-                      quan hệ hiện hành khi thực thi.
+                      {t(
+                        "Phạm vi này được dùng trong mô phỏng. Server phải kiểm tra quan hệ hiện hành khi thực thi.",
+                      )}
                     </p>
                     <div className="fd-scope-options">
                       {(Object.keys(scopes) as Scope[]).map((s) => (
@@ -292,7 +305,7 @@ export function PermissionBuilder({
                             checked={role.scope === s}
                             onChange={() => patch({ scope: s })}
                           />
-                          {scopes[s]}
+                          {t(scopes[s])}
                         </label>
                       ))}
                     </div>
@@ -301,10 +314,11 @@ export function PermissionBuilder({
               )}
               {tab === "fields" && (
                 <div className="fd-content">
-                  <h3>Chính sách theo trường</h3>
+                  <h3>{t("Chính sách theo trường")}</h3>
                   <p>
-                    Trường nhạy cảm phải được chiếu/mask tại API. Cấu hình dưới
-                    đây chỉ là ví dụ ở UI.
+                    {t(
+                      "Trường nhạy cảm phải được chiếu/mask tại API. Cấu hình dưới đây chỉ là ví dụ ở UI.",
+                    )}
                   </p>
                   {[
                     "vendor.bank_account",
@@ -314,10 +328,10 @@ export function PermissionBuilder({
                     <div className="fd-field-rule" key={f}>
                       <div>
                         <strong>{f}</strong>
-                        <small>Dữ liệu nhạy cảm mẫu</small>
+                        <small>{t("Dữ liệu nhạy cảm mẫu")}</small>
                       </div>
                       <Select
-                        label={`Quyền với ${f}`}
+                        label={t("Quyền với {{field}}", { field: f })}
                         value={role.fieldRules[f] ?? "DENY"}
                         onValueChange={(value) =>
                           patch({
@@ -328,9 +342,9 @@ export function PermissionBuilder({
                           })
                         }
                         options={[
-                          { value: "DENY", label: "Từ chối" },
-                          { value: "MASK", label: "Che giá trị" },
-                          { value: "READ", label: "Cho xem" },
+                          { value: "DENY", label: t("Từ chối") },
+                          { value: "MASK", label: t("Che giá trị") },
+                          { value: "READ", label: t("Cho xem") },
                         ]}
                       />
                     </div>
@@ -339,35 +353,39 @@ export function PermissionBuilder({
               )}
               {tab === "versions" && (
                 <div className="fd-content">
-                  <h3>Phiên bản chính sách</h3>
+                  <h3>{t("Phiên bản chính sách")}</h3>
                   <div className="fd-version-row">
-                    <Badge tone="warning">Draft</Badge>
-                    <span>Bản nháp hiện tại · trình duyệt này</span>
+                    <Badge tone="warning">{t("Draft")}</Badge>
+                    <span>{t("Bản nháp hiện tại · trình duyệt này")}</span>
                   </div>
                   <div className="fd-version-row">
-                    <Badge>v{role.version}</Badge>
-                    <span>Phiên bản mẫu · không có policy backend</span>
+                    <Badge>
+                      {t("v")}
+                      {role.version}
+                    </Badge>
+                    <span>{t("Phiên bản mẫu · không có policy backend")}</span>
                   </div>
                 </div>
               )}
             </>
           ) : (
-            <EmptyState title="Chọn vai trò" />
+            <EmptyState title={t("Chọn vai trò")} />
           )}
         </section>
         <aside className="fd-pane fd-inspector fd-access-panel">
           <div className="fd-pane-title">
-            <strong>Test Access</strong>
-            <Badge tone="warning">MÔ PHỎNG</Badge>
+            <strong>{t("Test Access")}</strong>
+            <Badge tone="warning">{t("MÔ PHỎNG")}</Badge>
           </div>
           <div className="fd-pane-pad">
             <p className="fd-muted">
-              Dùng dữ liệu giả lập để giải thích quyết định. Kết quả không cấp
-              quyền thật.
+              {t(
+                "Dùng dữ liệu giả lập để giải thích quyết định. Kết quả không cấp quyền thật.",
+              )}
             </p>
-            <Field label="Tài nguyên">
+            <Field label={t("Tài nguyên")}>
               <Select
-                label="Tài nguyên"
+                label={t("Tài nguyên")}
                 value={testResource}
                 onValueChange={(value) => {
                   setTestResource(value);
@@ -379,13 +397,13 @@ export function PermissionBuilder({
                 }}
                 options={resources.map((resource) => ({
                   value: resource.resource,
-                  label: resource.label,
+                  label: t(resource.label),
                 }))}
               />
             </Field>
-            <Field label="Hành động">
+            <Field label={t("Hành động")}>
               <Select
-                label="Hành động"
+                label={t("Hành động")}
                 value={testAction}
                 onValueChange={(value) => {
                   setTestAction(value as Action);
@@ -394,10 +412,13 @@ export function PermissionBuilder({
                 options={(
                   resources.find((r) => r.resource === testResource)?.actions ??
                   actions
-                ).map((action) => ({ value: action, label: labels[action] }))}
+                ).map((action) => ({
+                  value: action,
+                  label: t(labels[action]),
+                }))}
               />
             </Field>
-            <div className="fd-fixture-heading">NGỮ CẢNH GIẢ LẬP</div>
+            <div className="fd-fixture-heading">{t("NGỮ CẢNH GIẢ LẬP")}</div>
             {(
               [
                 ["actorActive", "Người dùng đang hoạt động"],
@@ -416,7 +437,7 @@ export function PermissionBuilder({
                     setDecision(null);
                   }}
                 />
-                {label}
+                {t(label)}
               </label>
             ))}
             <Button
@@ -430,7 +451,7 @@ export function PermissionBuilder({
                 )
               }
             >
-              Chạy mô phỏng
+              {t("Chạy mô phỏng")}
             </Button>
             {decision && (
               <div
@@ -438,15 +459,17 @@ export function PermissionBuilder({
                 role="status"
               >
                 <div>
-                  <strong>{decision.effect}</strong>
-                  <Badge tone="warning">SIMULATED</Badge>
+                  <strong>{t(decision.effect)}</strong>
+                  <Badge tone="warning">{t("SIMULATED")}</Badge>
                 </div>
                 <ul>
                   {decision.reasons.map((r, i) => (
-                    <li key={i}>{r}</li>
+                    <li key={i}>{t(r)}</li>
                   ))}
                 </ul>
-                <small>Chưa kiểm tra quyền truy cập thực tế trên API.</small>
+                <small>
+                  {t("Chưa kiểm tra quyền truy cập thực tế trên API.")}
+                </small>
               </div>
             )}
           </div>
@@ -454,29 +477,31 @@ export function PermissionBuilder({
       </div>
       {modal && (
         <Modal
-          title="Tạo vai trò"
+          title={t("Tạo vai trò")}
           onClose={() => setModal(false)}
           footer={
             <>
-              <Button onClick={() => setModal(false)}>Hủy</Button>
+              <Button onClick={() => setModal(false)}>{t("Hủy")}</Button>
               <Button
                 variant="primary"
                 disabled={!newName.trim()}
                 onClick={create}
               >
-                Tạo bản nháp
+                {t("Tạo bản nháp")}
               </Button>
             </>
           }
         >
-          <Field label="Tên vai trò">
+          <Field label={t("Tên vai trò")}>
             <Input
               autoFocus
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
             />
           </Field>
-          <Notice tone="warning">Vai trò mới không có quyền mặc định.</Notice>
+          <Notice tone="warning">
+            {t("Vai trò mới không có quyền mặc định.")}
+          </Notice>
         </Modal>
       )}
     </section>

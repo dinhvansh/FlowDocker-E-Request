@@ -1,3 +1,4 @@
+export * from "./app-draft";
 export type EntityKind =
   "LOCAL_CATALOG" | "EXTERNAL_MIRROR" | "COMPOSITE_READ_MODEL";
 export type FieldType = "text" | "number" | "date" | "boolean" | "reference";

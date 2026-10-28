@@ -1,3 +1,4 @@
+import { useI18n } from "@flowdocker/i18n";
 import {
   Select as ShadSelect,
   SelectContent,
@@ -35,6 +36,7 @@ export function Select({
   id,
   "aria-invalid": ariaInvalid,
 }: SelectProps) {
+  const { t } = useI18n();
   const themeRoot =
     typeof document === "undefined"
       ? undefined
@@ -48,7 +50,7 @@ export function Select({
         aria-label={label}
         aria-invalid={ariaInvalid}
       >
-        <SelectValue placeholder={placeholder} />
+        <SelectValue placeholder={t(placeholder)} />
       </SelectTrigger>
       <SelectContent
         position="popper"

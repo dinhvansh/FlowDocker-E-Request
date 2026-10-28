@@ -1,3 +1,4 @@
+import { useI18n } from "@flowdocker/i18n";
 import { useMemo, useState } from "react";
 import {
   ArrowRight,
@@ -64,6 +65,8 @@ const kindOptions = [
 ];
 
 export function ConnectionsPage({ onOpenFlows }: { onOpenFlows(): void }) {
+  const { t } = useI18n();
+
   const [drafts, setDrafts] = useState<ConnectionDraft[]>(readDrafts);
   const [selectedId, setSelectedId] = useState(() => readDrafts()[0]?.id || "");
   const [query, setQuery] = useState("");
@@ -114,15 +117,16 @@ export function ConnectionsPage({ onOpenFlows }: { onOpenFlows(): void }) {
     <section className="fd-screen fd-pr2-screen">
       <div className="fd-page-toolbar">
         <div>
-          <div className="fd-overline">DỮ LIỆU / CONNECTIONS</div>
-          <h1>Connection Manager</h1>
+          <div className="fd-overline">{t("DỮ LIỆU / CONNECTIONS")}</div>
+          <h1>{t("Connection Manager")}</h1>
           <p>
-            Quản lý cấu hình kết nối tách biệt với nguồn dữ liệu và flow đồng
-            bộ.
+            {t(
+              "Quản lý cấu hình kết nối tách biệt với nguồn dữ liệu và flow đồng bộ.",
+            )}
           </p>
         </div>
         <div className="fd-toolbar-actions">
-          <Badge tone="warning">Frontend demo</Badge>
+          <Badge tone="warning">{t("Frontend demo")}</Badge>
           <Button
             variant="primary"
             onClick={() => {
@@ -131,25 +135,30 @@ export function ConnectionsPage({ onOpenFlows }: { onOpenFlows(): void }) {
               setNotice("");
             }}
           >
-            <Plus size={16} /> Tạo kết nối
+            <Plus size={16} />
+            {t("Tạo kết nối")}
           </Button>
         </div>
       </div>
       <div className="fd-pr2-note">
         <CircleAlert size={18} />
         <span>
-          Chưa có vault, backend hoặc kiểm tra kết nối thật. Không nhập mật
-          khẩu, token hay endpoint nội bộ vào bản demo công khai.
+          {t(
+            "Chưa có vault, backend hoặc kiểm tra kết nối thật. Không nhập mật khẩu, token hay endpoint nội bộ vào bản demo công khai.",
+          )}
         </span>
       </div>
       {notice && (
         <div className="fd-pr2-feedback" role="status">
-          {notice}
+          {t(notice)}
         </div>
       )}
       {wizard ? (
         <div className="fd-connection-wizard">
-          <div className="fd-wizard-steps" aria-label="Các bước tạo kết nối">
+          <div
+            className="fd-wizard-steps"
+            aria-label={t("Các bước tạo kết nối")}
+          >
             {["1 · Loại", "2 · Cấu hình", "3 · Kiểm tra", "4 · Lưu nháp"].map(
               (label, index) => (
                 <button
@@ -158,7 +167,7 @@ export function ConnectionsPage({ onOpenFlows }: { onOpenFlows(): void }) {
                   data-active={step === index}
                   onClick={() => setStep(index)}
                 >
-                  {label}
+                  {t(label)}
                 </button>
               ),
             )}
@@ -166,26 +175,27 @@ export function ConnectionsPage({ onOpenFlows }: { onOpenFlows(): void }) {
           <div className="fd-wizard-body">
             {step === 0 && (
               <>
-                <h2>Chọn loại kết nối</h2>
+                <h2>{t("Chọn loại kết nối")}</h2>
                 <p>
-                  Chọn giao thức và môi trường. Mỗi kết nối có thể phục vụ nhiều
-                  nguồn đã được phê duyệt.
+                  {t(
+                    "Chọn giao thức và môi trường. Mỗi kết nối có thể phục vụ nhiều nguồn đã được phê duyệt.",
+                  )}
                 </p>
                 <div className="fd-pr2-form-grid">
                   <label>
-                    Tên kết nối
+                    {t("Tên kết nối")}
                     <Input
                       value={form.name}
                       onChange={(event) =>
                         setForm({ ...form, name: event.target.value })
                       }
-                      placeholder="Ví dụ: Epicor QA"
+                      placeholder={t("Ví dụ: Epicor QA")}
                     />
                   </label>
                   <label>
-                    Loại connector
+                    {t("Loại connector")}
                     <Select
-                      label="Loại connector"
+                      label={t("Loại connector")}
                       value={form.kind}
                       onValueChange={(value) =>
                         setForm({
@@ -193,31 +203,34 @@ export function ConnectionsPage({ onOpenFlows }: { onOpenFlows(): void }) {
                           kind: value as ConnectionDraft["kind"],
                         })
                       }
-                      options={kindOptions}
+                      options={kindOptions.map((option) => ({
+                        ...option,
+                        label: t(option.label),
+                      }))}
                     />
                   </label>
                   <label>
-                    Môi trường
+                    {t("Môi trường")}
                     <Select
-                      label="Môi trường"
+                      label={t("Môi trường")}
                       value={form.environment}
                       onValueChange={(value) =>
                         setForm({ ...form, environment: value as "DEV" | "QA" })
                       }
                       options={[
-                        { value: "DEV", label: "DEV" },
-                        { value: "QA", label: "QA" },
+                        { value: "DEV", label: t("DEV") },
+                        { value: "QA", label: t("QA") },
                       ]}
                     />
                   </label>
                   <label>
-                    Người phụ trách
+                    {t("Người phụ trách")}
                     <Input
                       value={form.owner}
                       onChange={(event) =>
                         setForm({ ...form, owner: event.target.value })
                       }
-                      placeholder="Nhóm hoặc vai trò vận hành"
+                      placeholder={t("Nhóm hoặc vai trò vận hành")}
                     />
                   </label>
                 </div>
@@ -225,86 +238,94 @@ export function ConnectionsPage({ onOpenFlows }: { onOpenFlows(): void }) {
             )}
             {step === 1 && (
               <>
-                <h2>Cấu hình an toàn</h2>
+                <h2>{t("Cấu hình an toàn")}</h2>
                 <p>
-                  Bản demo chỉ giữ mô tả hiển thị. Endpoint thực và secret phải
-                  đi qua backend và vault trong giai đoạn triển khai.
+                  {t(
+                    "Bản demo chỉ giữ mô tả hiển thị. Endpoint thực và secret phải đi qua backend và vault trong giai đoạn triển khai.",
+                  )}
                 </p>
                 <label className="fd-pr2-wide-label">
-                  Nhãn endpoint (không phải địa chỉ thực)
+                  {t("Nhãn endpoint (không phải địa chỉ thực)")}
                   <Input
                     value={form.endpointLabel}
                     onChange={(event) =>
                       setForm({ ...form, endpointLabel: event.target.value })
                     }
-                    placeholder="Ví dụ: Máy chủ QA đã được duyệt"
+                    placeholder={t("Ví dụ: Máy chủ QA đã được duyệt")}
                   />
                 </label>
                 <Notice tone="warning">
-                  TLS, xác thực, quyền chỉ đọc và danh sách view/BAQ được phép
-                  cần kiểm tra ở máy chủ. Bản demo không thu thập credential.
+                  {t(
+                    "TLS, xác thực, quyền chỉ đọc và danh sách view/BAQ được phép cần kiểm tra ở máy chủ. Bản demo không thu thập credential.",
+                  )}
                 </Notice>
               </>
             )}
             {step === 2 && (
               <>
-                <h2>Kiểm tra kết nối</h2>
+                <h2>{t("Kiểm tra kết nối")}</h2>
                 <p>
-                  Kiểm tra DNS, TLS, xác thực và quyền đọc giới hạn cần backend
-                  và tài khoản dịch vụ đã được cấp phép.
+                  {t(
+                    "Kiểm tra DNS, TLS, xác thực và quyền đọc giới hạn cần backend và tài khoản dịch vụ đã được cấp phép.",
+                  )}
                 </p>
                 <div className="fd-test-checks">
                   {["DNS / mạng", "TLS", "Xác thực", "Quyền đọc giới hạn"].map(
                     (item) => (
                       <div key={item}>
                         <CircleAlert size={16} />
-                        <span>{item}</span>
-                        <Badge tone="warning">Chưa chạy</Badge>
+                        <span>{t(item)}</span>
+                        <Badge tone="warning">{t("Chưa chạy")}</Badge>
                       </div>
                     ),
                   )}
                 </div>
-                <Button disabled title="Chưa có dịch vụ kiểm tra kết nối thật">
-                  Kiểm tra thật · cần backend
+                <Button
+                  disabled
+                  title={t("Chưa có dịch vụ kiểm tra kết nối thật")}
+                >
+                  {t("Kiểm tra thật · cần backend")}
                 </Button>
               </>
             )}
             {step === 3 && (
               <>
-                <h2>Lưu bản nháp</h2>
+                <h2>{t("Lưu bản nháp")}</h2>
                 <p>
-                  Chỉ lưu metadata demo trên trình duyệt. Không thể kích hoạt
-                  trước khi test thật trên cấu hình hiện hành đạt và được duyệt.
+                  {t(
+                    "Chỉ lưu metadata demo trên trình duyệt. Không thể kích hoạt trước khi test thật trên cấu hình hiện hành đạt và được duyệt.",
+                  )}
                 </p>
                 <dl className="fd-pr2-summary">
-                  <dt>Tên</dt>
-                  <dd>{form.name || "Chưa nhập"}</dd>
-                  <dt>Loại</dt>
+                  <dt>{t("Tên")}</dt>
+                  <dd>{form.name || t("Chưa nhập")}</dd>
+                  <dt>{t("Loại")}</dt>
                   <dd>{form.kind}</dd>
-                  <dt>Môi trường</dt>
+                  <dt>{t("Môi trường")}</dt>
                   <dd>{form.environment}</dd>
-                  <dt>Trạng thái</dt>
-                  <dd>DRAFT · chưa kết nối</dd>
+                  <dt>{t("Trạng thái")}</dt>
+                  <dd>{t("DRAFT · chưa kết nối")}</dd>
                 </dl>
                 <Button variant="primary" onClick={save}>
-                  Lưu bản nháp
+                  {t("Lưu bản nháp")}
                 </Button>{" "}
-                <Button disabled title="Yêu cầu kiểm tra kết nối thật">
-                  Kích hoạt
+                <Button disabled title={t("Yêu cầu kiểm tra kết nối thật")}>
+                  {t("Kích hoạt")}
                 </Button>
               </>
             )}
           </div>
           <div className="fd-wizard-footer">
             <Button variant="ghost" onClick={() => setWizard(false)}>
-              Hủy
+              {t("Hủy")}
             </Button>
             <span />
             <Button disabled={step === 0} onClick={() => setStep(step - 1)}>
-              Quay lại
+              {t("Quay lại")}
             </Button>
             <Button disabled={step === 3} onClick={() => setStep(step + 1)}>
-              Tiếp theo <ArrowRight size={15} />
+              {t("Tiếp theo")}
+              <ArrowRight size={15} />
             </Button>
           </div>
         </div>
@@ -312,21 +333,23 @@ export function ConnectionsPage({ onOpenFlows }: { onOpenFlows(): void }) {
         <div className="fd-connections-layout">
           <div className="fd-connection-list">
             <div className="fd-pr2-list-heading">
-              <h2>Kết nối</h2>
-              <Badge tone="neutral">{drafts.length} bản nháp</Badge>
+              <h2>{t("Kết nối")}</h2>
+              <Badge tone="neutral">
+                {t("{{count}} bản nháp", { count: drafts.length })}
+              </Badge>
             </div>
             <label className="fd-pr2-search">
               <Search size={16} />
-              <span className="sr-only">Tìm kết nối</span>
+              <span className="sr-only">{t("Tìm kết nối")}</span>
               <Input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Tìm theo tên, loại, owner..."
+                placeholder={t("Tìm theo tên, loại, owner...")}
               />
             </label>
             <div className="fd-pr2-list-items">
               {filtered.length === 0 ? (
-                <p className="fd-pr2-empty">Không tìm thấy kết nối.</p>
+                <p className="fd-pr2-empty">{t("Không tìm thấy kết nối.")}</p>
               ) : (
                 filtered.map((item) => (
                   <button
@@ -344,7 +367,7 @@ export function ConnectionsPage({ onOpenFlows }: { onOpenFlows(): void }) {
                         {item.kind} · {item.environment}
                       </small>
                     </span>
-                    <Badge tone="warning">Nháp</Badge>
+                    <Badge tone="warning">{t("Nháp")}</Badge>
                   </button>
                 ))
               )}
@@ -355,50 +378,59 @@ export function ConnectionsPage({ onOpenFlows }: { onOpenFlows(): void }) {
               <>
                 <div className="fd-pr2-detail-head">
                   <div>
-                    <div className="fd-overline">CHI TIẾT KẾT NỐI</div>
+                    <div className="fd-overline">{t("CHI TIẾT KẾT NỐI")}</div>
                     <h2>{selected.name}</h2>
                     <p>
                       {selected.kind} · {selected.environment}
                     </p>
                   </div>
-                  <Badge tone="warning">DRAFT</Badge>
+                  <Badge tone="warning">{t("DRAFT")}</Badge>
                 </div>
                 <div className="fd-pr2-detail-grid">
                   <div>
-                    <small>Người phụ trách</small>
+                    <small>{t("Người phụ trách")}</small>
                     <strong>{selected.owner}</strong>
                   </div>
                   <div>
-                    <small>Endpoint</small>
-                    <strong>{selected.endpointLabel}</strong>
+                    <small>{t("Endpoint")}</small>
+                    <strong>
+                      {selected.endpointLabel === "Chưa cấu hình endpoint"
+                        ? t("Chưa cấu hình endpoint")
+                        : selected.endpointLabel}
+                    </strong>
                   </div>
                   <div>
-                    <small>Lần kiểm tra cuối</small>
-                    <strong>Chưa kiểm tra</strong>
+                    <small>{t("Lần kiểm tra cuối")}</small>
+                    <strong>{t("Chưa kiểm tra")}</strong>
                   </div>
                   <div>
-                    <small>Được dùng bởi</small>
-                    <strong>0 nguồn / 0 flow thật</strong>
+                    <small>{t("Được dùng bởi")}</small>
+                    <strong>{t("0 nguồn / 0 flow thật")}</strong>
                   </div>
                 </div>
                 <div className="fd-pr2-detail-actions">
-                  <Button disabled title="Chưa có backend và vault">
-                    Kiểm tra kết nối
+                  <Button disabled title={t("Chưa có backend và vault")}>
+                    {t("Kiểm tra kết nối")}
                   </Button>
-                  <Button disabled title="Cần test thật, phê duyệt và backend">
-                    Kích hoạt
+                  <Button
+                    disabled
+                    title={t("Cần test thật, phê duyệt và backend")}
+                  >
+                    {t("Kích hoạt")}
                   </Button>
                   <Button variant="ghost" onClick={onOpenFlows}>
-                    <Cable size={16} /> Xem Flow Studio
+                    <Cable size={16} />
+                    {t("Xem Flow Studio")}
                   </Button>
                 </div>
                 <Notice tone="warning">
-                  Lưu bản nháp không đọc dữ liệu, tạo source hay bắt đầu đồng
-                  bộ.
+                  {t(
+                    "Lưu bản nháp không đọc dữ liệu, tạo source hay bắt đầu đồng bộ.",
+                  )}
                 </Notice>
               </>
             ) : (
-              <p>Chọn một kết nối để xem chi tiết.</p>
+              <p>{t("Chọn một kết nối để xem chi tiết.")}</p>
             )}
           </div>
         </div>

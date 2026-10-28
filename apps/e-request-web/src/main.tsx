@@ -1,13 +1,15 @@
+import { I18nProvider, useI18n } from "@flowdocker/i18n";
 import React, { Suspense, lazy, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { ArrowRight, Blocks, Database, LockKeyhole } from "lucide-react";
 import { AppShell, type PageId } from "@flowdocker/app-shell";
 import { MasterBuilder } from "@flowdocker/master-builder";
 import { PermissionBuilder } from "@flowdocker/permission-builder";
-import { Badge, Button, DataTable, EmptyState, Notice } from "@flowdocker/ui";
+import { Badge, Button, DataTable, Notice } from "@flowdocker/ui";
 import type { MasterEntity, Role } from "@flowdocker/app-contracts";
 import { entityService, resources, roleService } from "./mock";
 import { ConnectionsPage } from "./connections";
+import { ApplicationsPage } from "./applications";
 import { ProfilePage } from "./profile";
 import { demoProfile } from "./demo-profile";
 import "@flowdocker/ui/styles.css";
@@ -33,6 +35,11 @@ function initialPage(): PageId {
     : "workspace";
 }
 function App() {
+  const { t } = useI18n();
+  useEffect(() => {
+    document.title = t("FlowDocker · Platform Console");
+  }, [t]);
+
   const [page, setPage] = useState<PageId>(initialPage);
   const [theme, setTheme] = useState<"light" | "dark">(() =>
     localStorage.getItem("flowdocker.theme") === "dark" ? "dark" : "light",
@@ -109,7 +116,7 @@ function App() {
         <Suspense
           fallback={
             <section className="fd-screen fd-loading-screen">
-              Đang tải Flow Studio...
+              {t("Đang tải Flow Studio...")}
             </section>
           }
         >
@@ -127,17 +134,15 @@ function App() {
         <section className="fd-screen">
           <div className="fd-page-toolbar">
             <div>
-              <div className="fd-overline">WORKSPACE / E-REQUEST</div>
-              <h1>Không gian làm việc</h1>
-              <p>Quản lý cấu hình nền tảng và công việc đang mở</p>
+              <div className="fd-overline">{t("WORKSPACE / E-REQUEST")}</div>
+              <h1>{t("Không gian làm việc")}</h1>
+              <p>{t("Quản lý cấu hình nền tảng và công việc đang mở")}</p>
             </div>
             <div className="fd-toolbar-actions">
-              <Badge tone="warning">Môi trường demo</Badge>
-              <Button
-                disabled
-                title="Application Builder sẽ được triển khai ở PR 3"
-              >
-                <Blocks size={16} /> Tạo ứng dụng · PR 3
+              <Badge tone="warning">{t("Môi trường demo")}</Badge>
+              <Button onClick={() => navigate("applications")}>
+                <Blocks size={16} />
+                {t("Tạo ứng dụng")}
               </Button>
             </div>
           </div>
@@ -145,8 +150,12 @@ function App() {
             <div className="fd-overview-main">
               <div className="fd-section-heading">
                 <div>
-                  <h2>Tiếp tục công việc</h2>
-                  <p>Các cấu hình frontend có thể thử ngay trên dữ liệu mẫu.</p>
+                  <h2>{t("Tiếp tục công việc")}</h2>
+                  <p>
+                    {t(
+                      "Các cấu hình frontend có thể thử ngay trên dữ liệu mẫu.",
+                    )}
+                  </p>
                 </div>
               </div>
               <div className="fd-quick-links">
@@ -155,8 +164,10 @@ function App() {
                     <Database size={19} />
                   </span>
                   <span>
-                    <strong>Master Data Builder</strong>
-                    <small>Định nghĩa entity, trường và nguồn sở hữu</small>
+                    <strong>{t("Master Data Builder")}</strong>
+                    <small>
+                      {t("Định nghĩa entity, trường và nguồn sở hữu")}
+                    </small>
                   </span>
                   <ArrowRight size={17} />
                 </button>
@@ -165,23 +176,26 @@ function App() {
                     <LockKeyhole size={19} />
                   </span>
                   <span>
-                    <strong>Permission Builder</strong>
-                    <small>Ma trận quyền, phạm vi và mô phỏng truy cập</small>
+                    <strong>{t("Permission Builder")}</strong>
+                    <small>
+                      {t("Ma trận quyền, phạm vi và mô phỏng truy cập")}
+                    </small>
                   </span>
                   <ArrowRight size={17} />
                 </button>
               </div>
               <div className="fd-section-heading">
                 <div>
-                  <h2>Entity gần đây</h2>
-                  <p>Cấu hình mẫu trong trình duyệt hiện tại</p>
+                  <h2>{t("Entity gần đây")}</h2>
+                  <p>{t("Cấu hình mẫu trong trình duyệt hiện tại")}</p>
                 </div>
                 <Button variant="ghost" onClick={() => navigate("master")}>
-                  Xem tất cả <ArrowRight size={15} />
+                  {t("Xem tất cả")}
+                  <ArrowRight size={15} />
                 </Button>
               </div>
               {loading ? (
-                <p>Đang tải...</p>
+                <p>{t("Đang tải...")}</p>
               ) : (
                 <DataTable
                   rows={entities.slice(0, 5)}
@@ -190,32 +204,32 @@ function App() {
                   columns={[
                     {
                       key: "name",
-                      heading: "ENTITY",
+                      heading: t("ENTITY"),
                       render: (e) => <strong>{e.name}</strong>,
                     },
                     {
                       key: "type",
-                      heading: "LOẠI",
+                      heading: t("LOẠI"),
                       render: (e) =>
                         e.kind === "LOCAL_CATALOG"
-                          ? "Danh mục nội bộ"
-                          : "Nguồn ngoài",
+                          ? t("Danh mục nội bộ")
+                          : t("Nguồn ngoài"),
                     },
                     {
                       key: "owner",
-                      heading: "OWNER",
+                      heading: t("OWNER"),
                       render: (e) => e.businessOwner,
                     },
                     {
                       key: "status",
-                      heading: "TRẠNG THÁI",
+                      heading: t("TRẠNG THÁI"),
                       render: (e) => (
                         <Badge
                           tone={e.status === "DRAFT" ? "warning" : "success"}
                         >
                           {e.status === "DRAFT"
-                            ? "Bản nháp"
-                            : `Mẫu v${e.version}`}
+                            ? t("Bản nháp")
+                            : t("Mẫu v{{version}}", { version: e.version })}
                         </Badge>
                       ),
                     },
@@ -224,59 +238,42 @@ function App() {
               )}
             </div>
             <aside className="fd-overview-side">
-              <h2>Trạng thái nền tảng</h2>
+              <h2>{t("Trạng thái nền tảng")}</h2>
               <div className="fd-status-line">
-                <span>Master Builder</span>
-                <Badge tone="info">Frontend demo</Badge>
+                <span>{t("Master Builder")}</span>
+                <Badge tone="info">{t("Frontend demo")}</Badge>
               </div>
               <div className="fd-status-line">
-                <span>Permission Builder</span>
-                <Badge tone="info">Frontend demo</Badge>
+                <span>{t("Permission Builder")}</span>
+                <Badge tone="info">{t("Frontend demo")}</Badge>
               </div>
               <div className="fd-status-line">
-                <span>Backend & authorization</span>
-                <Badge tone="warning">Chưa triển khai</Badge>
+                <span>{t("Backend & authorization")}</span>
+                <Badge tone="warning">{t("Chưa triển khai")}</Badge>
               </div>
               <Notice tone="warning">
-                Dữ liệu ở đây là dữ liệu tổng hợp. Không có ERP, identity,
-                policy engine hay quyền máy chủ.
+                {t(
+                  "Dữ liệu ở đây là dữ liệu tổng hợp. Không có ERP, identity, policy engine hay quyền máy chủ.",
+                )}
               </Notice>
-              <h3>Lộ trình giao diện</h3>
+              <h3>{t("Lộ trình giao diện")}</h3>
               <ul className="fd-next-list">
-                <li>PR 2 · Connections & Flow Studio: frontend demo</li>
-                <li>PR 3 · Application Builder & tích hợp UI</li>
+                <li>{t("PR 2 · Connections & Flow Studio: frontend demo")}</li>
+                <li>{t("PR 3 · Application Builder: bản nháp frontend")}</li>
               </ul>
             </aside>
           </div>
         </section>
       )}
-      {page === "applications" && (
-        <section className="fd-screen">
-          <div className="fd-page-toolbar">
-            <div>
-              <div className="fd-overline">NỀN TẢNG / KẾ HOẠCH</div>
-              <h1>Application Builder</h1>
-              <p>Dự kiến trong PR 3</p>
-            </div>
-            <Badge tone="warning">Chưa triển khai</Badge>
-          </div>
-          <div className="fd-planned">
-            <EmptyState
-              title="Màn hình này đang trong kế hoạch"
-              detail="Tạo app, chọn module và App Manifest sẽ được thực hiện ở PR 3."
-            />
-            <Button onClick={() => navigate("workspace")}>
-              Về không gian làm việc
-            </Button>
-          </div>
-        </section>
-      )}
+      {page === "applications" && <ApplicationsPage onOpenModule={navigate} />}
     </AppShell>
   );
 }
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <I18nProvider>
+      <App />
+    </I18nProvider>
   </React.StrictMode>,
 );

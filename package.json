@@ -11,9 +11,10 @@
     "examples:ui": "vite packages/ui/examples --host 0.0.0.0",
     "build": "npm run build -w @flowdocker/e-request-web",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "lint": "eslint .",
+    "lint": "eslint . && npm run i18n:check",
     "format:check": "prettier --check 'apps/e-request-web/src/**/*.{ts,tsx}' 'packages/**/*.{ts,tsx,css}'",
-    "test": "vitest run"
+    "test": "vitest run",
+    "i18n:check": "node scripts/check-i18n.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

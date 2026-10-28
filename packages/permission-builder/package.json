@@ -1,1 +1,16 @@
-{ "name": "@flowdocker/permission-builder", "private": true, "version": "0.1.0", "type": "module", "exports": { ".": "./src/index.tsx" }, "dependencies": { "@flowdocker/ui": "*", "@flowdocker/app-contracts": "*", "lucide-react": "^0.468.0", "react": "^19.2.0" } }
+{
+  "name": "@flowdocker/permission-builder",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.tsx"
+  },
+  "dependencies": {
+    "@flowdocker/ui": "*",
+    "@flowdocker/app-contracts": "*",
+    "lucide-react": "^0.468.0",
+    "react": "^19.2.0",
+    "@flowdocker/i18n": "*"
+  }
+}

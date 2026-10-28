@@ -1,3 +1,4 @@
+import { useI18n } from "@flowdocker/i18n";
 import {
   cloneElement,
   isValidElement,
@@ -232,7 +233,8 @@ export function DataTable<T>({
   selectedKey?: string;
   empty?: string;
 }) {
-  if (!rows.length) return <EmptyState title={empty} />;
+  const { t } = useI18n();
+  if (!rows.length) return <EmptyState title={t(empty)} />;
   return (
     <div className="fd-table-scroll">
       <Table className="fd-table">

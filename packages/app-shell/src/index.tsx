@@ -1,3 +1,4 @@
+import { useI18n } from "@flowdocker/i18n";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Blocks,
@@ -11,7 +12,7 @@ import {
   Sun,
   X,
 } from "lucide-react";
-import { Badge, Button, Input } from "@flowdocker/ui";
+import { Badge, Button, Input, LanguagePicker } from "@flowdocker/ui";
 
 export type PageId =
   | "workspace"
@@ -60,6 +61,8 @@ export function AppShell({
   onThemeChange(): void;
   children: ReactNode;
 }) {
+  const { t, storageWarning } = useI18n();
+
   const [navOpen, setNavOpen] = useState(false);
   const sidebarRef = useRef<HTMLElement>(null);
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
@@ -90,7 +93,7 @@ export function AppShell({
         <button
           type="button"
           className="fd-sidebar-scrim"
-          aria-label="Đóng điều hướng"
+          aria-label={t("Đóng điều hướng")}
           onClick={() => setNavOpen(false)}
         />
       )}
@@ -98,18 +101,18 @@ export function AppShell({
         ref={sidebarRef}
         className="fd-sidebar"
         data-open={navOpen}
-        aria-label="Điều hướng chính"
+        aria-label={t("Điều hướng chính")}
       >
         <div className="fd-brand">
-          <div className="fd-brand-mark">F</div>
+          <div className="fd-brand-mark">{t("F")}</div>
           <div className="fd-brand-copy">
-            <strong>FlowDocker</strong>
-            <span>Application Platform</span>
+            <strong>{t("FlowDocker")}</strong>
+            <span>{t("Application Platform")}</span>
           </div>
           <button
             type="button"
             className="fd-sidebar-close"
-            aria-label="Đóng điều hướng"
+            aria-label={t("Đóng điều hướng")}
             onClick={() => setNavOpen(false)}
           >
             <X size={18} aria-hidden="true" />
@@ -117,22 +120,24 @@ export function AppShell({
         </div>
         <div
           className="fd-workspace-switch"
-          aria-label="Không gian làm việc hiện tại: E-Request, môi trường Demo"
+          aria-label={t(
+            "Không gian làm việc hiện tại: E-Request, môi trường Demo",
+          )}
         >
-          <span className="fd-workspace-avatar">E</span>
+          <span className="fd-workspace-avatar">{t("E")}</span>
           <span className="fd-workspace-copy">
-            <strong>E-Request</strong>
-            <small>Ứng dụng hiện tại</small>
+            <strong>{t("E-Request")}</strong>
+            <small>{t("Ứng dụng hiện tại")}</small>
           </span>
-          <span className="fd-workspace-demo">Demo</span>
+          <span className="fd-workspace-demo">{t("Demo")}</span>
         </div>
         <div className="fd-nav-groups">
           {groups.map((group) => (
-            <nav key={group.label} aria-label={group.label}>
-              <p className="fd-nav-heading">{group.label}</p>
+            <nav key={group.label} aria-label={t(group.label)}>
+              <p className="fd-nav-heading">{t(group.label)}</p>
               {group.pages.map((item) => {
                 const Icon = item.icon;
-                const planned = item.id === "applications";
+
                 return (
                   <button
                     type="button"
@@ -143,8 +148,7 @@ export function AppShell({
                     onClick={() => navigate(item.id)}
                   >
                     <Icon size={18} strokeWidth={1.85} aria-hidden="true" />
-                    <span>{item.label}</span>
-                    {planned && <small>Chưa có</small>}
+                    <span>{t(item.label)}</span>
                   </button>
                 );
               })}
@@ -157,7 +161,7 @@ export function AppShell({
           data-active={page === "profile"}
           aria-current={page === "profile" ? "page" : undefined}
           onClick={() => navigate("profile")}
-          aria-label="Mở hồ sơ cá nhân"
+          aria-label={t("Mở hồ sơ cá nhân")}
         >
           <span className="fd-avatar">{account.initials}</span>
           <div>
@@ -171,32 +175,35 @@ export function AppShell({
           <button
             ref={menuTriggerRef}
             className="fd-mobile-menu fd-icon-button"
-            aria-label="Mở điều hướng"
+            aria-label={t("Mở điều hướng")}
             aria-expanded={navOpen}
             onClick={() => setNavOpen(!navOpen)}
           >
             <Menu size={20} aria-hidden="true" />
           </button>
           <div className="fd-breadcrumb">
-            Workspace <span>/</span>{" "}
+            {t("Workspace")}
+            <span>/</span>{" "}
             <strong>
-              {page === "profile" ? "Hồ sơ cá nhân" : selected?.label}
+              {page === "profile"
+                ? t("Hồ sơ cá nhân")
+                : t(selected?.label ?? "")}
             </strong>
           </div>
           <div className="fd-top-actions">
             <label className="fd-global-search">
               <Search size={16} />
-              <span className="sr-only">Tìm trong menu</span>
+              <span className="sr-only">{t("Tìm trong menu")}</span>
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Tìm trong menu..."
+                placeholder={t("Tìm trong menu...")}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     const match = groups
                       .flatMap((g) => g.pages)
                       .find((p) =>
-                        p.label.toLowerCase().includes(search.toLowerCase()),
+                        t(p.label).toLowerCase().includes(search.toLowerCase()),
                       );
                     if (match) {
                       navigate(match.id);
@@ -207,11 +214,16 @@ export function AppShell({
               />
               <kbd>↵</kbd>
             </label>
-            <Badge tone="warning">DEMO · dữ liệu mẫu</Badge>
+            <div className="fd-language-picker">
+              <LanguagePicker />
+            </div>
+            <Badge tone="warning">{t("DEMO · dữ liệu mẫu")}</Badge>
             <Button
               variant="ghost"
               aria-label={
-                theme === "light" ? "Bật giao diện tối" : "Bật giao diện sáng"
+                theme === "light"
+                  ? t("Bật giao diện tối")
+                  : t("Bật giao diện sáng")
               }
               onClick={onThemeChange}
             >
@@ -220,6 +232,13 @@ export function AppShell({
           </div>
         </header>
         <main id="main-content" className="fd-main">
+          {storageWarning && (
+            <p role="status">
+              {t(
+                "Lựa chọn ngôn ngữ chỉ áp dụng trong phiên này vì trình duyệt không cho phép lưu.",
+              )}
+            </p>
+          )}
           {children}
         </main>
       </div>

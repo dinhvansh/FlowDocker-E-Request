@@ -1,3 +1,4 @@
+import { useI18n } from "@flowdocker/i18n";
 import { useMemo, useState } from "react";
 import { Database, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import {
@@ -39,6 +40,8 @@ export function MasterBuilder({
   loading,
   error,
 }: MasterBuilderProps) {
+  const { t, validation } = useI18n();
+
   const [selectedId, setSelectedId] = useState(entities[0]?.id ?? "");
   const [selectedFieldId, setSelectedFieldId] = useState("");
   const [tab, setTab] = useState("schema");
@@ -123,35 +126,36 @@ export function MasterBuilder({
     <section className="fd-screen">
       <div className="fd-page-toolbar">
         <div>
-          <div className="fd-overline">DỮ LIỆU / MASTER DATA</div>
-          <h1>Master Data Builder</h1>
-          <p>Định nghĩa danh mục, nguồn sở hữu và cấu trúc trường</p>
+          <div className="fd-overline">{t("DỮ LIỆU / MASTER DATA")}</div>
+          <h1>{t("Master Data Builder")}</h1>
+          <p>{t("Định nghĩa danh mục, nguồn sở hữu và cấu trúc trường")}</p>
         </div>
         <div className="fd-toolbar-actions">
-          <Badge tone="warning">Chỉ lưu cục bộ</Badge>
+          <Badge tone="warning">{t("Chỉ lưu cục bộ")}</Badge>
           <Button variant="primary" onClick={() => setModal(true)}>
-            <Plus size={16} /> Tạo entity
+            <Plus size={16} />
+            {t("Tạo entity")}
           </Button>
         </div>
       </div>
-      {error && <Notice tone="danger">{error}</Notice>}
-      {message && <Notice>{message}</Notice>}
+      {error && <Notice tone="danger">{t(error)}</Notice>}
+      {message && <Notice>{t(message)}</Notice>}
       <div className="fd-workbench fd-master-layout">
         <aside className="fd-pane fd-entity-list">
           <div className="fd-pane-title">
-            <strong>Entity Explorer</strong>
+            <strong>{t("Entity Explorer")}</strong>
             <span>{entities.length}</span>
           </div>
           <div className="fd-pane-pad">
             <SearchInput
-              label="Tìm entity..."
+              label={t("Tìm entity...")}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
           <div className="fd-entity-scroll">
             {loading ? (
-              <div className="fd-pane-pad">Đang tải...</div>
+              <div className="fd-pane-pad">{t("Đang tải...")}</div>
             ) : filtered.length ? (
               filtered.map((e) => (
                 <button
@@ -177,7 +181,7 @@ export function MasterBuilder({
                 </button>
               ))
             ) : (
-              <EmptyState title="Không tìm thấy entity" />
+              <EmptyState title={t("Không tìm thấy entity")} />
             )}
           </div>
         </aside>
@@ -194,16 +198,19 @@ export function MasterBuilder({
                       }
                     >
                       {entity.status === "PUBLISHED"
-                        ? "Đã phát hành"
-                        : "Bản nháp"}
+                        ? t("Đã phát hành")
+                        : t("Bản nháp")}
                     </Badge>
                   </div>
                   <div className="fd-object-meta">
                     <code>{entity.key}</code>
                     <span>·</span>
-                    <span>{kinds[entity.kind]}</span>
+                    <span>{t(kinds[entity.kind])}</span>
                     <span>·</span>
-                    <span>v{entity.version}</span>
+                    <span>
+                      {t("v")}
+                      {entity.version}
+                    </span>
                   </div>
                 </div>
                 <div className="fd-toolbar-actions">
@@ -217,35 +224,45 @@ export function MasterBuilder({
                       );
                     }}
                   >
-                    <ShieldCheck size={16} /> Kiểm tra
+                    <ShieldCheck size={16} />
+                    {t("Kiểm tra")}
                   </Button>
                   <Button
                     disabled
-                    title="Cần backend, reviewer và migration để phát hành"
+                    title={t("Cần backend, reviewer và migration để phát hành")}
                   >
-                    Phát hành · cần backend
+                    {t("Phát hành · cần backend")}
                   </Button>
                 </div>
               </div>
               <Tabs
                 tabs={[
-                  { id: "schema", label: `Cấu trúc (${entity.fields.length})` },
+                  {
+                    id: "schema",
+                    label: t("Cấu trúc ({{count}})", {
+                      count: entity.fields.length,
+                    }),
+                  },
                   {
                     id: "records",
-                    label: `Bản ghi (${entity.records.length})`,
+                    label: t("Bản ghi ({{count}})", {
+                      count: entity.records.length,
+                    }),
                   },
-                  { id: "source", label: "Nguồn & sở hữu" },
-                  { id: "versions", label: "Phiên bản" },
+                  { id: "source", label: t("Nguồn & sở hữu") },
+                  { id: "versions", label: t("Phiên bản") },
                 ]}
                 active={tab}
                 onChange={setTab}
               />
               {errors.length > 0 && (
                 <div className="fd-validation" role="alert">
-                  <strong>Cần xử lý {errors.length} vấn đề</strong>
+                  <strong>
+                    {t("Cần xử lý {{count}} vấn đề", { count: errors.length })}
+                  </strong>
                   <ul>
                     {errors.map((e, i) => (
-                      <li key={i}>{e}</li>
+                      <li key={i}>{validation(e)}</li>
                     ))}
                   </ul>
                 </div>
@@ -254,11 +271,16 @@ export function MasterBuilder({
                 <div className="fd-content">
                   <div className="fd-section-heading">
                     <div>
-                      <h3>Thiết kế trường</h3>
-                      <p>Chọn một dòng để chỉnh thuộc tính trong inspector.</p>
+                      <h3>{t("Thiết kế trường")}</h3>
+                      <p>
+                        {t(
+                          "Chọn một dòng để chỉnh thuộc tính trong inspector.",
+                        )}
+                      </p>
                     </div>
                     <Button onClick={addField}>
-                      <Plus size={15} /> Thêm trường
+                      <Plus size={15} />
+                      {t("Thêm trường")}
                     </Button>
                   </div>
                   <DataTable
@@ -266,11 +288,13 @@ export function MasterBuilder({
                     rowKey={(f) => f.id}
                     selectedKey={field?.id}
                     onRowClick={(f) => setSelectedFieldId(f.id)}
-                    empty="Chưa có trường. Thêm trường đầu tiên để bắt đầu."
+                    empty={t(
+                      "Chưa có trường. Thêm trường đầu tiên để bắt đầu.",
+                    )}
                     columns={[
                       {
                         key: "name",
-                        heading: "TRƯỜNG",
+                        heading: t("TRƯỜNG"),
                         render: (f) => (
                           <div className="fd-cell-main">
                             <strong>{f.label}</strong>
@@ -280,17 +304,17 @@ export function MasterBuilder({
                       },
                       {
                         key: "type",
-                        heading: "KIỂU",
-                        render: (f) => <Badge>{f.type}</Badge>,
+                        heading: t("KIỂU"),
+                        render: (f) => <Badge>{t(f.type)}</Badge>,
                       },
                       {
                         key: "required",
-                        heading: "BẮT BUỘC",
-                        render: (f) => (f.required ? "Có" : "Không"),
+                        heading: t("BẮT BUỘC"),
+                        render: (f) => (f.required ? t("Có") : t("Không")),
                       },
                       {
                         key: "security",
-                        heading: "PHÂN LOẠI",
+                        heading: t("PHÂN LOẠI"),
                         render: (f) => (
                           <Badge
                             tone={
@@ -299,7 +323,7 @@ export function MasterBuilder({
                                 : "neutral"
                             }
                           >
-                            {f.classification}
+                            {t(f.classification)}
                           </Badge>
                         ),
                       },
@@ -311,8 +335,8 @@ export function MasterBuilder({
                 <div className="fd-content">
                   <div className="fd-section-heading">
                     <div>
-                      <h3>Xem trước bản ghi</h3>
-                      <p>Dữ liệu minh họa, không kết nối nguồn thật.</p>
+                      <h3>{t("Xem trước bản ghi")}</h3>
+                      <p>{t("Dữ liệu minh họa, không kết nối nguồn thật.")}</p>
                     </div>
                   </div>
                   {entity.records.length ? (
@@ -329,8 +353,10 @@ export function MasterBuilder({
                     />
                   ) : (
                     <EmptyState
-                      title="Chưa có bản ghi mẫu"
-                      detail="Việc tạo và đồng bộ bản ghi cần API ở giai đoạn sau."
+                      title={t("Chưa có bản ghi mẫu")}
+                      detail={t(
+                        "Việc tạo và đồng bộ bản ghi cần API ở giai đoạn sau.",
+                      )}
                     />
                   )}
                 </div>
@@ -338,30 +364,31 @@ export function MasterBuilder({
               {tab === "source" && (
                 <div className="fd-content fd-source-grid">
                   <div>
-                    <h3>Quyền sở hữu nguồn</h3>
+                    <h3>{t("Quyền sở hữu nguồn")}</h3>
                     <p>
-                      Entity lấy từ nguồn ngoài chỉ được xem trong bản
-                      prototype.
+                      {t(
+                        "Entity lấy từ nguồn ngoài chỉ được xem trong bản prototype.",
+                      )}
                     </p>
-                    <Field label="Loại entity">
+                    <Field label={t("Loại entity")}>
                       <Select
-                        label="Loại entity"
+                        label={t("Loại entity")}
                         value={entity.kind}
                         onValueChange={(value) =>
                           patch({ kind: value as MasterEntity["kind"] })
                         }
                         options={Object.entries(kinds).map(
-                          ([value, label]) => ({ value, label }),
+                          ([value, label]) => ({ value, label: t(label) }),
                         )}
                       />
                     </Field>
-                    <Field label="Nguồn dữ liệu">
+                    <Field label={t("Nguồn dữ liệu")}>
                       <Input
                         value={entity.sourceOwner}
                         onChange={(e) => patch({ sourceOwner: e.target.value })}
                       />
                     </Field>
-                    <Field label="Business owner">
+                    <Field label={t("Business owner")}>
                       <Input
                         value={entity.businessOwner}
                         onChange={(e) =>
@@ -369,88 +396,94 @@ export function MasterBuilder({
                         }
                       />
                     </Field>
-                    <Field label="Phạm vi">
+                    <Field label={t("Phạm vi")}>
                       <Select
-                        label="Phạm vi"
+                        label={t("Phạm vi")}
                         value={entity.scope}
                         onValueChange={(value) =>
                           patch({ scope: value as MasterEntity["scope"] })
                         }
                         options={[
-                          { value: "TENANT", label: "Tenant" },
-                          { value: "COMPANY", label: "Công ty" },
+                          { value: "TENANT", label: t("Tenant") },
+                          { value: "COMPANY", label: t("Công ty") },
                         ]}
                       />
                     </Field>
                   </div>
                   <Notice tone="warning">
-                    Mọi thay đổi ở đây chỉ tác động bản nháp trong trình duyệt.
-                    Nguồn ngoài không được chỉnh bản ghi từ UI này.
+                    {t(
+                      "Mọi thay đổi ở đây chỉ tác động bản nháp trong trình duyệt. Nguồn ngoài không được chỉnh bản ghi từ UI này.",
+                    )}
                   </Notice>
                 </div>
               )}
               {tab === "versions" && (
                 <div className="fd-content">
-                  <h3>Lịch sử phiên bản</h3>
+                  <h3>{t("Lịch sử phiên bản")}</h3>
                   <div className="fd-version-row">
-                    <Badge tone="warning">Draft</Badge>
-                    <span>Bản nháp hiện tại · chỉ trên trình duyệt</span>
+                    <Badge tone="warning">{t("Draft")}</Badge>
+                    <span>{t("Bản nháp hiện tại · chỉ trên trình duyệt")}</span>
                   </div>
                   <div className="fd-version-row">
-                    <Badge>v{entity.version}</Badge>
-                    <span>Phiên bản mẫu · không có revision backend</span>
+                    <Badge>
+                      {t("v")}
+                      {entity.version}
+                    </Badge>
+                    <span>
+                      {t("Phiên bản mẫu · không có revision backend")}
+                    </span>
                   </div>
                 </div>
               )}
             </>
           ) : (
-            <EmptyState title="Chọn entity" />
+            <EmptyState title={t("Chọn entity")} />
           )}
         </section>
         <aside className="fd-pane fd-inspector">
           <div className="fd-pane-title">
-            <strong>Inspector</strong>
-            <span>THUỘC TÍNH</span>
+            <strong>{t("Inspector")}</strong>
+            <span>{t("THUỘC TÍNH")}</span>
           </div>
           {tab === "schema" && field && entity ? (
             <div className="fd-pane-pad fd-inspector-form">
               <div className="fd-inspector-heading">
-                <span className="fd-field-icon">Aa</span>
+                <span className="fd-field-icon">{t("Aa")}</span>
                 <div>
                   <strong>{field.label}</strong>
                   <small>{field.key}</small>
                 </div>
               </div>
-              <Field label="Tên hiển thị">
+              <Field label={t("Tên hiển thị")}>
                 <Input
                   value={field.label}
                   onChange={(e) => patchField({ label: e.target.value })}
                 />
               </Field>
-              <Field label="Mã trường">
+              <Field label={t("Mã trường")}>
                 <Input
                   value={field.key}
                   onChange={(e) => patchField({ key: e.target.value })}
                 />
               </Field>
-              <Field label="Kiểu dữ liệu">
+              <Field label={t("Kiểu dữ liệu")}>
                 <Select
-                  label="Kiểu dữ liệu"
+                  label={t("Kiểu dữ liệu")}
                   value={field.type}
                   onValueChange={(value) =>
                     patchField({ type: value as FieldType })
                   }
                   options={[
-                    { value: "text", label: "Văn bản" },
-                    { value: "number", label: "Số" },
-                    { value: "date", label: "Ngày" },
-                    { value: "boolean", label: "Boolean" },
-                    { value: "reference", label: "Tham chiếu" },
+                    { value: "text", label: t("Văn bản") },
+                    { value: "number", label: t("Số") },
+                    { value: "date", label: t("Ngày") },
+                    { value: "boolean", label: t("Boolean") },
+                    { value: "reference", label: t("Tham chiếu") },
                   ]}
                 />
               </Field>
               {field.type === "reference" && (
-                <Field label="Entity tham chiếu">
+                <Field label={t("Entity tham chiếu")}>
                   <Input
                     value={field.referenceEntity ?? ""}
                     onChange={(e) =>
@@ -459,9 +492,9 @@ export function MasterBuilder({
                   />
                 </Field>
               )}
-              <Field label="Phân loại">
+              <Field label={t("Phân loại")}>
                 <Select
-                  label="Phân loại"
+                  label={t("Phân loại")}
                   value={field.classification}
                   onValueChange={(value) =>
                     patchField({
@@ -469,9 +502,9 @@ export function MasterBuilder({
                     })
                   }
                   options={[
-                    { value: "PUBLIC", label: "Công khai" },
-                    { value: "INTERNAL", label: "Nội bộ" },
-                    { value: "SENSITIVE", label: "Nhạy cảm" },
+                    { value: "PUBLIC", label: t("Công khai") },
+                    { value: "INTERNAL", label: t("Nội bộ") },
+                    { value: "SENSITIVE", label: t("Nhạy cảm") },
                   ]}
                 />
               </Field>
@@ -482,7 +515,7 @@ export function MasterBuilder({
                     patchField({ required: checked === true })
                   }
                 />{" "}
-                Bắt buộc
+                {t("Bắt buộc")}
               </label>
               <div className="fd-inspector-bottom">
                 <Button
@@ -495,15 +528,16 @@ export function MasterBuilder({
                     setSelectedFieldId("");
                   }}
                 >
-                  <Trash2 size={15} /> Xóa trường
+                  <Trash2 size={15} />
+                  {t("Xóa trường")}
                 </Button>
               </div>
             </div>
           ) : (
             <div className="fd-pane-pad">
               <EmptyState
-                title="Chọn trường để xem thuộc tính"
-                detail="Inspector cập nhật theo trường đang chọn."
+                title={t("Chọn trường để xem thuộc tính")}
+                detail={t("Inspector cập nhật theo trường đang chọn.")}
               />
             </div>
           )}
@@ -511,23 +545,23 @@ export function MasterBuilder({
       </div>
       {modal && (
         <Modal
-          title="Tạo entity mới"
+          title={t("Tạo entity mới")}
           onClose={() => setModal(false)}
           footer={
             <>
-              <Button onClick={() => setModal(false)}>Hủy</Button>
+              <Button onClick={() => setModal(false)}>{t("Hủy")}</Button>
               <Button
                 variant="primary"
                 disabled={!newName.trim() || !/^[a-z][a-z0-9_]*$/.test(newKey)}
                 onClick={create}
               >
-                Tạo bản nháp
+                {t("Tạo bản nháp")}
               </Button>
             </>
           }
         >
           <div className="fd-form-stack">
-            <Field label="Tên entity">
+            <Field label={t("Tên entity")}>
               <Input
                 autoFocus
                 value={newName}
@@ -547,24 +581,24 @@ export function MasterBuilder({
               />
             </Field>
             <Field
-              label="Mã kỹ thuật"
-              hint="Chữ thường, số, dấu gạch dưới; bắt đầu bằng chữ"
+              label={t("Mã kỹ thuật")}
+              hint={t("Chữ thường, số, dấu gạch dưới; bắt đầu bằng chữ")}
             >
               <Input
                 value={newKey}
                 onChange={(e) => setNewKey(e.target.value)}
               />
             </Field>
-            <Field label="Loại entity">
+            <Field label={t("Loại entity")}>
               <Select
-                label="Loại entity"
+                label={t("Loại entity")}
                 value={newKind}
                 onValueChange={(value) =>
                   setNewKind(value as MasterEntity["kind"])
                 }
                 options={Object.entries(kinds).map(([value, label]) => ({
                   value,
-                  label,
+                  label: t(label),
                 }))}
               />
             </Field>

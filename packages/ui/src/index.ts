@@ -15,3 +15,4 @@ export type { SelectProps, SelectOption } from "./select";
 export { Input } from "./components/ui/input";
 export { Textarea } from "./components/ui/textarea";
 export { Checkbox } from "./components/ui/checkbox";
+export { LanguagePicker } from "./language-picker";

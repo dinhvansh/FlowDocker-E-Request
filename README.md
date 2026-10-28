@@ -22,6 +22,8 @@ Giao diện dùng trắng–đỏ và font Inter (Latin + tiếng Việt) đóng
 
 UI primitives có [isolated examples](packages/ui/examples/main.tsx) tại `npm run examples:ui` (cổng Vite in ra terminal); không cần backend.
 
+Skill [shadcn/ui chính thức](.agents/skills/shadcn/SKILL.md) đã được cài trong dự án từ [shadcn-ui/ui](https://github.com/shadcn-ui/ui/tree/main/skills/shadcn). Các phần UI tiếp theo dùng skill này cùng quy tắc FlowDocker trong `AGENTS.md`, tái sử dụng `@flowdocker/ui`, token chung và nền song ngữ Việt–Anh.
+
 ## Key architectural choices
 
 | Layer | Proposed choice | Status |
@@ -148,3 +150,9 @@ Proposed workspace packages `@flowdocker/ui`, `@flowdocker/flow-canvas`, `@flowd
 
 ## UI technology selection (owner decision)
 **No mandatory Ant Design.** Each screen/library is chosen based on actual UX flows and task needs, design freedom, accessibility, maintainability, performance and reusable FlowDocker component boundaries. [ADR-016: UI Stack Selection Principles](docs/50-UI-STACK-SELECTION-PRINCIPLES.md) details candidate shadcn/ui, Radix/Base UI, TanStack Table, React Flow, dnd-kit, and the conditions for using Ant Design selectively. **This is a selection policy, not implemented code.**
+
+## Frontend PR 3 — Application Builder
+Application Builder hỗ trợ danh sách/tìm kiếm ứng dụng, chọn module, kiểm tra manifest nháp và lưu cục bộ. Có fixture E-Request và IT Assets tổng hợp; không có server registry, chuyển app thật, cấp quyền hoặc publish. Xem docs/53-PR3-APPLICATION-BUILDER.md.
+
+## Vietnamese / English foundation
+The topbar language picker switches between Vietnamese and English and remembers the selection. All current application screens and the isolated UI examples use the shared private `@flowdocker/i18n` package, including Connections, Flow Studio, Permissions and Profile. New UI must ship in both languages; `npm run i18n:check` is included in lint. User-entered data and technical IDs stay unchanged. See [i18n foundation and coverage](docs/54-BILINGUAL-I18N-FOUNDATION.md).

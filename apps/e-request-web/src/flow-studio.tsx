@@ -1,3 +1,4 @@
+import { useI18n } from "@flowdocker/i18n";
 import { useCallback, useMemo, useState } from "react";
 import {
   addEdge,
@@ -29,8 +30,10 @@ const initialNodes: FlowNode[] = [
     position: { x: 30, y: 75 },
     data: {
       label: "Nguồn mẫu",
+      labelKey: "Nguồn mẫu",
       category: "Source",
       detail: "2 bản ghi tổng hợp",
+      detailKey: "2 bản ghi tổng hợp",
     },
   },
   {
@@ -39,8 +42,10 @@ const initialNodes: FlowNode[] = [
     position: { x: 265, y: 75 },
     data: {
       label: "RAW / Staging",
+      labelKey: "RAW / Staging",
       category: "RAW / Staging",
       detail: "Ranh giới lưu bền",
+      detailKey: "Ranh giới lưu bền",
     },
   },
   {
@@ -49,8 +54,10 @@ const initialNodes: FlowNode[] = [
     position: { x: 500, y: 75 },
     data: {
       label: "Ánh xạ trường",
+      labelKey: "Ánh xạ trường",
       category: "Field Mapper",
       detail: "Vendor → master",
+      detailKey: "Vendor → master",
     },
   },
   {
@@ -59,8 +66,10 @@ const initialNodes: FlowNode[] = [
     position: { x: 265, y: 270 },
     data: {
       label: "Kiểm tra",
+      labelKey: "Kiểm tra",
       category: "Validate",
       detail: "Khóa và company",
+      detailKey: "Khóa và company",
     },
   },
   {
@@ -69,8 +78,10 @@ const initialNodes: FlowNode[] = [
     position: { x: 500, y: 270 },
     data: {
       label: "Master Upsert",
+      labelKey: "Master Upsert",
       category: "Master Upsert",
       detail: "Chưa chạy thật",
+      detailKey: "Chưa chạy thật",
     },
   },
 ];
@@ -99,7 +110,28 @@ function loadGraph(): SavedGraph {
       Array.isArray(value.nodes) &&
       Array.isArray(value.edges)
     )
-      return value as SavedGraph;
+      return {
+        ...(value as SavedGraph),
+        nodes: (value as SavedGraph).nodes.map((node) => {
+          const starter = initialNodes.find((item) => item.id === node.id);
+          return starter
+            ? {
+                ...node,
+                data: {
+                  ...node.data,
+                  labelKey:
+                    node.data.label === starter.data.label
+                      ? starter.data.labelKey
+                      : node.data.labelKey,
+                  detailKey:
+                    node.data.detail === starter.data.detail
+                      ? starter.data.detailKey
+                      : node.data.detailKey,
+                },
+              }
+            : node;
+        }),
+      };
   } catch {
     /* Use the synthetic starter graph. */
   }
@@ -141,6 +173,8 @@ export function FlowStudioPage({
 }: {
   onOpenConnections(): void;
 }) {
+  const { t, validation } = useI18n();
+
   const [initial] = useState(loadGraph);
   const [nodes, setNodes] = useState<FlowNode[]>(initial.nodes);
   const [edges, setEdges] = useState<Edge[]>(initial.edges);
@@ -196,7 +230,13 @@ export function FlowStudioPage({
           x: 250 + current.length * 35,
           y: 270 + current.length * 15,
         },
-        data: { label: kind, category: kind, detail: "Bước demo mới" },
+        data: {
+          label: kind,
+          category: kind,
+          detail: "Bước demo mới",
+          detailKey: "Bước demo mới",
+          labelKey: kind,
+        },
       },
     ]);
     setSelectedId(id);
@@ -228,42 +268,47 @@ export function FlowStudioPage({
     <section className="fd-screen fd-pr2-screen fd-flow-screen">
       <div className="fd-page-toolbar">
         <div>
-          <div className="fd-overline">DỮ LIỆU / FLOW STUDIO</div>
-          <h1>Master Data Flow Studio</h1>
-          <p>Thiết kế đường đi Source → RAW → Map → Validate → Master.</p>
+          <div className="fd-overline">{t("DỮ LIỆU / FLOW STUDIO")}</div>
+          <h1>{t("Master Data Flow Studio")}</h1>
+          <p>
+            {t("Thiết kế đường đi Source → RAW → Map → Validate → Master.")}
+          </p>
         </div>
         <div className="fd-toolbar-actions">
-          <Badge tone="warning">Bản nháp demo</Badge>
+          <Badge tone="warning">{t("Bản nháp demo")}</Badge>
           <Button onClick={save}>
-            <Save size={16} /> Lưu nháp{dirty ? " *" : ""}
+            <Save size={16} />
+            {t("Lưu nháp")}
+            {dirty ? " *" : ""}
           </Button>
           <Button variant="primary" onClick={dryRun}>
-            Dry run mẫu
+            {t("Dry run mẫu")}
           </Button>
           <Button
             disabled
-            title="Cần compiler, backend, authorization và kiểm thử thật"
+            title={t("Cần compiler, backend, authorization và kiểm thử thật")}
           >
-            Publish
+            {t("Publish")}
           </Button>
         </div>
       </div>
       <div className="fd-pr2-note">
         <CircleAlert size={18} />
         <span>
-          Canvas và dry run chỉ dùng dữ liệu tổng hợp trong trình duyệt. Chưa có
-          connector, staging, worker, master upsert hay checkpoint thật.
+          {t(
+            "Canvas và dry run chỉ dùng dữ liệu tổng hợp trong trình duyệt. Chưa có connector, staging, worker, master upsert hay checkpoint thật.",
+          )}
         </span>
       </div>
       {status && (
         <div className="fd-pr2-feedback" role="status">
-          {status}
+          {validation(status)}
         </div>
       )}
       <div className="fd-flow-workbench">
         <aside className="fd-flow-palette">
-          <h2>Thư viện node</h2>
-          <p>Nhấn để thêm; kéo node trên canvas và nối bằng cổng.</p>
+          <h2>{t("Thư viện node")}</h2>
+          <p>{t("Nhấn để thêm; kéo node trên canvas và nối bằng cổng.")}</p>
           {(
             [
               "Source",
@@ -276,23 +321,29 @@ export function FlowStudioPage({
           ).map((kind) => (
             <button type="button" key={kind} onClick={() => addNode(kind)}>
               <Plus size={15} />
-              {kind}
+              {t(kind)}
             </button>
           ))}
           <div className="fd-flow-palette-foot">
             <Button variant="ghost" onClick={onOpenConnections}>
-              <Database size={16} /> Xem kết nối
+              <Database size={16} />
+              {t("Xem kết nối")}
             </Button>
-            <small>Source thật cần kết nối ACTIVE đã được kiểm tra.</small>
+            <small>
+              {t("Source thật cần kết nối ACTIVE đã được kiểm tra.")}
+            </small>
           </div>
         </aside>
         <div className="fd-flow-center">
           <div className="fd-flow-canvas-head">
             <span>
-              <Waypoints size={16} /> Flow mẫu · Vendor
+              <Waypoints size={16} />
+              {t("Flow mẫu · Vendor")}
             </span>
             <Badge tone={errors.length ? "warning" : "success"}>
-              {errors.length ? `${errors.length} vấn đề` : "Cấu trúc hợp lệ"}
+              {errors.length
+                ? t("{{count}} vấn đề", { count: errors.length })
+                : t("Cấu trúc hợp lệ")}
             </Badge>
           </div>
           <FlowCanvas
@@ -305,46 +356,57 @@ export function FlowStudioPage({
           />
           <div className="fd-flow-validation">
             <strong>
-              <ShieldCheck size={16} /> Kiểm tra cấu trúc
+              <ShieldCheck size={16} />
+              {t("Kiểm tra cấu trúc")}
             </strong>
             {errors.length ? (
               <ul>
                 {errors.map((error) => (
-                  <li key={error}>{error}</li>
+                  <li key={error}>{validation(error)}</li>
                 ))}
               </ul>
             ) : (
               <p>
-                Đủ node chính, không có vòng lặp và Upsert nhận từ Validate.
-                Chưa chứng minh thực thi thật.
+                {t(
+                  "Đủ node chính, không có vòng lặp và Upsert nhận từ Validate. Chưa chứng minh thực thi thật.",
+                )}
               </p>
             )}
           </div>
         </div>
         <aside className="fd-flow-inspector">
-          <h2>Inspector</h2>
+          <h2>{t("Inspector")}</h2>
           {selected ? (
             <>
-              <span className="fd-overline">NODE ĐANG CHỌN</span>
-              <h3>{selected.data.label}</h3>
+              <span className="fd-overline">{t("NODE ĐANG CHỌN")}</span>
+              <h3>
+                {selected.data.labelKey
+                  ? t(selected.data.labelKey)
+                  : selected.data.label}
+              </h3>
               <p>
-                {selected.data.category} · {selected.data.detail}
+                {t(selected.data.category)} ·{" "}
+                {selected.data.detailKey
+                  ? t(selected.data.detailKey)
+                  : selected.data.detail}
               </p>
               <dl>
-                <dt>Node ID</dt>
+                <dt>{t("Node ID")}</dt>
                 <dd>{selected.id.slice(0, 12)}</dd>
-                <dt>Trạng thái</dt>
-                <dd>Chưa chạy thật</dd>
+                <dt>{t("Trạng thái")}</dt>
+                <dd>{t("Chưa chạy thật")}</dd>
               </dl>
               {selected.data.category === "Field Mapper" && (
                 <div className="fd-flow-mapping">
-                  <h3>Ánh xạ trường</h3>
+                  <h3>{t("Ánh xạ trường")}</h3>
                   {targetFields.map((target) => (
                     <label key={target.key}>
                       {target.label}
                       {target.required && " *"}
                       <Select
-                        label={`Nguồn cho ${target.label}`}
+                        label={t("Nguồn cho {{field}}", {
+                          field: target.label,
+                        })}
                         value={mapping[target.key] || "none"}
                         onValueChange={(value) => {
                           setMapping({
@@ -355,8 +417,11 @@ export function FlowStudioPage({
                           setPreview(false);
                         }}
                         options={[
-                          { value: "none", label: "Chưa ánh xạ" },
-                          ...sourceFields,
+                          { value: "none", label: t("Chưa ánh xạ") },
+                          ...sourceFields.map((option) => ({
+                            ...option,
+                            label: t(option.label),
+                          })),
                         ]}
                       />
                     </label>
@@ -379,50 +444,53 @@ export function FlowStudioPage({
                     setDirty(true);
                   }}
                 >
-                  Xóa node
+                  {t("Xóa node")}
                 </Button>
               )}
             </>
           ) : (
-            <p>Chọn node để xem cấu hình.</p>
+            <p>{t("Chọn node để xem cấu hình.")}</p>
           )}
         </aside>
       </div>
       <div className="fd-flow-preview">
         <div>
           <GitBranch size={18} />
-          <strong>Data Inspector · dry run mẫu</strong>
-          <Badge tone="info">Không ghi dữ liệu</Badge>
+          <strong>{t("Data Inspector · dry run mẫu")}</strong>
+          <Badge tone="info">{t("Không ghi dữ liệu")}</Badge>
         </div>
         {preview ? (
           <div className="fd-flow-preview-grid">
             <div>
-              <h3>Input đã che dữ liệu</h3>
+              <h3>{t("Input đã che dữ liệu")}</h3>
               <pre>{JSON.stringify(sampleRows, null, 2)}</pre>
             </div>
             <div>
-              <h3>Output dự kiến</h3>
+              <h3>{t("Output dự kiến")}</h3>
               <pre>{JSON.stringify(previewRows, null, 2)}</pre>
             </div>
             <div>
-              <h3>Kết quả</h3>
-              <p>2 bản ghi mẫu · 0 lỗi mẫu</p>
+              <h3>{t("Kết quả")}</h3>
+              <p>{t("2 bản ghi mẫu · 0 lỗi mẫu")}</p>
               <p>
-                Ánh xạ trên mẫu hiện tại; chưa tra cứu company, kiểm tra dữ liệu
-                hoặc ghi master thật.
+                {t(
+                  "Ánh xạ trên mẫu hiện tại; chưa tra cứu company, kiểm tra dữ liệu hoặc ghi master thật.",
+                )}
               </p>
             </div>
           </div>
         ) : (
           <p>
-            Chạy dry run mẫu để xem bố cục input/output. Để thử node thật cần
-            nguồn đã duyệt và backend.
+            {t(
+              "Chạy dry run mẫu để xem bố cục input/output. Để thử node thật cần nguồn đã duyệt và backend.",
+            )}
           </p>
         )}
       </div>
       <Notice tone="warning">
-        Graph chỉ lưu localStorage. Không dùng bản nháp này để quyết định quyền
-        hay đồng bộ dữ liệu thật.
+        {t(
+          "Graph chỉ lưu localStorage. Không dùng bản nháp này để quyết định quyền hay đồng bộ dữ liệu thật.",
+        )}
       </Notice>
     </section>
   );
