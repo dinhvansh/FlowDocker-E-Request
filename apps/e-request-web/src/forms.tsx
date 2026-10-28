@@ -4,6 +4,7 @@ import { FilePenLine, Plus, Save } from "lucide-react";
 import {
   FormDesigner,
   FormPreview,
+  createShowcaseDefinition,
   validateFormDefinition,
   type FormDefinition,
   type PreviewValues,
@@ -110,6 +111,12 @@ export function FormsPage() {
         </div>
         <div className="fd-toolbar-actions">
           <Badge tone="warning">{t("Chỉ lưu cục bộ")}</Badge>
+          <Button
+            disabled={initial.failed}
+            onClick={() => request(createShowcaseDefinition())}
+          >
+            {t("Mở mẫu nâng cao")}
+          </Button>
           <Button
             variant="primary"
             disabled={initial.failed || forms.length >= 100}

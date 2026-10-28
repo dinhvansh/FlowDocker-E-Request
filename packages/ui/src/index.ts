@@ -17,3 +17,13 @@ export { Textarea } from "./components/ui/textarea";
 export { Checkbox } from "./components/ui/checkbox";
 export { LanguagePicker } from "./language-picker";
 export { FieldGroup } from "./components/ui/field";
+export { FieldSet, FieldLegend } from "./components/ui/field";
+export { RadioGroup, RadioGroupItem } from "./components/ui/radio-group";
+export {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./components/ui/table";

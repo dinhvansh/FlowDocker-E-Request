@@ -15,11 +15,21 @@ function readKeys(node) {
     keys.add(
       ts.isStringLiteral(node.name)
         ? node.name.text
-        : node.name.getText(catalog),
+        : ts.isIdentifier(node.name)
+          ? node.name.text
+          : node.name.getText(catalog),
     );
   ts.forEachChild(node, readKeys);
 }
 readKeys(catalog);
+readKeys(
+  ts.createSourceFile(
+    "packages/i18n/src/form-messages.ts",
+    fs.readFileSync("packages/i18n/src/form-messages.ts", "utf8"),
+    ts.ScriptTarget.Latest,
+    true,
+  ),
+);
 const errors = [];
 function inspect(file) {
   const source = ts.createSourceFile(

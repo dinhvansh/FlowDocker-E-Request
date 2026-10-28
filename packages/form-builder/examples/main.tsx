@@ -5,26 +5,11 @@ import { Button, LanguagePicker } from "@flowdocker/ui";
 import {
   FormDesigner,
   FormPreview,
-  type FormDefinition,
+  createShowcaseDefinition,
   type PreviewValues,
 } from "../src";
 import "@flowdocker/ui/styles.css";
-const initial: FormDefinition = {
-  id: "standalone",
-  title: { vi: "Biểu mẫu thử", en: "Sample form" },
-  version: 1,
-  status: "DRAFT",
-  fields: [
-    {
-      id: "name",
-      key: "name",
-      label: { vi: "Tên mẫu", en: "Sample name" },
-      type: "text",
-      required: true,
-      options: [],
-    },
-  ],
-};
+const initial = createShowcaseDefinition();
 function Example() {
   const { t } = useI18n();
   const [definition, setDefinition] = useState(initial);

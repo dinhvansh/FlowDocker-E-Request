@@ -1,4 +1,5 @@
 import {
+  createShowcaseDefinition,
   isFormDefinition,
   type FormDefinition,
 } from "@flowdocker/form-builder";
@@ -77,6 +78,7 @@ export const demoForms: FormDefinition[] = [
       },
     ],
   },
+  createShowcaseDefinition(),
 ];
 export function readFormDrafts(
   storage: Pick<Storage, "getItem">,

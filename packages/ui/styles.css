@@ -15,6 +15,207 @@
 @source "../permission-builder/src/**/*.{ts,tsx}";
 @source "../flow-canvas/src/**/*.{ts,tsx}";
 @source "../form-builder/src/**/*.{ts,tsx}";
+
+.fd-form-product {
+  container-type: inline-size;
+  min-width: 0;
+}
+.fd-app.fd-forms-root {
+  display: block;
+  min-height: 0;
+  width: 100%;
+  padding: 20px;
+  border-radius: 8px;
+}
+.fd-form-product-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 0;
+}
+.fd-form-product-toolbar > [data-slot="select-trigger"] {
+  width: 160px;
+}
+.fd-form-builder-grid {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) 280px;
+  border-top: 1px solid var(--fd-border);
+}
+.fd-form-palette {
+  padding: 14px 10px 14px 0;
+  border-right: 1px solid var(--fd-border);
+  min-width: 0;
+}
+.fd-form-palette h2 {
+  margin-top: 0;
+}
+.fd-form-palette-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 640px;
+  overflow-y: auto;
+  padding-right: 3px;
+}
+.fd-form-palette-items button {
+  width: 100%;
+  justify-content: flex-start;
+  font-size: 13px;
+  white-space: normal;
+  height: auto;
+  min-height: 34px;
+  text-align: left;
+}
+.fd-form-builder-grid > .fd-form-schema {
+  padding: 14px 12px;
+}
+.fd-form-builder-grid > .fd-form-properties {
+  padding: 14px 12px;
+  max-height: 760px;
+  overflow-y: auto;
+}
+.fd-form-builder-grid .fd-table-scroll {
+  max-height: 560px;
+  overflow: auto;
+}
+.fd-form-builder-grid .fd-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--fd-surface-raised);
+}
+.fd-form-property-fieldset {
+  border: 0;
+  padding: 16px 0 0;
+  min-width: 0;
+  margin: 0;
+}
+.fd-drag-handle {
+  background: transparent;
+  border: 0;
+  padding: 5px;
+  color: var(--fd-text-muted);
+  cursor: grab;
+  touch-action: none;
+}
+.fd-runtime-section {
+  border: 1px solid var(--fd-border);
+  border-radius: 6px;
+  padding: 16px;
+  min-width: 0;
+}
+.fd-runtime-section legend {
+  padding: 0 5px;
+}
+.fd-layout-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.fd-layout-table td {
+  border: 1px solid var(--fd-border);
+  padding: 12px;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.fd-repeat-row {
+  border-bottom: 1px solid var(--fd-border);
+  padding: 8px 0 20px;
+  margin-bottom: 12px;
+}
+.fd-runtime-columns {
+  display: grid;
+  gap: 16px;
+}
+.fd-runtime-columns-1 {
+  grid-template-columns: minmax(0, 1fr);
+}
+.fd-runtime-columns-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.fd-runtime-columns-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.fd-runtime-field {
+  min-width: 0;
+}
+.fd-rule-editor {
+  border-top: 1px solid var(--fd-border);
+  padding-top: 12px;
+}
+.fd-rule-condition {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--fd-border);
+}
+.fd-signature {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 3;
+  border: 1px dashed var(--fd-border);
+  touch-action: none;
+  background: var(--fd-surface-raised);
+  margin-bottom: 12px;
+}
+.fd-choice-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  color: var(--fd-text-primary);
+}
+.fd-survey-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+.fd-form-error-summary {
+  border: 1px solid var(--fd-status-error);
+  padding: 14px;
+  margin: 14px 0;
+  border-radius: 6px;
+}
+.fd-form-error-summary button {
+  background: none;
+  border: 0;
+  color: var(--fd-status-error);
+  text-align: left;
+  text-decoration: underline;
+  padding: 6px 0;
+}
+.fd-form-content {
+  overflow-wrap: anywhere;
+}
+@container (max-width: 850px) {
+  .fd-form-builder-grid {
+    grid-template-columns: 150px minmax(0, 1fr);
+  }
+  .fd-form-builder-grid > .fd-form-properties {
+    grid-column: 1 / -1;
+    border-left: 0;
+    border-top: 1px solid var(--fd-border);
+  }
+}
+@container (max-width: 520px) {
+  .fd-form-builder-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fd-form-palette {
+    border-right: 0;
+    border-bottom: 1px solid var(--fd-border);
+    padding-right: 0;
+  }
+  .fd-form-palette-items {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-height: 230px;
+  }
+}
+@media (max-width: 600px) {
+  .fd-runtime-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 @source "../../apps/e-request-web/src/**/*.{ts,tsx}";
 
 .fd-form-workbench {

@@ -7,6 +7,7 @@
     "packages/*"
   ],
   "scripts": {
+    "build:forms": "vite build --config vite.forms.config.ts && node scripts/package-forms.mjs",
     "dev": "npm run dev -w @flowdocker/e-request-web",
     "examples:ui": "vite packages/ui/examples --host 0.0.0.0",
     "examples:forms": "vite packages/form-builder/examples --host 0.0.0.0",
@@ -36,6 +37,11 @@
     "typescript": "^5.9.0",
     "typescript-eslint": "^8.46.0",
     "vite": "^7.1.0",
+    "vite-plugin-dts": "5.1.2",
     "vitest": "^5.0.5"
+  },
+  "dependencies": {
+    "cn": "^0.5.0",
+    "radix-ui": "^1.8.1"
   }
 }

@@ -5,6 +5,15 @@ export const vi: Record<keyof typeof en, string> = {
     string
   >),
   ...{
+    "calc.add": "Cộng",
+    "calc.subtract": "Trừ",
+    "calc.multiply": "Nhân",
+    "calc.divide": "Chia",
+    "calc.sum": "Tổng",
+    "calc.average": "Trung bình",
+    "calc.count": "Đếm",
+    "calc.min": "Nhỏ nhất",
+    "calc.max": "Lớn nhất",
     "Permission Builder": "Thiết kế phân quyền",
     Draft: "Bản nháp",
     "Test Access": "Kiểm thử truy cập",

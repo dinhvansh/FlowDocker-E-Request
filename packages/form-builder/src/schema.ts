@@ -2,12 +2,66 @@ export type BilingualText = { vi: string; en: string };
 export const formFieldTypes = [
   "text",
   "textarea",
+  "email",
+  "url",
+  "phone",
+  "password",
   "number",
+  "currency",
   "date",
+  "datetime",
+  "time",
   "checkbox",
   "select",
+  "radio",
+  "multiselect",
+  "checkboxes",
+  "tags",
+  "file",
+  "signature",
+  "hidden",
+  "content",
+  "section",
+  "columns",
+  "tabs",
+  "repeat",
+  "keyvalue",
+  "survey",
+  "address",
+  "day",
+  "container",
+  "table",
+  "alert",
+  "button",
 ] as const;
 export type FormFieldType = (typeof formFieldTypes)[number];
+export type FormValue =
+  string | number | boolean | null | FormValue[] | { [key: string]: FormValue };
+export type PreviewValues = Record<string, FormValue>;
+export type RuleOperator =
+  "eq" | "ne" | "gt" | "gte" | "lt" | "lte" | "empty" | "notEmpty" | "contains";
+export interface FormRule {
+  mode: "all" | "any";
+  conditions: {
+    field: string;
+    operator: RuleOperator;
+    value?: string | number | boolean;
+  }[];
+}
+export interface Calculation {
+  operator:
+    | "add"
+    | "subtract"
+    | "multiply"
+    | "divide"
+    | "sum"
+    | "average"
+    | "count"
+    | "min"
+    | "max";
+  fields: string[];
+  precision?: number;
+}
 export interface FormField {
   id: string;
   key: string;
@@ -15,6 +69,34 @@ export interface FormField {
   type: FormFieldType;
   required: boolean;
   options: { value: string; label: BilingualText }[];
+  help?: BilingualText;
+  placeholder?: BilingualText;
+  defaultValue?: FormValue;
+  readOnly?: boolean;
+  disabled?: boolean;
+  min?: number;
+  max?: number;
+  minLength?: number;
+  maxLength?: number;
+  integer?: boolean;
+  compare?: { field: string; operator: "eq" | "gte" | "lte" };
+  visibleWhen?: FormRule;
+  requiredWhen?: FormRule;
+  disabledWhen?: FormRule;
+  calculation?: Calculation;
+  children?: FormField[];
+  columns?: 1 | 2 | 3;
+  minRows?: number;
+  maxRows?: number;
+  uniqueBy?: string;
+  currency?: string;
+  accept?: string;
+  maxFileSize?: number;
+  maxFiles?: number;
+  dataSource?: { provider: string; dependsOn?: string };
+  customRenderer?: string;
+  buttonAction?: "submit" | "reset";
+  tone?: "info" | "warning" | "danger" | "success";
 }
 export interface FormDefinition {
   id: string;
@@ -22,144 +104,635 @@ export interface FormDefinition {
   version: number;
   status: "DRAFT";
   fields: FormField[];
+  schemaVersion?: 1 | 2;
+  display?: "form" | "wizard";
 }
-export type PreviewValues = Record<string, string | boolean>;
 export interface FormIssue {
   fieldId?: string;
+  path?: string;
   message: string;
   params?: Record<string, string | number>;
 }
-const keyPattern = /^[a-z][a-z0-9_]{0,63}$/;
-const safeKey = (key: string) =>
-  keyPattern.test(key) && !["constructor", "prototype"].includes(key);
-const hasLabels = (label: BilingualText) => label.vi.trim() && label.en.trim();
+export const containerTypes: readonly FormFieldType[] = [
+  "section",
+  "columns",
+  "tabs",
+  "repeat",
+  "container",
+  "table",
+];
+export const choiceTypes: readonly FormFieldType[] = [
+  "select",
+  "radio",
+  "multiselect",
+  "checkboxes",
+  "survey",
+];
+export const fieldTypeLabels: Record<FormFieldType, string> = {
+  text: "Văn bản ngắn",
+  textarea: "Văn bản dài",
+  email: "Email",
+  url: "Đường dẫn",
+  phone: "Điện thoại",
+  password: "Mật khẩu",
+  number: "Số",
+  currency: "Tiền tệ",
+  date: "Ngày",
+  datetime: "Ngày và giờ",
+  time: "Giờ",
+  checkbox: "Ô xác nhận",
+  select: "Danh sách chọn",
+  radio: "Chọn một",
+  multiselect: "Chọn nhiều",
+  checkboxes: "Nhóm xác nhận",
+  tags: "Thẻ",
+  file: "Tệp đính kèm",
+  signature: "Chữ ký",
+  hidden: "Trường ẩn",
+  content: "Nội dung hướng dẫn",
+  section: "Nhóm trường",
+  columns: "Bố cục cột",
+  tabs: "Bố cục tab",
+  repeat: "Bảng dòng lặp",
+  keyvalue: "Cặp mã và giá trị",
+  survey: "Khảo sát",
+  address: "Địa chỉ",
+  day: "Ngày tách thành phần",
+  container: "Nhóm dữ liệu",
+  table: "Bảng bố cục",
+  alert: "Thông báo biểu mẫu",
+  button: "Nút thao tác",
+};
+export function isContainer(field: FormField) {
+  return containerTypes.includes(field.type);
+}
+export function flattenFields(fields: FormField[]): FormField[] {
+  return fields.flatMap((field) => [
+    field,
+    ...flattenFields(field.children ?? []),
+  ]);
+}
+/** Visual containers share scope; repeats introduce a row scope. */
+export function scopeFields(fields: FormField[]): FormField[] {
+  return fields.flatMap((field) => [
+    field,
+    ...(["repeat", "container"].includes(field.type)
+      ? []
+      : scopeFields(field.children ?? [])),
+  ]);
+}
+export function safeKey(key: string) {
+  return (
+    /^[a-z][a-z0-9_]{0,63}$/.test(key) &&
+    !["constructor", "prototype"].includes(key)
+  );
+}
+const isObject = (value: unknown): value is Record<string, unknown> =>
+  !!value && typeof value === "object" && !Array.isArray(value);
+const textShape = (value: unknown): value is BilingualText =>
+  isObject(value) &&
+  typeof value.vi === "string" &&
+  typeof value.en === "string" &&
+  Object.keys(value).every((key) => ["vi", "en"].includes(key));
+const boundedValue = (value: unknown, depth = 0): boolean =>
+  depth <= 8 &&
+  (value === null ||
+    typeof value === "boolean" ||
+    (typeof value === "number" && Number.isFinite(value)) ||
+    (typeof value === "string" && value.length <= 100000) ||
+    (Array.isArray(value) &&
+      value.length <= 100 &&
+      value.every((item) => boundedValue(item, depth + 1))) ||
+    (isObject(value) &&
+      Object.keys(value).length <= 100 &&
+      Object.entries(value).every(
+        ([key, item]) =>
+          !["__proto__", "prototype", "constructor"].includes(key) &&
+          boundedValue(item, depth + 1),
+      )));
+const ruleShape = (value: unknown): value is FormRule =>
+  isObject(value) &&
+  ["all", "any"].includes(String(value.mode)) &&
+  Array.isArray(value.conditions) &&
+  value.conditions.length > 0 &&
+  value.conditions.length <= 20 &&
+  value.conditions.every(
+    (condition) =>
+      isObject(condition) &&
+      typeof condition.field === "string" &&
+      [
+        "eq",
+        "ne",
+        "gt",
+        "gte",
+        "lt",
+        "lte",
+        "empty",
+        "notEmpty",
+        "contains",
+      ].includes(String(condition.operator)) &&
+      (condition.value === undefined ||
+        ["string", "number", "boolean"].includes(typeof condition.value)),
+  );
+const allowedKeys = new Set([
+  "id",
+  "key",
+  "label",
+  "type",
+  "required",
+  "options",
+  "help",
+  "placeholder",
+  "defaultValue",
+  "readOnly",
+  "disabled",
+  "min",
+  "max",
+  "minLength",
+  "maxLength",
+  "integer",
+  "compare",
+  "visibleWhen",
+  "requiredWhen",
+  "disabledWhen",
+  "calculation",
+  "children",
+  "columns",
+  "minRows",
+  "maxRows",
+  "uniqueBy",
+  "currency",
+  "accept",
+  "maxFileSize",
+  "maxFiles",
+  "dataSource",
+  "customRenderer",
+  "buttonAction",
+  "tone",
+]);
+function fieldsShape(
+  value: unknown,
+  depth = 0,
+  budget = { count: 0 },
+): value is FormField[] {
+  return (
+    depth <= 5 &&
+    Array.isArray(value) &&
+    value.length <= 100 &&
+    value.every((field) => {
+      if (
+        ++budget.count > 300 ||
+        !isObject(field) ||
+        Object.keys(field).some((key) => !allowedKeys.has(key)) ||
+        typeof field.id !== "string" ||
+        !field.id ||
+        typeof field.key !== "string" ||
+        !textShape(field.label) ||
+        !formFieldTypes.includes(field.type as FormFieldType) ||
+        typeof field.required !== "boolean" ||
+        !Array.isArray(field.options) ||
+        field.options.length > 50 ||
+        !field.options.every(
+          (option) =>
+            isObject(option) &&
+            typeof option.value === "string" &&
+            textShape(option.label),
+        )
+      )
+        return false;
+      for (const key of ["help", "placeholder"])
+        if (field[key] !== undefined && !textShape(field[key])) return false;
+      for (const key of [
+        "min",
+        "max",
+        "minLength",
+        "maxLength",
+        "minRows",
+        "maxRows",
+        "maxFileSize",
+        "maxFiles",
+      ])
+        if (
+          field[key] !== undefined &&
+          (typeof field[key] !== "number" || !Number.isFinite(field[key]))
+        )
+          return false;
+      for (const key of ["readOnly", "disabled", "integer"])
+        if (field[key] !== undefined && typeof field[key] !== "boolean")
+          return false;
+      if (
+        field.buttonAction !== undefined &&
+        !["submit", "reset"].includes(String(field.buttonAction))
+      )
+        return false;
+      if (
+        field.tone !== undefined &&
+        !["info", "warning", "danger", "success"].includes(String(field.tone))
+      )
+        return false;
+      for (const key of ["uniqueBy", "currency", "accept", "customRenderer"])
+        if (field[key] !== undefined && typeof field[key] !== "string")
+          return false;
+      for (const key of ["visibleWhen", "requiredWhen", "disabledWhen"])
+        if (field[key] !== undefined && !ruleShape(field[key])) return false;
+      if (
+        field.columns !== undefined &&
+        ![1, 2, 3].includes(Number(field.columns))
+      )
+        return false;
+      if (field.defaultValue !== undefined && !boundedValue(field.defaultValue))
+        return false;
+      if (
+        field.children !== undefined &&
+        (!containerTypes.includes(field.type as FormFieldType) ||
+          !fieldsShape(field.children, depth + 1, budget))
+      )
+        return false;
+      if (
+        field.compare !== undefined &&
+        (!isObject(field.compare) ||
+          typeof field.compare.field !== "string" ||
+          !["eq", "gte", "lte"].includes(String(field.compare.operator)))
+      )
+        return false;
+      if (
+        field.dataSource !== undefined &&
+        (!isObject(field.dataSource) ||
+          typeof field.dataSource.provider !== "string" ||
+          (field.dataSource.dependsOn !== undefined &&
+            typeof field.dataSource.dependsOn !== "string"))
+      )
+        return false;
+      if (
+        field.calculation !== undefined &&
+        (!isObject(field.calculation) ||
+          ![
+            "add",
+            "subtract",
+            "multiply",
+            "divide",
+            "sum",
+            "average",
+            "count",
+            "min",
+            "max",
+          ].includes(String(field.calculation.operator)) ||
+          !Array.isArray(field.calculation.fields) ||
+          field.calculation.fields.length > 20 ||
+          !field.calculation.fields.every((key) => typeof key === "string") ||
+          (field.calculation.precision !== undefined &&
+            (!Number.isInteger(field.calculation.precision) ||
+              Number(field.calculation.precision) < 0 ||
+              Number(field.calculation.precision) > 8)))
+      )
+        return false;
+      return true;
+    })
+  );
+}
+export function isFormDefinition(value: unknown): value is FormDefinition {
+  return (
+    isObject(value) &&
+    Object.keys(value).every((key) =>
+      [
+        "id",
+        "title",
+        "version",
+        "status",
+        "fields",
+        "schemaVersion",
+        "display",
+      ].includes(key),
+    ) &&
+    typeof value.id === "string" &&
+    !!value.id &&
+    textShape(value.title) &&
+    Number.isSafeInteger(value.version) &&
+    Number(value.version) > 0 &&
+    value.status === "DRAFT" &&
+    (value.schemaVersion === undefined ||
+      [1, 2].includes(Number(value.schemaVersion))) &&
+    (value.display === undefined ||
+      ["form", "wizard"].includes(String(value.display))) &&
+    fieldsShape(value.fields)
+  );
+}
 export function validateFormDefinition(form: FormDefinition): FormIssue[] {
   const issues: FormIssue[] = [];
-  if (!hasLabels(form.title))
+  if (!isFormDefinition(form))
+    return [
+      { message: "Schema không hợp lệ hoặc có thuộc tính không được hỗ trợ." },
+    ];
+  const labels = (text: BilingualText) => text.vi.trim() && text.en.trim();
+  if (!labels(form.title))
     issues.push({
       message: "Cần tên biểu mẫu bằng cả tiếng Việt và tiếng Anh.",
     });
   if (!Number.isSafeInteger(form.version) || form.version < 1)
     issues.push({ message: "Phiên bản biểu mẫu phải là số nguyên dương." });
-  if (!form.fields.length || form.fields.length > 100)
-    issues.push({ message: "Biểu mẫu cần từ 1 đến 100 trường." });
-  const keys = new Set<string>();
+  if (!form.fields.length || flattenFields(form.fields).length > 300)
+    issues.push({ message: "Biểu mẫu cần từ 1 đến 300 trường." });
   const ids = new Set<string>();
-  for (const field of form.fields) {
-    const add = (message: string) =>
-      issues.push({ fieldId: field.id, message, params: { key: field.key } });
-    if (!safeKey(field.key))
-      add("Mã trường {{key}} không hợp lệ hoặc được dành riêng.");
-    if (keys.has(field.key) || ids.has(field.id))
-      add("Mã hoặc ID trường {{key}} bị trùng.");
-    keys.add(field.key);
-    ids.add(field.id);
-    if (!hasLabels(field.label))
-      add("Trường {{key}} cần nhãn bằng cả hai ngôn ngữ.");
-    if (!formFieldTypes.includes(field.type))
-      add("Trường {{key}} có kiểu không được hỗ trợ.");
-    if (
-      field.type === "select" &&
-      (!field.options.length ||
-        field.options.length > 50 ||
-        field.options.some(
-          (option) => !option.value.trim() || !hasLabels(option.label),
-        ) ||
-        new Set(field.options.map((option) => option.value)).size !==
-          field.options.length)
-    )
-      add("Trường {{key}} cần 1–50 lựa chọn có mã duy nhất và nhãn song ngữ.");
-  }
-  return issues;
-}
-export function validatePreview(
-  form: FormDefinition,
-  values: PreviewValues,
-): FormIssue[] {
-  const issues = validateFormDefinition(form);
-  for (const field of form.fields) {
-    const value = Object.hasOwn(values, field.key)
-      ? values[field.key]
-      : undefined;
-    const empty =
-      value === undefined ||
-      value === "" ||
-      (typeof value === "string" && !value.trim());
-    const add = (message: string) =>
-      issues.push({ fieldId: field.id, message, params: { key: field.key } });
-    if (
-      field.required &&
-      (empty || (field.type === "checkbox" && value !== true))
-    )
-      add("Trường {{key}} là bắt buộc.");
-    if (empty) continue;
-    if (
-      field.type === "checkbox"
-        ? typeof value !== "boolean"
-        : typeof value !== "string"
-    ) {
-      add("Giá trị trường {{key}} không đúng kiểu.");
-      continue;
+  const checkScope = (fields: FormField[], outer: FormField[] = []) => {
+    const flat = scopeFields(fields);
+    const keys = new Set<string>();
+    const available = new Map(
+      [...outer, ...flat].map((field) => [field.key, field]),
+    );
+    const scopeWalk = (items: FormField[]) => {
+      for (const field of items) {
+        const add = (message: string) =>
+          issues.push({
+            fieldId: field.id,
+            message,
+            params: { key: field.key },
+          });
+        if (!safeKey(field.key))
+          add("Mã trường {{key}} không hợp lệ hoặc được dành riêng.");
+        if (keys.has(field.key) || ids.has(field.id))
+          add("Mã hoặc ID trường {{key}} bị trùng.");
+        keys.add(field.key);
+        ids.add(field.id);
+        if (!labels(field.label))
+          add("Trường {{key}} cần nhãn bằng cả hai ngôn ngữ.");
+        if (!formFieldTypes.includes(field.type))
+          add("Trường {{key}} có kiểu không được hỗ trợ.");
+        if (
+          choiceTypes.includes(field.type) &&
+          !field.dataSource &&
+          (!field.options.length ||
+            field.options.length > 50 ||
+            field.options.some(
+              (option) =>
+                !option.value.trim() ||
+                option.value === "__fd_clear__" ||
+                !labels(option.label),
+            ) ||
+            new Set(field.options.map((option) => option.value)).size !==
+              field.options.length)
+        )
+          add(
+            "Trường {{key}} cần 1–50 lựa chọn có mã duy nhất và nhãn song ngữ.",
+          );
+        if (isContainer(field) && !field.children?.length)
+          add("Nhóm {{key}} cần ít nhất một trường con.");
+        if (
+          (field.min !== undefined &&
+            field.max !== undefined &&
+            field.min > field.max) ||
+          (field.minLength !== undefined &&
+            field.maxLength !== undefined &&
+            field.minLength > field.maxLength) ||
+          (field.minRows !== undefined &&
+            field.maxRows !== undefined &&
+            field.minRows > field.maxRows)
+        )
+          add("Giới hạn của trường {{key}} không hợp lệ.");
+        for (const prop of [
+          "minLength",
+          "maxLength",
+          "minRows",
+          "maxRows",
+          "maxFiles",
+          "maxFileSize",
+        ] as const)
+          if (
+            field[prop] !== undefined &&
+            (!Number.isSafeInteger(field[prop]) ||
+              field[prop]! < 0 ||
+              (["minRows", "maxRows", "maxFiles"].includes(prop) &&
+                field[prop]! > 100))
+          )
+            add("Giới hạn của trường {{key}} không hợp lệ.");
+        if (field.currency && !/^[A-Z]{3}$/.test(field.currency))
+          add("Mã tiền tệ của trường {{key}} cần 3 chữ cái ISO.");
+        const references = [
+          ...[
+            field.visibleWhen,
+            field.requiredWhen,
+            field.disabledWhen,
+          ].flatMap(
+            (rule) =>
+              rule?.conditions.map((condition) => condition.field) ?? [],
+          ),
+          ...(field.calculation?.fields ?? []),
+          ...(field.compare ? [field.compare.field] : []),
+          ...(field.dataSource?.dependsOn ? [field.dataSource.dependsOn] : []),
+        ];
+        for (const ref of references) {
+          const [key, childKey, extra] = ref.split(".");
+          const source = available.get(key);
+          if (
+            !source ||
+            extra ||
+            (childKey &&
+              (!["repeat", "container"].includes(source.type) ||
+                !scopeFields(source.children ?? []).some(
+                  (child) => child.key === childKey,
+                ))) ||
+            key === field.key
+          )
+            add("Tham chiếu của trường {{key}} không hợp lệ.");
+        }
+        if (field.calculation && !["number", "currency"].includes(field.type))
+          add("Chỉ trường số hoặc tiền tệ được dùng phép tính.");
+        if (["repeat", "container"].includes(field.type)) {
+          if (
+            field.uniqueBy &&
+            !scopeFields(field.children ?? []).some(
+              (child) => child.key === field.uniqueBy,
+            )
+          )
+            add("Tham chiếu của trường {{key}} không hợp lệ.");
+          checkScope(field.children ?? [], [...outer, ...flat]);
+        } else scopeWalk(field.children ?? []);
+      }
+    };
+    scopeWalk(fields);
+    const visited = new Set<string>();
+    const active = new Set<string>();
+    const visit = (key: string): boolean => {
+      if (active.has(key)) return true;
+      if (visited.has(key)) return false;
+      active.add(key);
+      for (const ref of available.get(key)?.calculation?.fields ?? [])
+        if (visit(ref.split(".")[0])) return true;
+      active.delete(key);
+      visited.add(key);
+      return false;
+    };
+    if ([...available.keys()].some(visit))
+      issues.push({ message: "Phép tính có vòng tham chiếu." });
+  };
+  checkScope(form.fields);
+  // Resolve dependencies to field identities, including aggregates across repeat scopes.
+  const edges = new Map<string, string[]>();
+  const collect = (
+    fields: FormField[],
+    inherited = new Map<string, FormField>(),
+  ) => {
+    const flat = scopeFields(fields);
+    const available = new Map([
+      ...inherited,
+      ...flat.map((item) => [item.key, item] as const),
+    ]);
+    for (const item of flat) {
+      edges.set(
+        item.id,
+        (item.calculation?.fields ?? []).flatMap((ref) => {
+          const [key, child] = ref.split(".");
+          const source = available.get(key);
+          const target = child
+            ? scopeFields(source?.children ?? []).find(
+                (entry) => entry.key === child,
+              )
+            : source;
+          return target ? [target.id] : [];
+        }),
+      );
+      if (["repeat", "container"].includes(item.type))
+        collect(item.children ?? [], available);
     }
-    if (field.type === "number" && !Number.isFinite(Number(value)))
-      add("Trường {{key}} cần một số hữu hạn.");
-    if (
-      field.type === "date" &&
-      (typeof value !== "string" ||
-        !/^\d{4}-\d{2}-\d{2}$/.test(value) ||
-        !Number.isFinite(Date.parse(value)) ||
-        new Date(value).toISOString().slice(0, 10) !== value)
-    )
-      add("Trường {{key}} cần ngày hợp lệ.");
-    if (
-      field.type === "select" &&
-      !field.options.some((option) => option.value === value)
-    )
-      add("Lựa chọn của trường {{key}} không hợp lệ.");
-  }
+  };
+  collect(form.fields);
+  const activeIds = new Set<string>();
+  const doneIds = new Set<string>();
+  const cyclic = (id: string): boolean => {
+    if (activeIds.has(id)) return true;
+    if (doneIds.has(id)) return false;
+    activeIds.add(id);
+    if ((edges.get(id) ?? []).some(cyclic)) return true;
+    activeIds.delete(id);
+    doneIds.add(id);
+    return false;
+  };
+  if (
+    [...edges.keys()].some(cyclic) &&
+    !issues.some((issue) => issue.message === "Phép tính có vòng tham chiếu.")
+  )
+    issues.push({ message: "Phép tính có vòng tham chiếu." });
   return issues;
 }
-function isText(value: unknown): value is BilingualText {
-  return (
-    !!value &&
-    typeof value === "object" &&
-    "vi" in value &&
-    "en" in value &&
-    typeof value.vi === "string" &&
-    typeof value.en === "string"
-  );
+export function importFormDefinition(json: string): FormDefinition {
+  if (json.length > 1000000) throw new Error("Schema vượt quá 1 MB.");
+  const value: unknown = JSON.parse(json);
+  if (!isFormDefinition(value))
+    throw new Error(
+      "Schema không hợp lệ hoặc có thuộc tính không được hỗ trợ.",
+    );
+  const issues = validateFormDefinition(value);
+  if (issues.length) throw new Error(issues[0].message);
+  return { ...value, schemaVersion: 2 };
 }
-/** Shape checks allow incomplete drafts; validation separately gates Save and Preview. */
-export function isFormDefinition(value: unknown): value is FormDefinition {
-  if (!value || typeof value !== "object") return false;
-  const form = value as FormDefinition;
-  return (
-    typeof form.id === "string" &&
-    form.id.length > 0 &&
-    isText(form.title) &&
-    Number.isSafeInteger(form.version) &&
-    form.version > 0 &&
-    form.status === "DRAFT" &&
-    Array.isArray(form.fields) &&
-    form.fields.length <= 100 &&
-    form.fields.every(
-      (field) =>
-        !!field &&
-        typeof field === "object" &&
-        typeof field.id === "string" &&
-        field.id.length > 0 &&
-        typeof field.key === "string" &&
-        isText(field.label) &&
-        formFieldTypes.includes(field.type) &&
-        typeof field.required === "boolean" &&
-        Array.isArray(field.options) &&
-        field.options.length <= 50 &&
-        field.options.every(
-          (option) =>
-            !!option &&
-            typeof option.value === "string" &&
-            isText(option.label),
-        ),
-    )
-  );
+export function exportFormDefinition(form: FormDefinition): string {
+  if (!isFormDefinition(form) || validateFormDefinition(form).length)
+    throw new Error("Cấu trúc biểu mẫu chưa hợp lệ.");
+  return JSON.stringify({ ...form, schemaVersion: 2 }, null, 2);
 }
+export function createField(
+  type: FormFieldType,
+  existing: FormField[],
+): FormField {
+  let count = 1;
+  const keys = new Set(flattenFields(existing).map((field) => field.key));
+  while (keys.has(`${type}_${count}`)) count++;
+  return {
+    id: crypto.randomUUID(),
+    key: `${type}_${count}`,
+    label: { vi: fieldTypeLabels[type], en: type },
+    type,
+    required: false,
+    options: choiceTypes.includes(type)
+      ? [{ value: "option_1", label: { vi: "Lựa chọn 1", en: "Option 1" } }]
+      : [],
+    ...(containerTypes.includes(type) ? { children: [] } : {}),
+  };
+}
+export function updateFieldTree(
+  fields: FormField[],
+  id: string,
+  update: (field: FormField) => FormField | null,
+): FormField[] {
+  return fields.flatMap((field) => {
+    if (field.id === id) {
+      const next = update(field);
+      return next ? [next] : [];
+    }
+    return [
+      {
+        ...field,
+        ...(field.children
+          ? { children: updateFieldTree(field.children, id, update) }
+          : {}),
+      },
+    ];
+  });
+}
+export function duplicateField(
+  field: FormField,
+  existing: FormField[],
+): FormField {
+  const used = new Set(flattenFields(existing).map((item) => item.key));
+  const replacements = new Map<string, string>();
+  const clone = (item: FormField): FormField => {
+    let key = `${item.key.slice(0, 48)}_copy`;
+    let count = 2;
+    while (used.has(key)) key = `${item.key.slice(0, 48)}_copy_${count++}`;
+    used.add(key);
+    replacements.set(item.key, key);
+    return {
+      ...structuredClone(item),
+      id: crypto.randomUUID(),
+      key,
+      ...(item.children ? { children: item.children.map(clone) } : {}),
+    };
+  };
+  const copy = clone(field);
+  const reference = (key: string) =>
+    key
+      .split(".")
+      .map((part) => replacements.get(part) ?? part)
+      .join(".");
+  const rewrite = (item: FormField): FormField => ({
+    ...item,
+    ...(item.uniqueBy ? { uniqueBy: reference(item.uniqueBy) } : {}),
+    ...Object.fromEntries(
+      (["visibleWhen", "requiredWhen", "disabledWhen"] as const)
+        .filter((prop) => item[prop])
+        .map((prop) => [
+          prop,
+          {
+            ...item[prop],
+            conditions: item[prop]!.conditions.map((condition) => ({
+              ...condition,
+              field: reference(condition.field),
+            })),
+          },
+        ]),
+    ),
+    ...(item.calculation
+      ? {
+          calculation: {
+            ...item.calculation,
+            fields: item.calculation.fields.map(reference),
+          },
+        }
+      : {}),
+    ...(item.compare
+      ? { compare: { ...item.compare, field: reference(item.compare.field) } }
+      : {}),
+    ...(item.dataSource
+      ? {
+          dataSource: {
+            ...item.dataSource,
+            dependsOn: item.dataSource.dependsOn
+              ? reference(item.dataSource.dependsOn)
+              : undefined,
+          },
+        }
+      : {}),
+    ...(item.children ? { children: item.children.map(rewrite) } : {}),
+  });
+  return rewrite(copy);
+}
+export { validatePreview } from "./engine";

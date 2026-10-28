@@ -1,4 +1,6 @@
+import { formMessages } from "./form-messages";
 export const en = {
+  ...formMessages,
   "Biểu mẫu": "Forms",
   "Thiết kế biểu mẫu": "Form Studio",
   "ỨNG DỤNG / BIỂU MẪU": "APPLICATIONS / FORMS",

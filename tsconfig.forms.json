@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "declaration": true, "emitDeclarationOnly": true, "noEmit": false, "outDir": "./dist/forms-types" },
+  "include": ["packages/form-builder/src"],
+  "exclude": ["**/*.test.ts", "**/*.test.tsx"]
+}

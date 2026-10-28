@@ -79,9 +79,10 @@ export function translateValidation(locale: Locale, message: string): string {
   return translate(locale, message);
 }
 
-function readLocale(): Locale {
+function readLocale(storageKey: string | null = localeStorageKey): Locale {
+  if (!storageKey) return "vi";
   try {
-    return localStorage.getItem(localeStorageKey) === "en" ? "en" : "vi";
+    return localStorage.getItem(storageKey) === "en" ? "en" : "vi";
   } catch {
     return "vi";
   }
@@ -107,12 +108,29 @@ function makeValue(
   };
 }
 const I18nContext = createContext(makeValue("vi", () => {}));
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, updateLocale] = useState<Locale>(readLocale);
+export function I18nProvider({
+  children,
+  locale: controlledLocale,
+  onLocaleChange,
+  initialLocale,
+  persistenceKey = localeStorageKey,
+  manageDocumentLanguage = true,
+}: {
+  children: ReactNode;
+  locale?: Locale;
+  onLocaleChange?(locale: Locale): void;
+  initialLocale?: Locale;
+  persistenceKey?: string | null;
+  manageDocumentLanguage?: boolean;
+}) {
+  const [storedLocale, updateLocale] = useState<Locale>(
+    () => initialLocale ?? readLocale(persistenceKey),
+  );
+  const locale = controlledLocale ?? storedLocale;
   const [storageWarning, setStorageWarning] = useState(false);
   useEffect(() => {
-    document.documentElement.lang = locale;
-  }, [locale]);
+    if (manageDocumentLanguage) document.documentElement.lang = locale;
+  }, [locale, manageDocumentLanguage]);
   const value = useMemo(
     () =>
       makeValue(
@@ -120,8 +138,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
         (next) => {
           if (next !== "en" && next !== "vi") return;
           updateLocale(next);
+          onLocaleChange?.(next);
           try {
-            localStorage.setItem(localeStorageKey, next);
+            if (persistenceKey) localStorage.setItem(persistenceKey, next);
             setStorageWarning(false);
           } catch {
             setStorageWarning(true);
@@ -129,7 +148,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
         },
         storageWarning,
       ),
-    [locale, storageWarning],
+    [locale, storageWarning, onLocaleChange, persistenceKey],
   );
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
