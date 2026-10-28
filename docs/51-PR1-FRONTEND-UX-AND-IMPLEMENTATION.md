@@ -87,6 +87,8 @@ QA lượt này trên Vite local: Select mở và chọn bằng ArrowDown/Enter,
 
 Sau phản hồi owner về dropdown vỡ kiểu dáng, kiểm tra `http://localhost:5173/#master` phát hiện Vite cũ vẫn chạy từ trước khi thêm plugin Tailwind vào cấu hình. [Ảnh trước khi restart](../output/playwright/dropdown-5173-current.png) thiếu utility CSS; sau khi restart đúng cổng 5173, [màn sáng](../output/playwright/dropdown-5173-light-fixed.png) và [dropdown trong Dialog](../output/playwright/dropdown-dialog-5173.png) hiển thị đúng. Đã thử click option trong Dialog, giá trị cập nhật; console 0 error. Đây là lỗi tiến trình dev server cũ, không phải lỗi build production.
 
+Sau khi cài skill `shadcn` từ chính `shadcn-ui/ui/skills/shadcn` vào môi trường Codex cá nhân, đã dùng CLI `info` xác nhận project dùng Vite, Tailwind v4, Radix và 9 component có sẵn; dùng CLI `docs` để đối chiếu Select, Dialog, Field. Thêm Field, Alert, Empty bằng CLI; wrapper `@flowdocker/ui` dùng các component này, SelectItem được bọc trong SelectGroup theo hướng dẫn skill. Field gắn label với control bằng ID. QA trên cổng 5173: chọn “Số” trong inspector, chọn “Danh mục nội bộ” trong Dialog bằng chuột, [ảnh Master](../output/playwright/shadcn-skill-master.png), console 0 error/warning. Skill nằm trong môi trường cá nhân, không phải dependency hay code được commit vào repo.
+
 ### Chưa xong / cần review
 
 Chưa có nghiên cứu người dùng thực tế hoặc owner duyệt thiết kế; metadata 11–12px cần kiểm tra với người dùng ở zoom 125–150%. Chưa có Storybook, second independent host, API, kiểm thử phân quyền server hoặc CI. Isolated examples chỉ chứng minh UI primitives có thể render riêng, không chứng minh toàn platform tái sử dụng được. PR 1 chỉ bàn giao frontend prototype, không đại diện cho hệ thống production.

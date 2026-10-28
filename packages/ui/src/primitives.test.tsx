@@ -1,8 +1,17 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { DataTable, Modal, Tabs } from "./primitives";
+import { DataTable, Field, Modal, Tabs } from "./primitives";
+import { Input } from "./components/ui/input";
 
 describe("UI primitives", () => {
+  it("liên kết nhãn shadcn Field với input", () => {
+    render(
+      <Field label="Tên entity">
+        <Input />
+      </Field>,
+    );
+    expect(screen.getByRole("textbox", { name: "Tên entity" })).toBeTruthy();
+  });
   it("bảng cho phép chọn dòng bằng bàn phím", () => {
     const select = vi.fn();
     render(

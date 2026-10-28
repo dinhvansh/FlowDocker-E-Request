@@ -1,12 +1,30 @@
 import {
+  cloneElement,
+  isValidElement,
+  useId,
   type ButtonHTMLAttributes,
   type InputHTMLAttributes,
+  type ReactElement,
   type ReactNode,
 } from "react";
 import { Search } from "lucide-react";
 import { Button as ShadButton } from "./components/ui/button";
 import { Badge as ShadBadge } from "./components/ui/badge";
 import { Input } from "./components/ui/input";
+import {
+  Field as ShadField,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "./components/ui/field";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "./components/ui/empty";
+import { Alert, AlertDescription } from "./components/ui/alert";
 import { Tabs as ShadTabs, TabsList, TabsTrigger } from "./components/ui/tabs";
 import {
   Dialog,
@@ -67,11 +85,13 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="fd-empty">
-      <strong>{title}</strong>
-      {detail && <p>{detail}</p>}
-      {action}
-    </div>
+    <Empty className="fd-empty">
+      <EmptyHeader>
+        <EmptyTitle>{title}</EmptyTitle>
+        {detail && <EmptyDescription>{detail}</EmptyDescription>}
+      </EmptyHeader>
+      {action && <EmptyContent>{action}</EmptyContent>}
+    </Empty>
   );
 }
 export type Tab = { id: string; label: string };
@@ -119,17 +139,26 @@ export function Field({
   error?: string;
   children: ReactNode;
 }) {
+  const id = useId();
+  const controlId = isValidElement(children)
+    ? ((children.props as { id?: string }).id ?? id)
+    : id;
+  const control = isValidElement(children)
+    ? cloneElement(
+        children as ReactElement<{ id?: string; "aria-invalid"?: boolean }>,
+        {
+          id: controlId,
+          "aria-invalid": error ? true : undefined,
+        },
+      )
+    : children;
   return (
-    <label className="fd-field">
-      <span>{label}</span>
-      {children}
-      {hint && <small>{hint}</small>}
-      {error && (
-        <small className="fd-error" role="alert">
-          {error}
-        </small>
-      )}
-    </label>
+    <ShadField className="fd-field" data-invalid={error ? true : undefined}>
+      <FieldLabel htmlFor={controlId}>{label}</FieldLabel>
+      {control}
+      {hint && <FieldDescription>{hint}</FieldDescription>}
+      {error && <FieldError>{error}</FieldError>}
+    </ShadField>
   );
 }
 export function Notice({
@@ -140,9 +169,13 @@ export function Notice({
   children: ReactNode;
 }) {
   return (
-    <div className={`fd-notice fd-notice-${tone}`} role="status">
-      {children}
-    </div>
+    <Alert
+      variant={tone === "danger" ? "destructive" : "default"}
+      className={`fd-notice fd-notice-${tone}`}
+      role="status"
+    >
+      <AlertDescription>{children}</AlertDescription>
+    </Alert>
   );
 }
 export function Modal({

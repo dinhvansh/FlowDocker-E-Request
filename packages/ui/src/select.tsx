@@ -1,6 +1,7 @@
 import {
   Select as ShadSelect,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -19,6 +20,8 @@ export type SelectProps = {
   onValueChange(value: string): void;
   disabled?: boolean;
   placeholder?: string;
+  id?: string;
+  "aria-invalid"?: boolean;
 };
 
 /** FlowDocker Select built from the shadcn/ui Radix source. */
@@ -29,6 +32,8 @@ export function Select({
   onValueChange,
   disabled,
   placeholder = "Chọn giá trị",
+  id,
+  "aria-invalid": ariaInvalid,
 }: SelectProps) {
   const themeRoot =
     typeof document === "undefined"
@@ -37,7 +42,12 @@ export function Select({
 
   return (
     <ShadSelect value={value} onValueChange={onValueChange} disabled={disabled}>
-      <SelectTrigger className="w-full" aria-label={label}>
+      <SelectTrigger
+        id={id}
+        className="w-full"
+        aria-label={label}
+        aria-invalid={ariaInvalid}
+      >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent
@@ -46,15 +56,17 @@ export function Select({
         collisionPadding={8}
         portalContainer={themeRoot}
       >
-        {options.map((option) => (
-          <SelectItem
-            key={option.value}
-            value={option.value}
-            disabled={option.disabled}
-          >
-            {option.label}
-          </SelectItem>
-        ))}
+        <SelectGroup>
+          {options.map((option) => (
+            <SelectItem
+              key={option.value}
+              value={option.value}
+              disabled={option.disabled}
+            >
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectGroup>
       </SelectContent>
     </ShadSelect>
   );
