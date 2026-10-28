@@ -14,7 +14,129 @@
 @source "../master-builder/src/**/*.{ts,tsx}";
 @source "../permission-builder/src/**/*.{ts,tsx}";
 @source "../flow-canvas/src/**/*.{ts,tsx}";
+@source "../form-builder/src/**/*.{ts,tsx}";
 @source "../../apps/e-request-web/src/**/*.{ts,tsx}";
+
+.fd-form-workbench {
+  display: grid;
+  grid-template-columns: 235px minmax(0, 1fr);
+  border: 1px solid var(--fd-border);
+  border-radius: 8px;
+  background: var(--fd-surface-default);
+}
+.fd-form-catalog {
+  min-width: 0;
+  padding: 16px;
+  border-right: 1px solid var(--fd-border);
+}
+.fd-form-catalog-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 12px 8px;
+  margin-top: 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fd-text-primary);
+  overflow-wrap: anywhere;
+}
+.fd-form-catalog-item[aria-pressed="true"] {
+  background: var(--fd-brand-soft);
+  border-color: var(--fd-border);
+  color: var(--fd-color-brand);
+}
+.fd-form-catalog-item svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.fd-form-catalog-item strong,
+.fd-form-catalog-item small,
+.fd-form-key {
+  display: block;
+}
+.fd-form-catalog-item small,
+.fd-form-key {
+  margin-top: 4px;
+  color: var(--fd-text-muted);
+  font-size: 13px;
+}
+.fd-form-editor {
+  min-width: 0;
+  padding: 18px;
+}
+.fd-form-editor > .fd-section-heading {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.fd-form-titles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 18px 0;
+}
+.fd-form-designer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  border-top: 1px solid var(--fd-border);
+}
+.fd-form-schema {
+  min-width: 0;
+  padding: 16px 16px 16px 0;
+}
+.fd-form-properties {
+  min-width: 0;
+  padding: 16px;
+  border-left: 1px solid var(--fd-border);
+}
+.fd-form-properties h2 {
+  margin: 0 0 18px;
+}
+.fd-form-properties > .fd-notice {
+  margin-top: 12px;
+}
+.fd-form-order {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0;
+}
+.fd-form-preview {
+  max-width: 720px;
+  padding: 20px 0;
+}
+.fd-form-preview > .fd-notice {
+  margin-bottom: 20px;
+}
+@media (max-width: 1200px) {
+  .fd-form-designer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fd-form-properties {
+    border-left: 0;
+    border-top: 1px solid var(--fd-border);
+    padding: 16px 0;
+  }
+  .fd-form-schema {
+    padding-right: 0;
+  }
+}
+@media (max-width: 800px) {
+  .fd-form-workbench {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fd-form-catalog {
+    border-right: 0;
+    border-bottom: 1px solid var(--fd-border);
+  }
+  .fd-form-titles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fd-form-editor {
+    padding: 14px;
+  }
+}
 
 @theme inline {
   --font-sans: "Inter", Arial, sans-serif;
@@ -733,6 +855,10 @@ a {
 .fd-field small {
   color: var(--fd-text-muted);
   font-weight: 400;
+}
+.fd-field > [data-slot="checkbox"] {
+  width: 1rem;
+  align-self: flex-start;
 }
 .fd-field .fd-error {
   color: var(--fd-status-error);

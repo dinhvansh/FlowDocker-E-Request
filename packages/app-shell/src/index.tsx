@@ -2,6 +2,7 @@ import { useI18n } from "@flowdocker/i18n";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Blocks,
+  FilePenLine,
   Database,
   LayoutGrid,
   LockKeyhole,
@@ -19,6 +20,7 @@ export type PageId =
   | "master"
   | "permissions"
   | "applications"
+  | "forms"
   | "connections"
   | "flows"
   | "profile";
@@ -31,6 +33,7 @@ const groups: {
     pages: [
       { id: "workspace", label: "Tổng quan", icon: LayoutGrid },
       { id: "applications", label: "Ứng dụng", icon: Blocks },
+      { id: "forms", label: "Biểu mẫu", icon: FilePenLine },
     ],
   },
   {

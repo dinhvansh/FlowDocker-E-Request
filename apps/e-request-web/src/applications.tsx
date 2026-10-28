@@ -66,7 +66,9 @@ function loadApps(): { apps: AppDraft[]; error: string } {
 export function ApplicationsPage({
   onOpenModule,
 }: {
-  onOpenModule(id: "master" | "permissions" | "connections" | "flows"): void;
+  onOpenModule(
+    id: "master" | "permissions" | "connections" | "flows" | "forms",
+  ): void;
 }) {
   const { t, validation } = useI18n();
 
@@ -262,6 +264,22 @@ export function ApplicationsPage({
                     {t("Mở Master Data demo")}
                     <ArrowRight size={15} />
                   </Button>
+                )}
+                {selected.modules.includes("forms") && (
+                  <>
+                    <p>
+                      {t(
+                        "Form Studio đã có demo; Approval Studio chưa triển khai.",
+                      )}
+                    </p>
+                    <Button
+                      variant="ghost"
+                      onClick={() => onOpenModule("forms")}
+                    >
+                      {t("Mở Form Studio demo")}
+                      <ArrowRight data-icon="inline-end" />
+                    </Button>
+                  </>
                 )}
               </>
             ) : (

@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "npm run dev -w @flowdocker/e-request-web",
     "examples:ui": "vite packages/ui/examples --host 0.0.0.0",
+    "examples:forms": "vite packages/form-builder/examples --host 0.0.0.0",
     "build": "npm run build -w @flowdocker/e-request-web",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint": "eslint . && npm run i18n:check",

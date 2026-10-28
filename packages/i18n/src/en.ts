@@ -1,4 +1,95 @@
 export const en = {
+  "Biểu mẫu": "Forms",
+  "Thiết kế biểu mẫu": "Form Studio",
+  "ỨNG DỤNG / BIỂU MẪU": "APPLICATIONS / FORMS",
+  "Thiết kế trường, kiểm tra và xem thử bản nháp song ngữ":
+    "Design fields, validate and preview bilingual drafts",
+  "Tạo biểu mẫu": "Create form",
+  "Danh sách biểu mẫu": "Form catalog",
+  "Tìm biểu mẫu...": "Search forms...",
+  "{{count}} trường · nháp v{{version}}":
+    "{{count}} fields · draft v{{version}}",
+  "Không tìm thấy biểu mẫu": "No forms found",
+  "Biểu mẫu chưa đặt tên": "Untitled form",
+  "Chưa lưu": "Unsaved",
+  "Cần backend và phiên bản bất biến để phát hành biểu mẫu":
+    "Publishing forms requires a backend and immutable versions",
+  "Xem thử biểu mẫu": "Form preview",
+  "Tên biểu mẫu · tiếng Việt": "Form name · Vietnamese",
+  "Tên biểu mẫu · tiếng Anh": "Form name · English",
+  "Chưa có biểu mẫu": "No forms yet",
+  "Tạo bản nháp rồi thêm trường để thiết kế biểu mẫu.":
+    "Create a draft and add fields to design a form.",
+  "Bản nháp chưa lưu": "Unsaved draft",
+  "Tiếp tục chỉnh sửa": "Continue editing",
+  "Bỏ thay đổi và tiếp tục": "Discard changes and continue",
+  "Thay đổi của biểu mẫu hiện tại chưa được lưu. Chuyển tiếp sẽ bỏ các thay đổi này.":
+    "Changes to this form have not been saved. Continuing will discard these changes.",
+  "Không đọc được bản nháp biểu mẫu. Dữ liệu lưu hiện tại được giữ nguyên; kiểm tra bộ nhớ trình duyệt rồi tải lại.":
+    "Form drafts could not be loaded. Stored data has been preserved; check browser storage and reload.",
+  "Không lưu được biểu mẫu. Bản đang sửa vẫn còn; hãy thử lưu lại.":
+    "The form could not be saved. Your edits are still here; try saving again.",
+  "Đã lưu bản nháp biểu mẫu trên máy này.": "Form draft saved on this device.",
+  "Cấu trúc biểu mẫu hợp lệ trên trình duyệt.":
+    "The form schema is valid in this browser.",
+  "Cấu trúc biểu mẫu": "Form schema",
+  "Nhãn trường": "Field label",
+  "Thuộc tính trường": "Field properties",
+  "Nhãn tiếng Việt": "Vietnamese label",
+  "Nhãn tiếng Anh": "English label",
+  "Chữ thường, số và gạch dưới; mã không đổi theo ngôn ngữ.":
+    "Lowercase letters, digits and underscores; keys stay the same across languages.",
+  "Chưa có trường. Thêm trường để bắt đầu.":
+    "No fields yet. Add a field to get started.",
+  "Văn bản ngắn": "Short text",
+  "Văn bản dài": "Long text",
+  "Ô xác nhận": "Checkbox",
+  "Danh sách chọn": "Select list",
+  "Tùy chọn": "Optional",
+  "Lựa chọn song ngữ": "Bilingual options",
+  "Mỗi dòng: mã | nhãn Việt | nhãn Anh. Tối đa 50 dòng.":
+    "One per line: value | Vietnamese label | English label. Up to 50 lines.",
+  "Lên trên": "Move up",
+  "Xuống dưới": "Move down",
+  "Chọn hoặc thêm một trường": "Select or add a field",
+  "Sửa lỗi cấu trúc trước khi xem thử biểu mẫu.":
+    "Fix schema errors before previewing the form.",
+  "Xem thử cục bộ. Giá trị nhập không được gửi hoặc lưu.":
+    "Local preview. Entered values are never sent or saved.",
+  "{{label}} (bắt buộc)": "{{label}} (required)",
+  "Kiểm tra dữ liệu thử": "Validate sample values",
+  "Xóa dữ liệu thử": "Clear sample values",
+  "Cần sửa {{count}} lỗi trong dữ liệu thử.":
+    "Fix {{count}} errors in the sample values.",
+  "Dữ liệu thử hợp lệ trên trình duyệt; chưa gửi yêu cầu.":
+    "Sample values are valid in this browser; no request has been submitted.",
+  "Cần tên biểu mẫu bằng cả tiếng Việt và tiếng Anh.":
+    "The form needs a name in both Vietnamese and English.",
+  "Phiên bản biểu mẫu phải là số nguyên dương.":
+    "The form version must be a positive integer.",
+  "Biểu mẫu cần từ 1 đến 100 trường.": "A form needs 1 to 100 fields.",
+  "Mã trường {{key}} không hợp lệ hoặc được dành riêng.":
+    "Field key {{key}} is invalid or reserved.",
+  "Mã hoặc ID trường {{key}} bị trùng.":
+    "The key or ID of field {{key}} is duplicated.",
+  "Trường {{key}} cần nhãn bằng cả hai ngôn ngữ.":
+    "Field {{key}} needs labels in both languages.",
+  "Trường {{key}} có kiểu không được hỗ trợ.":
+    "Field {{key}} has an unsupported type.",
+  "Trường {{key}} cần 1–50 lựa chọn có mã duy nhất và nhãn song ngữ.":
+    "Field {{key}} needs 1–50 choices with unique values and bilingual labels.",
+  "Trường {{key}} là bắt buộc.": "Field {{key}} is required.",
+  "Giá trị trường {{key}} không đúng kiểu.":
+    "Field {{key}} has a value of the wrong type.",
+  "Trường {{key}} cần một số hữu hạn.": "Field {{key}} needs a finite number.",
+  "Trường {{key}} cần ngày hợp lệ.": "Field {{key}} needs a valid date.",
+  "Lựa chọn của trường {{key}} không hợp lệ.":
+    "The selected value for field {{key}} is invalid.",
+  "Mở Form Studio demo": "Open Form Studio demo",
+  "Form Studio đã có demo; Approval Studio chưa triển khai.":
+    "Form Studio has a demo; Approval Studio is not implemented yet.",
+  "PR 4 · Form Studio: thiết kế và xem thử bản nháp":
+    "PR 4 · Form Studio: draft designer and preview",
   "FlowDocker · Platform Console": "FlowDocker · Platform Console",
   "Chưa đồng bộ từ HR": "Not synced from HR",
   "Trường mới": "New field",

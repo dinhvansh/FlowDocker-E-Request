@@ -146,10 +146,24 @@ export function Field({
     : id;
   const control = isValidElement(children)
     ? cloneElement(
-        children as ReactElement<{ id?: string; "aria-invalid"?: boolean }>,
+        children as ReactElement<{
+          id?: string;
+          "aria-invalid"?: boolean;
+          "aria-describedby"?: string;
+        }>,
         {
           id: controlId,
           "aria-invalid": error ? true : undefined,
+          "aria-describedby":
+            [
+              (children.props as { "aria-describedby"?: string })[
+                "aria-describedby"
+              ],
+              hint ? `${id}-hint` : undefined,
+              error ? `${id}-error` : undefined,
+            ]
+              .filter(Boolean)
+              .join(" ") || undefined,
         },
       )
     : children;
@@ -157,8 +171,8 @@ export function Field({
     <ShadField className="fd-field" data-invalid={error ? true : undefined}>
       <FieldLabel htmlFor={controlId}>{label}</FieldLabel>
       {control}
-      {hint && <FieldDescription>{hint}</FieldDescription>}
-      {error && <FieldError>{error}</FieldError>}
+      {hint && <FieldDescription id={`${id}-hint`}>{hint}</FieldDescription>}
+      {error && <FieldError id={`${id}-error`}>{error}</FieldError>}
     </ShadField>
   );
 }

@@ -1,6 +1,6 @@
 import { I18nProvider, useI18n } from "@flowdocker/i18n";
 import React, { Suspense, lazy, useEffect, useState } from "react";
-import { createRoot } from "react-dom/client";
+import { createRoot, type Root } from "react-dom/client";
 import { ArrowRight, Blocks, Database, LockKeyhole } from "lucide-react";
 import { AppShell, type PageId } from "@flowdocker/app-shell";
 import { MasterBuilder } from "@flowdocker/master-builder";
@@ -10,6 +10,7 @@ import type { MasterEntity, Role } from "@flowdocker/app-contracts";
 import { entityService, resources, roleService } from "./mock";
 import { ConnectionsPage } from "./connections";
 import { ApplicationsPage } from "./applications";
+import { FormsPage } from "./forms";
 import { ProfilePage } from "./profile";
 import { demoProfile } from "./demo-profile";
 import "@flowdocker/ui/styles.css";
@@ -27,6 +28,7 @@ function initialPage(): PageId {
     "master",
     "permissions",
     "applications",
+    "forms",
     "connections",
     "flows",
     "profile",
@@ -260,17 +262,24 @@ function App() {
               <ul className="fd-next-list">
                 <li>{t("PR 2 · Connections & Flow Studio: frontend demo")}</li>
                 <li>{t("PR 3 · Application Builder: bản nháp frontend")}</li>
+                <li>{t("PR 4 · Form Studio: thiết kế và xem thử bản nháp")}</li>
               </ul>
             </aside>
           </div>
         </section>
       )}
       {page === "applications" && <ApplicationsPage onOpenModule={navigate} />}
+      <div hidden={page !== "forms"}>
+        <FormsPage />
+      </div>
     </AppShell>
   );
 }
 
-createRoot(document.getElementById("root")!).render(
+const root: Root =
+  import.meta.hot?.data.root ?? createRoot(document.getElementById("root")!);
+if (import.meta.hot) import.meta.hot.data.root = root;
+root.render(
   <React.StrictMode>
     <I18nProvider>
       <App />

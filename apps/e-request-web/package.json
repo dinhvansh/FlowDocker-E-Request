@@ -8,6 +8,7 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@flowdocker/form-builder": "*",
     "@flowdocker/app-contracts": "*",
     "@flowdocker/app-shell": "*",
     "@flowdocker/master-builder": "*",

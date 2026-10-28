@@ -4,6 +4,20 @@ import { DataTable, Field, Modal, Tabs } from "./primitives";
 import { Input } from "./components/ui/input";
 
 describe("UI primitives", () => {
+  it("connects hint and validation error to the labelled control", () => {
+    render(
+      <Field label="Sample field" hint="Allowed format" error="Fix value">
+        <Input />
+      </Field>,
+    );
+    const input = screen.getByRole("textbox", { name: "Sample field" });
+    expect(input.getAttribute("aria-invalid")).toBe("true");
+    const descriptions = input
+      .getAttribute("aria-describedby")!
+      .split(" ")
+      .map((id) => document.getElementById(id)?.textContent);
+    expect(descriptions).toEqual(["Allowed format", "Fix value"]);
+  });
   it("liên kết nhãn shadcn Field với input", () => {
     render(
       <Field label="Tên entity">

@@ -23,6 +23,7 @@ export type SelectProps = {
   placeholder?: string;
   id?: string;
   "aria-invalid"?: boolean;
+  "aria-describedby"?: string;
 };
 
 /** FlowDocker Select built from the shadcn/ui Radix source. */
@@ -35,6 +36,7 @@ export function Select({
   placeholder = "Chọn giá trị",
   id,
   "aria-invalid": ariaInvalid,
+  "aria-describedby": ariaDescribedBy,
 }: SelectProps) {
   const { t } = useI18n();
   const themeRoot =
@@ -49,6 +51,7 @@ export function Select({
         className="w-full"
         aria-label={label}
         aria-invalid={ariaInvalid}
+        aria-describedby={ariaDescribedBy}
       >
         <SelectValue placeholder={t(placeholder)} />
       </SelectTrigger>

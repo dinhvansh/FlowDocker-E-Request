@@ -24,6 +24,8 @@ UI primitives có [isolated examples](packages/ui/examples/main.tsx) tại `npm 
 
 Skill [shadcn/ui chính thức](.agents/skills/shadcn/SKILL.md) đã được cài trong dự án từ [shadcn-ui/ui](https://github.com/shadcn-ui/ui/tree/main/skills/shadcn). Các phần UI tiếp theo dùng skill này cùng quy tắc FlowDocker trong `AGENTS.md`, tái sử dụng `@flowdocker/ui`, token chung và nền song ngữ Việt–Anh.
 
+PR 4 bổ sung [Form Studio](docs/55-PR4-FORM-STUDIO.md) tại `#forms`: tạo/sửa biểu mẫu nháp, nhãn Việt–Anh, sáu kiểu trường, sắp xếp và xem thử với kiểm tra cục bộ. Package dùng chung [`@flowdocker/form-builder`](packages/form-builder/README.md) có ví dụ riêng qua `npm run examples:forms`. Chưa tích hợp Form.io, backend, phát hành hay thực thi phê duyệt.
+
 ## Key architectural choices
 
 | Layer | Proposed choice | Status |
