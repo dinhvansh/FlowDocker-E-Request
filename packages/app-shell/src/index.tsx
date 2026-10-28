@@ -1,13 +1,15 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Blocks,
   Database,
   LayoutGrid,
   LockKeyhole,
+  Menu,
   Moon,
   Search,
   Settings2,
   Sun,
+  X,
 } from "lucide-react";
 import { Badge, Button, Input } from "@flowdocker/ui";
 
@@ -23,14 +25,14 @@ const groups: {
   pages: { id: PageId; label: string; icon: typeof LayoutGrid }[];
 }[] = [
   {
-    label: "KHÔNG GIAN LÀM VIỆC",
+    label: "Không gian",
     pages: [
       { id: "workspace", label: "Tổng quan", icon: LayoutGrid },
       { id: "applications", label: "Ứng dụng", icon: Blocks },
     ],
   },
   {
-    label: "DỮ LIỆU",
+    label: "Dữ liệu",
     pages: [
       { id: "master", label: "Master Data", icon: Database },
       { id: "connections", label: "Kết nối", icon: Settings2 },
@@ -38,7 +40,7 @@ const groups: {
     ],
   },
   {
-    label: "BẢO MẬT",
+    label: "Quản trị",
     pages: [{ id: "permissions", label: "Phân quyền", icon: LockKeyhole }],
   },
 ];
@@ -56,39 +58,75 @@ export function AppShell({
   children: ReactNode;
 }) {
   const [navOpen, setNavOpen] = useState(false);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const menuTriggerRef = useRef<HTMLButtonElement>(null);
   const [search, setSearch] = useState("");
   const selected = groups.flatMap((g) => g.pages).find((p) => p.id === page);
   const navigate = (id: PageId) => {
     onPageChange(id);
     setNavOpen(false);
   };
+  useEffect(() => {
+    if (!navOpen) return;
+    sidebarRef.current
+      ?.querySelector<HTMLElement>(".fd-sidebar-close")
+      ?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setNavOpen(false);
+    };
+    const menuTrigger = menuTriggerRef.current;
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      menuTrigger?.focus();
+    };
+  }, [navOpen]);
   return (
     <div className="fd-app" data-theme={theme}>
+      {navOpen && (
+        <button
+          type="button"
+          className="fd-sidebar-scrim"
+          aria-label="Đóng điều hướng"
+          onClick={() => setNavOpen(false)}
+        />
+      )}
       <aside
-        className={`fd-sidebar ${navOpen ? "open" : ""}`}
+        ref={sidebarRef}
+        className="fd-sidebar"
+        data-open={navOpen}
         aria-label="Điều hướng chính"
       >
         <div className="fd-brand">
           <div className="fd-brand-mark">F</div>
-          <div>
+          <div className="fd-brand-copy">
             <strong>FlowDocker</strong>
-            <span>PLATFORM CONSOLE</span>
+            <span>Application Platform</span>
           </div>
+          <button
+            type="button"
+            className="fd-sidebar-close"
+            aria-label="Đóng điều hướng"
+            onClick={() => setNavOpen(false)}
+          >
+            <X size={18} aria-hidden="true" />
+          </button>
         </div>
         <div
           className="fd-workspace-switch"
           aria-label="Không gian làm việc hiện tại: E-Request, môi trường Demo"
         >
           <span className="fd-workspace-avatar">E</span>
-          <span>
+          <span className="fd-workspace-copy">
             <strong>E-Request</strong>
-            <small>Workspace demo</small>
+            <small>Ứng dụng hiện tại</small>
           </span>
+          <span className="fd-workspace-demo">Demo</span>
         </div>
         <div className="fd-nav-groups">
           {groups.map((group) => (
             <nav key={group.label} aria-label={group.label}>
-              <p>{group.label}</p>
+              <p className="fd-nav-heading">{group.label}</p>
               {group.pages.map((item) => {
                 const Icon = item.icon;
                 const planned = [
@@ -98,14 +136,16 @@ export function AppShell({
                 ].includes(item.id);
                 return (
                   <button
+                    type="button"
                     key={item.id}
-                    className={`fd-nav-link ${page === item.id ? "active" : ""}`}
+                    className="fd-nav-link"
+                    data-active={page === item.id}
                     aria-current={page === item.id ? "page" : undefined}
                     onClick={() => navigate(item.id)}
                   >
-                    <Icon size={17} strokeWidth={1.8} />
+                    <Icon size={18} strokeWidth={1.85} aria-hidden="true" />
                     <span>{item.label}</span>
-                    {planned && <i aria-label="Dự kiến">Sắp có</i>}
+                    {planned && <small>Chưa có</small>}
                   </button>
                 );
               })}
@@ -116,19 +156,20 @@ export function AppShell({
           <span className="fd-avatar">VA</span>
           <div>
             <strong>Platform Admin</strong>
-            <small>Tài khoản minh họa</small>
+            <small>Vai trò demo</small>
           </div>
         </div>
       </aside>
       <div className="fd-main-wrap">
         <header className="fd-topbar">
           <button
+            ref={menuTriggerRef}
             className="fd-mobile-menu fd-icon-button"
             aria-label="Mở điều hướng"
             aria-expanded={navOpen}
             onClick={() => setNavOpen(!navOpen)}
           >
-            ☰
+            <Menu size={20} aria-hidden="true" />
           </button>
           <div className="fd-breadcrumb">
             Workspace <span>/</span> <strong>{selected?.label}</strong>
