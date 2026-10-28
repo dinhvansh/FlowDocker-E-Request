@@ -72,6 +72,35 @@ export function createPaymentDefinition(): FormDefinition {
           ],
         },
       }),
+      field("currency", "select", "Loại tiền", "Currency", {
+        defaultValue: "USD",
+        options: [
+          {
+            value: "USD",
+            label: { vi: "USD · Đô la Mỹ", en: "USD · US Dollar" },
+          },
+        ],
+        help: {
+          vi: "Mẫu này dùng USD để kiểm tra số thập phân.",
+          en: "This sample uses USD to test decimal calculations.",
+        },
+      }),
+      field(
+        "amount_requested",
+        "currency",
+        "Số tiền đề nghị",
+        "Amount requested",
+        {
+          currency: "USD",
+          min: 0,
+          required: true,
+          compare: { field: "total", operator: "eq" },
+          help: {
+            vi: "Phải khớp với tổng các dòng chi phí.",
+            en: "Must match the expense rows total.",
+          },
+        },
+      ),
       field("lines", "repeat", "Chi tiết chi phí", "Expense lines", {
         minRows: 1,
         maxRows: 20,
@@ -94,6 +123,12 @@ export function createPaymentDefinition(): FormDefinition {
           precision: 2,
         },
       }),
+      field(
+        "payment_description",
+        "textarea",
+        "Diễn giải thanh toán",
+        "Payment description",
+      ),
       field("attachment", "file", "Chứng từ đính kèm", "Attachment", {
         accept: ".pdf,image/*",
         help: {

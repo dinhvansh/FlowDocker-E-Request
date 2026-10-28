@@ -1,3 +1,4 @@
+import { RepeatField } from "./components/repeat-field";
 import {
   useEffect,
   useId,
@@ -605,7 +606,11 @@ function RuntimeField({
   if (isContainer(field)) {
     const children = field.children ?? [];
     return (
-      <FieldSet id={id} className="fd-runtime-section">
+      <FieldSet
+        id={id}
+        className="fd-runtime-section"
+        data-field-type={field.type}
+      >
         <FieldLegend>{label}</FieldLegend>
         {field.help?.[locale] && <p>{field.help[locale]}</p>}
         {field.type === "container" ? (
@@ -616,74 +621,23 @@ function RuntimeField({
             prefix={`${path}.`}
             onChange={setValue}
           />
-        ) : field.type === "repeat" && props.design ? (
-          <div className="fd-repeat-row">
-            <RuntimeFields
-              {...nextProps}
-              fields={children}
-              data={Array.isArray(value) && isRecord(value[0]) ? value[0] : {}}
-              prefix={`${path}.0.`}
-              onChange={(next) => setValue([next])}
-            />
-          </div>
         ) : field.type === "repeat" ? (
-          <>
-            {(Array.isArray(value) ? value.filter(isRecord) : []).map(
-              (row, index) => (
-                <div className="fd-repeat-row" key={index}>
-                  <div className="fd-section-heading">
-                    <h3>{t("Dòng {{index}}", { index: index + 1 })}</h3>
-                    <Button
-                      type="button"
-                      disabled={
-                        disabled ||
-                        (Array.isArray(value) &&
-                          value.length <= (field.minRows ?? 0))
-                      }
-                      onClick={() =>
-                        setValue(
-                          (value as FormValue[]).filter(
-                            (_, position) => position !== index,
-                          ),
-                        )
-                      }
-                    >
-                      {t("Xóa dòng")}
-                    </Button>
-                  </div>
-                  <RuntimeFields
-                    {...nextProps}
-                    fields={children}
-                    data={row}
-                    prefix={`${path}.${index}.`}
-                    onChange={(next) =>
-                      setValue(
-                        (value as FormValue[]).map((item, position) =>
-                          position === index ? next : item,
-                        ),
-                      )
-                    }
-                  />
-                </div>
-              ),
+          <RepeatField
+            field={field}
+            rows={Array.isArray(value) ? value.filter(isRecord) : []}
+            onChange={setValue}
+            disabled={disabled}
+            design={!!props.design}
+            renderFields={(fields, row, index, onRowChange) => (
+              <RuntimeFields
+                {...nextProps}
+                fields={fields}
+                data={row}
+                prefix={`${path}.${index}.`}
+                onChange={onRowChange}
+              />
             )}
-            <Button
-              type="button"
-              disabled={
-                disabled ||
-                (Array.isArray(value) ? value.length : 0) >=
-                  (field.maxRows ?? 100)
-              }
-              onClick={() =>
-                setValue([
-                  ...(Array.isArray(value) ? value : []),
-                  defaultValues(children),
-                ])
-              }
-            >
-              {t("Thêm dòng")}
-            </Button>
-          </>
+          />
         ) : field.type === "tabs" ? (
           <>
             <Tabs

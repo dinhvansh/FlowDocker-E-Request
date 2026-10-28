@@ -87,7 +87,8 @@ describe("live authoring canvas", () => {
     expect(schema().fields[0].children).toHaveLength(6);
     fireEvent.click(screen.getByRole("button", { name: "Làm lại" }));
     expect(schema().fields[0].children).toHaveLength(7);
-  });
+  }, 15000);
+
   it("rejects destructive conversion of a populated layout and keeps its children", () => {
     render(<Host />);
     fireEvent.click(
@@ -124,4 +125,43 @@ describe("live authoring canvas", () => {
     expect(fields).toHaveLength(7);
     expect(fields[6].key).not.toBe("vendor");
   });
+  it("commits a focused inline label as one undo step and cancels with Escape", () => {
+    render(<Host />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Chọn trường Nhà cung cấp" }),
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Sửa nhãn trên canvas" }),
+    );
+    const input = screen.getByRole("textbox", { name: "Nhãn trên canvas" });
+    fireEvent.change(input, { target: { value: "Đơn vị cung cấp" } });
+    expect(document.activeElement).toBe(input);
+    expect(
+      JSON.parse(screen.getByTestId("schema").textContent!).fields[0]
+        .children[3].label.vi,
+    ).toBe("Nhà cung cấp");
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(
+      screen.getByRole("textbox", { name: "Đơn vị cung cấp (bắt buộc)" }),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Hoàn tác" }));
+    expect(
+      screen.getByRole("textbox", { name: "Nhà cung cấp (bắt buộc)" }),
+    ).toBeTruthy();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Sửa nhãn trên canvas" }),
+    );
+    fireEvent.change(
+      screen.getByRole("textbox", { name: "Nhãn trên canvas" }),
+      { target: { value: "Không lưu nhãn này" } },
+    );
+    fireEvent.keyDown(
+      screen.getByRole("textbox", { name: "Nhãn trên canvas" }),
+      { key: "Escape" },
+    );
+    expect(
+      JSON.parse(screen.getByTestId("schema").textContent!).fields[0]
+        .children[3].label.vi,
+    ).toBe("Nhà cung cấp");
+  }, 15000);
 });

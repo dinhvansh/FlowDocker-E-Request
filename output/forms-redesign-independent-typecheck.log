@@ -1,0 +1,4 @@
+
+> flowdocker-forms-source@0.2.0 typecheck
+> tsc --noEmit -p tsconfig.json
+

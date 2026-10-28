@@ -10,6 +10,56 @@ import {
   Textarea,
 } from "@flowdocker/ui";
 import { type FormField, type FormRule, type RuleOperator } from "./schema";
+function ConditionValue({
+  condition,
+  fields,
+  onChange,
+}: {
+  condition: FormRule["conditions"][number];
+  fields: FormField[];
+  onChange(value: string | number | boolean): void;
+}) {
+  const { t, locale } = useI18n();
+  const source = fields.find((field) => field.key === condition.field);
+  if (source?.type === "checkbox")
+    return (
+      <Select
+        label={t("Giá trị so sánh")}
+        value={String(condition.value ?? false)}
+        options={[
+          { value: "true", label: t("Có") },
+          { value: "false", label: t("Không") },
+        ]}
+        onValueChange={(value) => onChange(value === "true")}
+      />
+    );
+  if (source?.options.length)
+    return (
+      <Select
+        label={t("Giá trị so sánh")}
+        value={String(condition.value ?? "")}
+        options={source.options.map((option) => ({
+          value: option.value,
+          label: option.label[locale],
+        }))}
+        onValueChange={onChange}
+      />
+    );
+  const numeric = ["number", "currency"].includes(source?.type ?? "");
+  return (
+    <Input
+      type={numeric ? "number" : "text"}
+      value={String(condition.value ?? "")}
+      onChange={(event) =>
+        onChange(
+          numeric && event.target.value.trim()
+            ? Number(event.target.value)
+            : event.target.value,
+        )
+      }
+    />
+  );
+}
 export function OptionsEditor({
   field,
   onChange,
@@ -129,21 +179,10 @@ export function RuleEditor({
               </Field>
               {!["empty", "notEmpty"].includes(condition.operator) && (
                 <Field label={t("Giá trị so sánh")}>
-                  <Input
-                    value={String(condition.value ?? "")}
-                    onChange={(event) => {
-                      const source = fields.find(
-                        (field) => field.key === condition.field,
-                      );
-                      const raw = event.target.value;
-                      const value =
-                        source?.type === "checkbox"
-                          ? raw === "true"
-                          : ["number", "currency"].includes(
-                                source?.type ?? "",
-                              ) && raw.trim()
-                            ? Number(raw)
-                            : raw;
+                  <ConditionValue
+                    condition={condition}
+                    fields={fields}
+                    onChange={(value) => {
                       onChange({
                         ...rule,
                         conditions: rule.conditions.map((item, position) =>
@@ -234,7 +273,9 @@ export function AdvancedProperties({
   );
   return (
     <FieldGroup>
-      {(section === "all" || section === "appearance") && (
+      {(section === "all" ||
+        section === "appearance" ||
+        section === "general") && (
         <>
           <Field label={t("Gợi ý tiếng Việt")}>
             <Textarea
@@ -284,7 +325,7 @@ export function AdvancedProperties({
           </Field>
         </>
       )}
-      {(section === "all" || section === "data") && (
+      {(section === "all" || section === "data" || section === "general") && (
         <>
           <Field label={t("Giá trị mặc định")}>
             <Input

@@ -1,6 +1,6 @@
-import { useId, useState, type ReactNode } from "react";
+import { useId, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "@flowdocker/i18n";
-import { useDroppable } from "@dnd-kit/core";
+import { useDndContext, useDroppable } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -10,6 +10,7 @@ import {
   GripVertical,
   Plus,
   Trash2,
+  Pencil,
 } from "lucide-react";
 import { Badge, Button, FieldGroup } from "@flowdocker/ui";
 import { RuntimeFields, type FormRendererProps } from "./runtime";
@@ -17,10 +18,12 @@ import { defaultValues, prepareValues } from "./engine";
 import {
   fieldTypeLabels,
   isContainer,
+  flattenFields,
   type FormDefinition,
   type FormField,
   type PreviewValues,
 } from "./schema";
+import { InlineLabelEditor } from "./components/inline-label-editor";
 
 export interface FormCanvasProps {
   providers?: FormRendererProps["providers"];
@@ -32,6 +35,7 @@ export interface FormCanvasProps {
   onMove(field: FormField, offset: number): void;
   onClone(field: FormField): void;
   onDelete(field: FormField): void;
+  onPatch?(id: string, changes: Partial<FormField>): void;
 }
 function FieldOverlay({
   field,
@@ -44,12 +48,26 @@ function FieldOverlay({
   selected: boolean;
 }) {
   const { t, locale } = useI18n();
-  const sortable = useSortable({ id: field.id, disabled: props.readOnly });
+  const [editing, setEditing] = useState(false);
+  const editActions = useRef<HTMLDivElement>(null);
+  const { active } = useDndContext();
+  const dragged = active?.data.current?.field as FormField | undefined;
+  const validDrop =
+    active &&
+    active.id !== field.id &&
+    (!dragged ||
+      !flattenFields([dragged]).some((item) => item.id === field.id));
+  const sortable = useSortable({
+    id: field.id,
+    disabled: props.readOnly,
+    data: { field },
+  });
   return (
     <div
       ref={sortable.setNodeRef}
       data-canvas-field={field.id}
       data-selected={selected}
+      data-drop-active={!!sortable.isOver && !!validDrop}
       className="fd-canvas-field"
       style={{
         transform: CSS.Transform.toString(sortable.transform),
@@ -77,7 +95,24 @@ function FieldOverlay({
         )
           props.onSelect(field.id);
       }}
+      onDoubleClick={(event) => {
+        const target = event.target as HTMLElement;
+        if (
+          props.onPatch &&
+          !props.readOnly &&
+          target.closest("[data-canvas-field]") === event.currentTarget &&
+          target.closest('[data-slot="field-label"],legend')
+        )
+          setEditing(true);
+      }}
     >
+      {sortable.isOver && validDrop && (
+        <div className="fd-canvas-drop-indicator">
+          {isContainer(field)
+            ? t("Thả vào nhóm này")
+            : t("Chèn trước trường này")}
+        </div>
+      )}
       <div className="fd-canvas-field-bar">
         <button
           type="button"
@@ -102,7 +137,18 @@ function FieldOverlay({
         </button>
         {field.visibleWhen && <Badge>{t("Có điều kiện")}</Badge>}
         {selected && (
-          <div className="fd-canvas-inline-actions">
+          <div className="fd-canvas-inline-actions" ref={editActions}>
+            {props.onPatch && (
+              <Button
+                data-inline-label-edit
+                disabled={props.readOnly}
+                aria-label={t("Sửa nhãn trên canvas")}
+                title={t("Sửa nhãn trên canvas")}
+                onClick={() => setEditing(true)}
+              >
+                <Pencil />
+              </Button>
+            )}
             <Button
               disabled={props.readOnly}
               aria-label={t("Lên trên")}
@@ -134,6 +180,25 @@ function FieldOverlay({
           </div>
         )}
       </div>
+      {editing && props.onPatch && (
+        <InlineLabelEditor
+          key={`${field.id}-${locale}`}
+          value={field.label[locale]}
+          onFinish={(value, restoreFocus) => {
+            if (value !== null && value !== field.label[locale])
+              props.onPatch?.(field.id, {
+                label: { ...field.label, [locale]: value },
+              });
+            setEditing(false);
+            if (restoreFocus)
+              requestAnimationFrame(() =>
+                editActions.current
+                  ?.querySelector<HTMLButtonElement>("[data-inline-label-edit]")
+                  ?.focus(),
+              );
+          }}
+        />
+      )}
       <div className="fd-canvas-control">
         {children}
         {field.type === "hidden" && (

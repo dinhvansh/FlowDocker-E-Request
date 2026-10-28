@@ -15,14 +15,10 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import {
-  ArrowDown,
-  ArrowUp,
-  Copy,
   Download,
   GripVertical,
   Plus,
   Redo2,
-  Trash2,
   Undo2,
   Upload,
   PanelLeft,
@@ -32,10 +28,8 @@ import {
 import {
   Badge,
   Button,
-  Checkbox,
   EmptyState,
   Field,
-  FieldGroup,
   Input,
   Modal,
   Notice,
@@ -51,8 +45,6 @@ import {
   Textarea,
 } from "@flowdocker/ui";
 import {
-  choiceTypes,
-  containerTypes,
   createField,
   duplicateField,
   exportFormDefinition,
@@ -67,7 +59,10 @@ import {
   type FormField,
   type FormFieldType,
 } from "./schema";
-import { AdvancedProperties, OptionsEditor } from "./editors";
+import {
+  FieldInspector,
+  type InspectorSection,
+} from "./components/field-inspector";
 import type { FormRendererProps } from "./runtime";
 import { FormCanvas } from "./canvas";
 export interface FormDesignerProps {
@@ -223,7 +218,7 @@ export function FormDesigner({
   const { t, locale } = useI18n();
   const [selectedId, setSelectedId] = useState("");
   const [query, setQuery] = useState("");
-  const [properties, setProperties] = useState("basic");
+  const [properties, setProperties] = useState<InspectorSection>("basic");
   useEffect(() => {
     if (inspectorSection) setProperties(inspectorSection);
   }, [inspectorSection]);
@@ -558,18 +553,22 @@ export function FormDesigner({
           }
           const target = rows.find((row) => row.field.id === over.id);
           if (!target || active.id === over.id) return;
-          const targetSiblings = target.parent
-            ? (flattenFields(definition.fields).find(
-                (item) => item.id === target.parent,
-              )?.children ?? [])
+          const dropParent = isContainer(target.field)
+            ? target.field.id
+            : target.parent;
+          const targetSiblings = dropParent
+            ? (rows.find((item) => item.field.id === dropParent)?.field
+                .children ?? [])
             : definition.fields;
           commit({
             ...definition,
             fields: moveField(
               definition.fields,
               String(active.id),
-              target.parent,
-              targetSiblings.findIndex((item) => item.id === over.id),
+              dropParent,
+              isContainer(target.field)
+                ? targetSiblings.length
+                : targetSiblings.findIndex((item) => item.id === over.id),
             ),
           });
         }}
@@ -747,6 +746,16 @@ export function FormDesigner({
                   selectedId={field?.id}
                   readOnly={readOnly}
                   onSelect={setSelectedId}
+                  onPatch={(id, changes) =>
+                    commit({
+                      ...definition,
+                      fields: updateFieldTree(
+                        definition.fields,
+                        id,
+                        (item) => ({ ...item, ...changes }),
+                      ),
+                    })
+                  }
                   onInsert={insert}
                   onMove={moveSelected}
                   onClone={cloneSelected}
@@ -760,224 +769,33 @@ export function FormDesigner({
             aria-label={t("Thuộc tính trường")}
           >
             {field ? (
-              <>
-                <div className="fd-inspector-heading">
-                  <h2>{t("Thuộc tính trường")}</h2>
-                  <input
-                    type="range"
-                    min={260}
-                    max={380}
-                    step={10}
-                    value={inspectorWidth}
-                    aria-label={t("Độ rộng thuộc tính")}
-                    onChange={(event) =>
-                      setInspectorWidth(Number(event.target.value))
-                    }
-                  />
-                </div>
-                <Tabs
-                  active={properties}
-                  onChange={setProperties}
-                  tabs={[
-                    { id: "basic", label: t("Cơ bản") },
-                    { id: "validation", label: t("Kiểm tra dữ liệu") },
-                    { id: "logic", label: t("Điều kiện và tính toán") },
-                    { id: "data", label: t("Dữ liệu") },
-                    { id: "appearance", label: t("Hiển thị") },
-                    { id: "advanced", label: t("Nâng cao") },
-                  ]}
-                />
-                <fieldset
-                  disabled={readOnly}
-                  className="fd-form-property-fieldset"
-                >
-                  {properties === "basic" ? (
-                    <FieldGroup>
-                      <Field
-                        label={t("Mã trường")}
-                        hint={t(
-                          "Chữ thường, số và gạch dưới; mã không đổi theo ngôn ngữ.",
-                        )}
-                      >
-                        <Input
-                          value={field.key}
-                          onChange={(event) =>
-                            patch({ key: event.target.value })
-                          }
-                        />
-                      </Field>
-                      <Field label={t("Nhãn tiếng Việt")}>
-                        <Input
-                          value={field.label.vi}
-                          onChange={(event) =>
-                            patch({
-                              label: { ...field.label, vi: event.target.value },
-                            })
-                          }
-                        />
-                      </Field>
-                      <Field label={t("Nhãn tiếng Anh")}>
-                        <Input
-                          value={field.label.en}
-                          onChange={(event) =>
-                            patch({
-                              label: { ...field.label, en: event.target.value },
-                            })
-                          }
-                        />
-                      </Field>
-                      <Field label={t("Kiểu dữ liệu")}>
-                        <Select
-                          label={t("Kiểu dữ liệu")}
-                          value={field.type}
-                          options={formFieldTypes.map((type) => ({
-                            value: type,
-                            label: t(fieldTypeLabels[type]),
-                          }))}
-                          onValueChange={(type) => {
-                            if (
-                              field.children?.length &&
-                              !containerTypes.includes(type as FormFieldType)
-                            ) {
-                              setError(
-                                "Di chuyển hoặc xóa các trường con trước khi đổi sang kiểu đơn.",
-                              );
-                              return;
-                            }
-                            patch({
-                              type: type as FormFieldType,
-                              children: containerTypes.includes(
-                                type as FormFieldType,
-                              )
-                                ? (field.children ?? [])
-                                : undefined,
-                            });
-                          }}
-                        />
-                      </Field>
-                      <Field label={t("Bắt buộc")}>
-                        <Checkbox
-                          checked={field.required}
-                          onCheckedChange={(checked) =>
-                            patch({ required: checked === true })
-                          }
-                        />
-                      </Field>
-                      <Field label={t("Đặt trong nhóm")}>
-                        <Select
-                          label={t("Đặt trong nhóm")}
-                          value={parent || "__root__"}
-                          options={[
-                            { value: "__root__", label: t("Cấp ngoài cùng") },
-                            ...containers
-                              .filter(
-                                (row) =>
-                                  !flattenFields([field]).some(
-                                    (item) => item.id === row.field.id,
-                                  ),
-                              )
-                              .map((row) => ({
-                                value: row.field.id,
-                                label: row.field.label[locale],
-                              })),
-                          ]}
-                          onValueChange={(parentId) =>
-                            commit({
-                              ...definition,
-                              fields: moveField(
-                                definition.fields,
-                                field.id,
-                                parentId === "__root__" ? "" : parentId,
-                              ),
-                            })
-                          }
-                        />
-                      </Field>
-                      {choiceTypes.includes(field.type) && (
-                        <OptionsEditor
-                          key={`${field.id}-${historyRevision}`}
-                          field={field}
-                          onChange={(options) => patch({ options })}
-                        />
-                      )}
-                    </FieldGroup>
-                  ) : (
-                    <AdvancedProperties
-                      key={field.id}
-                      field={field}
-                      section={properties}
-                      fields={references}
-                      patch={patch}
-                    />
-                  )}
-                </fieldset>
-                <div className="fd-form-order">
-                  <Button
-                    disabled={readOnly || fieldIndex <= 0}
-                    onClick={() => move(-1)}
-                  >
-                    <ArrowUp data-icon="inline-start" />
-                    {t("Lên trên")}
-                  </Button>
-                  <Button
-                    disabled={readOnly || fieldIndex >= siblings.length - 1}
-                    onClick={() => move(1)}
-                  >
-                    <ArrowDown data-icon="inline-start" />
-                    {t("Xuống dưới")}
-                  </Button>
-                  <Button
-                    disabled={
-                      readOnly ||
-                      rows.length + flattenFields([field]).length > 300
-                    }
-                    onClick={() => {
-                      const copy = duplicateField(field, definition.fields);
-                      const fields = updateFieldTree(
-                        definition.fields,
-                        field.id,
-                        (item) => item,
-                      );
-                      const next = parent
-                        ? updateFieldTree(fields, parent, (item) => ({
-                            ...item,
-                            children: [...(item.children ?? []), copy],
-                          }))
-                        : [...fields, copy];
-                      commit({ ...definition, fields: next });
-                      setSelectedId(copy.id);
-                    }}
-                  >
-                    <Copy data-icon="inline-start" />
-                    {t("Nhân bản trường")}
-                  </Button>
-                </div>
-                <Button
-                  variant="danger"
-                  disabled={readOnly}
-                  onClick={() => {
-                    commit({
-                      ...definition,
-                      fields: updateFieldTree(
-                        definition.fields,
-                        field.id,
-                        () => null,
-                      ),
-                    });
-                    setSelectedId("");
-                  }}
-                >
-                  <Trash2 data-icon="inline-start" />
-                  {t("Xóa trường")}
-                </Button>
-                {issues
-                  .filter((issue) => issue.fieldId === field.id)
-                  .map((issue, index) => (
-                    <Notice key={index} tone="danger">
-                      {t(issue.message, issue.params)}
-                    </Notice>
-                  ))}
-              </>
+              <FieldInspector
+                field={field}
+                section={properties}
+                onSectionChange={setProperties}
+                patch={patch}
+                references={references}
+                containers={containers.map((row) => row.field)}
+                parent={parent}
+                onParentChange={(parentId) =>
+                  commit({
+                    ...definition,
+                    fields: moveField(definition.fields, field.id, parentId),
+                  })
+                }
+                onMove={move}
+                onClone={() => cloneSelected(field)}
+                onDelete={() => deleteSelected(field)}
+                onError={setError}
+                canMoveUp={fieldIndex > 0}
+                canMoveDown={fieldIndex < siblings.length - 1}
+                canClone={rows.length + flattenFields([field]).length <= 300}
+                readOnly={readOnly}
+                issues={issues}
+                historyRevision={historyRevision}
+                width={inspectorWidth}
+                onWidthChange={setInspectorWidth}
+              />
             ) : (
               <EmptyState title={t("Chọn hoặc thêm một trường")} />
             )}

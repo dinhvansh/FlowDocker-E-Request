@@ -18,3 +18,8 @@ export { FormCanvas } from "./canvas";
 export type { FormCanvasProps } from "./canvas";
 
 export { createPaymentDefinition } from "./payment-example";
+export { FieldInspector } from "./components/field-inspector";
+export type {
+  FieldInspectorProps,
+  InspectorSection,
+} from "./components/field-inspector";

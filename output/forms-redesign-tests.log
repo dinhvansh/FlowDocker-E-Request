@@ -1,0 +1,17 @@
+
+> test
+> vitest run --maxWorkers=1
+
+
+ RUN  v5.0.5 D:/Andros portal/FlowDocker-E-Request
+
+
+ Test Files  13 passed (13)
+      Tests  59 passed (59)
+   Start at  23:46:14
+   Duration  72.03s (tests 46%, import 37%, environment 16%)
+
+     Import  70 modules were evaluated 103 times · 25.88s total, 37% of tracked time
+             ~8.29s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+

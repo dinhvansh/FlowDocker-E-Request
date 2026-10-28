@@ -711,4 +711,16 @@ export const en = {
   Xong: "Done",
   Giờ: "Hour",
   Phút: "Minute",
+  "Nhóm thuộc tính": "Property category",
+  "Điều chỉnh độ rộng bảng": "Adjust panel width",
+  Dòng: "Row",
+  "Một dòng minh họa · thêm và xóa dòng trong Xem thử":
+    "One sample row · add and remove rows in Preview",
+  "Nhãn trên canvas": "Canvas label",
+  "Enter để lưu · Esc để hủy": "Enter to save · Esc to cancel",
+  "Sửa nhãn trên canvas": "Edit label on canvas",
+  "Thả vào nhóm này": "Drop into this group",
+  "Chèn trước trường này": "Insert before this field",
+  "Xóa dòng {{index}}": "Remove row {{index}}",
+  "Thao tác": "Actions",
 } as const;
