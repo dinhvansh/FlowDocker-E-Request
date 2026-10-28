@@ -14,7 +14,7 @@ npm install
 npm run dev
 ```
 
-Mở `http://localhost:5173`. Kiểm tra bằng `npm run build`, `npm run typecheck`, `npm run lint`, `npm test`. Ứng dụng hiện có điều hướng, theme sáng/tối, Master Data Builder và Permission Builder tương tác với mock service typed trong `localStorage`. Nút Publish bị vô hiệu hóa; Test Access chỉ mô phỏng. Connections/Flow Studio là PR 2, Application Builder là PR 3. Xem [UX và ranh giới PR 1](docs/51-PR1-FRONTEND-UX-AND-IMPLEMENTATION.md).
+Mở `http://localhost:5173`. Kiểm tra bằng `npm run build`, `npm run typecheck`, `npm run lint`, `npm test`. Ứng dụng hiện có điều hướng, theme sáng/tối, Master Data Builder và Permission Builder tương tác với mock service typed trong `localStorage`. Nhánh PR 2 bổ sung Connection Manager (lưu metadata bản nháp), Flow Studio dùng React Flow (sơ đồ và dry run tổng hợp), và User Profile demo. Kiểm tra kết nối thật, kích hoạt, publish và đồng bộ vẫn cần backend; không nhập secret hoặc endpoint nội bộ. Application Builder là PR 3. Xem [UX và ranh giới PR 1](docs/51-PR1-FRONTEND-UX-AND-IMPLEMENTATION.md), [phạm vi PR 2](docs/52-PR2-CONNECTIONS-FLOW-PROFILE.md).
 
 Sau khi cập nhật `vite.config.ts` hoặc Tailwind, hãy dừng rồi chạy lại dev server trên cổng 5173 và tải lại trang. Vite đang chạy từ cấu hình cũ có thể render component shadcn/ui mà không biên dịch utility CSS, khiến button và dropdown bị mất kiểu dáng.
 

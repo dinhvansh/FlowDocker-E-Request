@@ -6,6 +6,7 @@ import {
   LockKeyhole,
   Menu,
   Moon,
+  UserRound,
   Search,
   Settings2,
   Sun,
@@ -19,7 +20,8 @@ export type PageId =
   | "permissions"
   | "applications"
   | "connections"
-  | "flows";
+  | "flows"
+  | "profile";
 const groups: {
   label: string;
   pages: { id: PageId; label: string; icon: typeof LayoutGrid }[];
@@ -42,6 +44,10 @@ const groups: {
   {
     label: "Quản trị",
     pages: [{ id: "permissions", label: "Phân quyền", icon: LockKeyhole }],
+  },
+  {
+    label: "Tài khoản",
+    pages: [{ id: "profile", label: "Hồ sơ cá nhân", icon: UserRound }],
   },
 ];
 export function AppShell({
@@ -129,11 +135,7 @@ export function AppShell({
               <p className="fd-nav-heading">{group.label}</p>
               {group.pages.map((item) => {
                 const Icon = item.icon;
-                const planned = [
-                  "applications",
-                  "connections",
-                  "flows",
-                ].includes(item.id);
+                const planned = item.id === "applications";
                 return (
                   <button
                     type="button"
@@ -152,13 +154,18 @@ export function AppShell({
             </nav>
           ))}
         </div>
-        <div className="fd-sidebar-bottom">
+        <button
+          type="button"
+          className="fd-sidebar-bottom fd-profile-link"
+          onClick={() => navigate("profile")}
+          aria-label="Mở hồ sơ cá nhân"
+        >
           <span className="fd-avatar">VA</span>
           <div>
             <strong>Platform Admin</strong>
             <small>Vai trò demo</small>
           </div>
-        </div>
+        </button>
       </aside>
       <div className="fd-main-wrap">
         <header className="fd-topbar">
@@ -208,7 +215,14 @@ export function AppShell({
             >
               {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
             </Button>
-            <span className="fd-top-avatar">VA</span>
+            <button
+              type="button"
+              className="fd-top-avatar fd-profile-avatar"
+              onClick={() => navigate("profile")}
+              aria-label="Mở hồ sơ cá nhân"
+            >
+              VA
+            </button>
           </div>
         </header>
         <main id="main-content" className="fd-main">

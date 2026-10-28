@@ -17,6 +17,7 @@
       "@flowdocker/app-shell": ["./packages/app-shell/src/index.tsx"],
       "@flowdocker/app-contracts": ["./packages/app-contracts/src/index.ts"],
       "@flowdocker/master-builder": ["./packages/master-builder/src/index.tsx"],
+      "@flowdocker/flow-canvas": ["./packages/flow-canvas/src/index.tsx"],
       "@flowdocker/permission-builder": [
         "./packages/permission-builder/src/index.tsx"
       ]
