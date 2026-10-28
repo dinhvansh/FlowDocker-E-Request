@@ -1,7 +1,7 @@
 # AI Agent / Contributor Guide — FlowDocker E-Request
 
 ## Project status
-This repo currently contains **DESIGN DOCUMENTATION ONLY**. Do not claim application code, unit tests, integration tests, build, deployment, UAT or CI are done when they do not exist.
+This repo contains design documentation and a **frontend PR 1 prototype with synthetic browser-local data**. Do not claim backend services, authorization enforcement, migrations, deployment, UAT or CI are done when they do not exist. Frontend build/test evidence must cite actual commands and SHA.
 
 ## Read first
 1. `README.md` for scope.
