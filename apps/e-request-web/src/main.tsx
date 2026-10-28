@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { ArrowRight, Blocks, Database, LockKeyhole } from "lucide-react";
 import { AppShell, type PageId } from "@flowdocker/app-shell";
@@ -7,7 +7,15 @@ import { PermissionBuilder } from "@flowdocker/permission-builder";
 import { Badge, Button, DataTable, EmptyState, Notice } from "@flowdocker/ui";
 import type { MasterEntity, Role } from "@flowdocker/app-contracts";
 import { entityService, resources, roleService } from "./mock";
+import { ConnectionsPage } from "./connections";
+import { ProfilePage } from "./profile";
 import "@flowdocker/ui/styles.css";
+
+const FlowStudioPage = lazy(() =>
+  import("./flow-studio").then((module) => ({
+    default: module.FlowStudioPage,
+  })),
+);
 
 function initialPage(): PageId {
   const hash = location.hash.slice(1);
@@ -18,6 +26,7 @@ function initialPage(): PageId {
     "applications",
     "connections",
     "flows",
+    "profile",
   ].includes(hash)
     ? (hash as PageId)
     : "workspace";
@@ -86,6 +95,23 @@ function App() {
           loading={loading}
           error={error}
         />
+      )}
+      {page === "connections" && (
+        <ConnectionsPage onOpenFlows={() => navigate("flows")} />
+      )}
+      {page === "flows" && (
+        <Suspense
+          fallback={
+            <section className="fd-screen fd-loading-screen">
+              Đang tải Flow Studio...
+            </section>
+          }
+        >
+          <FlowStudioPage onOpenConnections={() => navigate("connections")} />
+        </Suspense>
+      )}
+      {page === "profile" && (
+        <ProfilePage theme={theme} onThemeChange={changeTheme} />
       )}
       {page === "workspace" && (
         <section className="fd-screen">
@@ -205,45 +231,29 @@ function App() {
                 Dữ liệu ở đây là dữ liệu tổng hợp. Không có ERP, identity,
                 policy engine hay quyền máy chủ.
               </Notice>
-              <h3>Giai đoạn kế tiếp</h3>
+              <h3>Lộ trình giao diện</h3>
               <ul className="fd-next-list">
-                <li>PR 2 · Connections & Flow Studio</li>
+                <li>PR 2 · Connections & Flow Studio: frontend demo</li>
                 <li>PR 3 · Application Builder & tích hợp UI</li>
               </ul>
             </aside>
           </div>
         </section>
       )}
-      {["applications", "connections", "flows"].includes(page) && (
+      {page === "applications" && (
         <section className="fd-screen">
           <div className="fd-page-toolbar">
             <div>
               <div className="fd-overline">NỀN TẢNG / KẾ HOẠCH</div>
-              <h1>
-                {page === "applications"
-                  ? "Application Builder"
-                  : page === "connections"
-                    ? "Connection Manager"
-                    : "Master Data Flow Studio"}
-              </h1>
-              <p>
-                {page === "applications"
-                  ? "Dự kiến trong PR 3"
-                  : "Dự kiến trong PR 2"}
-              </p>
+              <h1>Application Builder</h1>
+              <p>Dự kiến trong PR 3</p>
             </div>
             <Badge tone="warning">Chưa triển khai</Badge>
           </div>
           <div className="fd-planned">
             <EmptyState
               title="Màn hình này đang trong kế hoạch"
-              detail={
-                page === "applications"
-                  ? "Tạo app, chọn module và App Manifest sẽ được thực hiện ở PR 3."
-                  : page === "connections"
-                    ? "Danh sách kết nối và trình cấu hình sẽ được thực hiện ở PR 2; chưa có kiểm tra kết nối thật."
-                    : "Canvas React Flow và Dry Run sẽ được thực hiện ở PR 2; chưa có graph runtime."
-              }
+              detail="Tạo app, chọn module và App Manifest sẽ được thực hiện ở PR 3."
             />
             <Button onClick={() => navigate("workspace")}>
               Về không gian làm việc

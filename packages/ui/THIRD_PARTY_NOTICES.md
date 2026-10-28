@@ -5,5 +5,6 @@
 - `cn`: MIT, Copyright shadcn. Used by the generated components.
 - `class-variance-authority`: Apache-2.0. Used for component variants.
 - `@fontsource/inter`: bundles Inter by the Inter Project Authors under SIL Open Font License 1.1.
+- `@xyflow/react` 12.12.0: MIT. Used by the original FlowDocker graph editor UI; React Flow attribution remains visible. The visual library does not include a connector or execution runtime.
 
 The original license texts are present in the corresponding installed packages. FlowDocker owns its wrapper API and theme, not the upstream component or font source.
