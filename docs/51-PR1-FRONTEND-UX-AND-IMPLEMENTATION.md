@@ -85,6 +85,8 @@ Ngày 2026-10-28, theo yêu cầu tiếp theo của owner: dùng `shadcn@4.23.0 
 
 QA lượt này trên Vite local: Select mở và chọn bằng ArrowDown/Enter, Dialog mở và đóng bằng Escape, checkbox render trong ma trận, ảnh [Master desktop](../output/playwright/shadcn-master-first.png), [Select](../output/playwright/shadcn-master-select.png), [Dialog](../output/playwright/shadcn-master-dialog.png), [Permission desktop](../output/playwright/shadcn-permissions-desktop-final.png), [Permission mobile](../output/playwright/shadcn-permissions-mobile.png), [mobile tối](../output/playwright/shadcn-permissions-mobile-dark.png). Chromium console sau reload: 0 error, 0 warning. Đây vẫn là frontend demo; quyền thật và publish cần backend.
 
+Sau phản hồi owner về dropdown vỡ kiểu dáng, kiểm tra `http://localhost:5173/#master` phát hiện Vite cũ vẫn chạy từ trước khi thêm plugin Tailwind vào cấu hình. [Ảnh trước khi restart](../output/playwright/dropdown-5173-current.png) thiếu utility CSS; sau khi restart đúng cổng 5173, [màn sáng](../output/playwright/dropdown-5173-light-fixed.png) và [dropdown trong Dialog](../output/playwright/dropdown-dialog-5173.png) hiển thị đúng. Đã thử click option trong Dialog, giá trị cập nhật; console 0 error. Đây là lỗi tiến trình dev server cũ, không phải lỗi build production.
+
 ### Chưa xong / cần review
 
 Chưa có nghiên cứu người dùng thực tế hoặc owner duyệt thiết kế; metadata 11–12px cần kiểm tra với người dùng ở zoom 125–150%. Chưa có Storybook, second independent host, API, kiểm thử phân quyền server hoặc CI. Isolated examples chỉ chứng minh UI primitives có thể render riêng, không chứng minh toàn platform tái sử dụng được. PR 1 chỉ bàn giao frontend prototype, không đại diện cho hệ thống production.

@@ -16,6 +16,8 @@ npm run dev
 
 Mở `http://localhost:5173`. Kiểm tra bằng `npm run build`, `npm run typecheck`, `npm run lint`, `npm test`. Ứng dụng hiện có điều hướng, theme sáng/tối, Master Data Builder và Permission Builder tương tác với mock service typed trong `localStorage`. Nút Publish bị vô hiệu hóa; Test Access chỉ mô phỏng. Connections/Flow Studio là PR 2, Application Builder là PR 3. Xem [UX và ranh giới PR 1](docs/51-PR1-FRONTEND-UX-AND-IMPLEMENTATION.md).
 
+Sau khi cập nhật `vite.config.ts` hoặc Tailwind, hãy dừng rồi chạy lại dev server trên cổng 5173 và tải lại trang. Vite đang chạy từ cấu hình cũ có thể render component shadcn/ui mà không biên dịch utility CSS, khiến button và dropdown bị mất kiểu dáng.
+
 Giao diện dùng trắng–đỏ và font Inter (Latin + tiếng Việt) đóng gói cùng ứng dụng. `@flowdocker/ui` dùng source shadcn/ui tạo bằng CLI trên Radix cho Button, Badge, Input, Checkbox, Select, Dialog, Tabs và Table; các Builder vẫn gọi qua API component chung của FlowDocker. Các ô chọn không mở menu mặc định của Chrome.
 
 UI primitives có [isolated examples](packages/ui/examples/main.tsx) tại `npm run examples:ui` (cổng Vite in ra terminal); không cần backend.
