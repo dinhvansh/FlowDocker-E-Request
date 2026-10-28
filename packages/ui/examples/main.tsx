@@ -3,6 +3,7 @@ import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   LanguagePicker,
+  DatePicker,
   Badge,
   Button,
   DataTable,
@@ -24,6 +25,8 @@ function Examples() {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [kind, setKind] = useState("LOCAL_CATALOG");
+  const [date, setDate] = useState("");
+  const [dateTime, setDateTime] = useState("");
   return (
     <div className="fd-app" data-theme={theme}>
       <main
@@ -62,6 +65,21 @@ function Examples() {
         >
           {tab === "default" ? (
             <>
+              <Field label={t("Ngày")}>
+                <DatePicker
+                  label={t("Ngày")}
+                  value={date}
+                  onValueChange={setDate}
+                />
+              </Field>
+              <Field label={t("Ngày và giờ")}>
+                <DatePicker
+                  label={t("Ngày và giờ")}
+                  value={dateTime}
+                  onValueChange={setDateTime}
+                  withTime
+                />
+              </Field>
               <Field label={t("Tìm dữ liệu mẫu")}>
                 <Input
                   value={search}

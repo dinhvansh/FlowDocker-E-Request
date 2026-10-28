@@ -2357,6 +2357,36 @@ a {
   bottom: 0;
 }
 
+.fd-date-trigger {
+  width: 100%;
+  justify-content: space-between;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+.fd-date-trigger [data-placeholder] {
+  color: var(--fd-text-muted);
+}
+.fd-date-popover {
+  width: fit-content;
+  max-width: calc(100vw - 16px);
+  max-height: var(--radix-popover-content-available-height);
+  overflow-y: auto;
+  padding: 0;
+}
+.fd-date-time {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 0 12px 12px;
+}
+.fd-date-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 8px;
+  border-top: 1px solid var(--fd-border);
+}
+
 .fd-language-trigger {
   width: 88px;
   height: 36px;

@@ -15,6 +15,7 @@ import {
   Field,
   FieldGroup,
   Input,
+  DatePicker,
   Notice,
   Select,
   Tabs,
@@ -930,6 +931,18 @@ function RuntimeField({
         onChange={(event) => setValue(event.target.value)}
       />
     );
+  else if (field.type === "date" || field.type === "datetime")
+    control = (
+      <DatePicker
+        id={id}
+        label={label}
+        value={text}
+        onValueChange={setValue}
+        withTime={field.type === "datetime"}
+        disabled={disabled}
+        placeholder={field.placeholder?.[locale]}
+      />
+    );
   else
     control = (
       <Input
@@ -937,11 +950,9 @@ function RuntimeField({
         type={
           field.type === "phone"
             ? "tel"
-            : field.type === "datetime"
-              ? "datetime-local"
-              : ["number", "currency"].includes(field.type)
-                ? "number"
-                : field.type
+            : ["number", "currency"].includes(field.type)
+              ? "number"
+              : field.type
         }
         value={text}
         disabled={disabled}

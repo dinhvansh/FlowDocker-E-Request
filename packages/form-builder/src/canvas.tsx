@@ -65,6 +65,12 @@ function FieldOverlay({
         }
       }}
       onFocusCapture={(event) => {
+        // Opening a popover selects on click. Selecting on pointer focus can
+        // move its trigger before pointer-up when inline actions appear.
+        if (
+          (event.target as HTMLElement).closest('[data-slot="popover-trigger"]')
+        )
+          return;
         if (
           (event.target as HTMLElement).closest("[data-canvas-field]") ===
           event.currentTarget
