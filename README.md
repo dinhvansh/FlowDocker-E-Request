@@ -127,3 +127,7 @@ Proposed workspace packages `@flowdocker/ui`, `@flowdocker/flow-canvas`, `@flowd
 
 ## Mandatory UX Research → Design → Audit → Prototype → Design to Code
 **Owner's five-stage process for all FlowDocker screens** is recorded in [UX/UI Process](docs/47-UX-RESEARCH-TO-DESIGN-TO-CODE.md), with a [heuristic audit of the old FlowDocker HTML prototype](docs/48-V1-PROTOTYPE-AUDIT-AND-UX-RESEARCH.md) and a [task-first enterprise console redesign brief](docs/49-FLOWDOCKER-UI-REDESIGN-BRIEF.md). All Codex UI work must first read [FlowDocker UX Design Process Agent Skill](.agents/skills/flowdocker-ux-design-process/SKILL.md) and upstream UI/UX Pro Max guidance. The audit is screenshot-based, **not** proof of usability interviews; the redesigned interactive prototype and Design-to-Code are **NOT DONE**.
+
+
+## UI technology selection (owner decision)
+**No mandatory Ant Design.** Each screen/library is chosen based on actual UX flows and task needs, design freedom, accessibility, maintainability, performance and reusable FlowDocker component boundaries. [ADR-016: UI Stack Selection Principles](docs/50-UI-STACK-SELECTION-PRINCIPLES.md) details candidate shadcn/ui, Radix/Base UI, TanStack Table, React Flow, dnd-kit, and the conditions for using Ant Design selectively. **This is a selection policy, not implemented code.**

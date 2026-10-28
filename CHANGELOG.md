@@ -20,3 +20,6 @@
 - Architectural design addendum: **FlowDocker Application Platform** reusable shell/business module registry, Master Data Builder, Permission Builder (policy simulation and backend PDP/PEP), App Manifest/extension contract, reference PostgreSQL 007, multi-app IT Assets portability QA, and Codex Agent Skill. **Design only, no implementation.**
 
 - Added owner-mandated **UX Research → UI/UX Design → Design Audit → Interactive Prototype → Design to Code** process, UI/UX Pro Max-linked local agent skill, heuristic findings from existing HTML demo screenshots, and task-first enterprise redesign brief. **Documents and audit only — no user interviews, redesigned UI prototype or production code.**
+
+
+- Owner clarified UI framework selection: **Ant Design is optional, NOT a platform-wide mandate.** Added ADR-016 for task-based technology evaluation, headless/composable candidates and FlowDocker-owned design consistency. No new libraries installed or UI code written.

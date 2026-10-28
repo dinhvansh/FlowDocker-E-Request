@@ -36,3 +36,7 @@ Use [12 reusable UI acceptance tests](../../../docs/40-COMPONENT-EXTRACTION-ACCE
 
 ## Precondition — five-stage UX/UI Pro process
 Before implementing or extracting any UI component for FlowDocker, read `.agents/skills/flowdocker-ux-design-process/SKILL.md`, docs/47–49, and follow **UX Research → UI/UX Design → Design Audit → Interactive Prototype → Design to Code**. Component extraction is the **Design to Code** stage, not a substitute for research/audit/interactive usability checks. Avoid standardizing an unreviewed generic AI template.
+
+
+## Library selection neutrality
+The FlowDocker Component System does **not** bind the product to Ant Design or any other visual framework. Follow `docs/50-UI-STACK-SELECTION-PRINCIPLES.md`; wrap chosen primitives in FlowDocker public component contracts. Prefer a consistent foundation with domain-specific toolkits where justified, without forcing a vendor theme onto the interface.

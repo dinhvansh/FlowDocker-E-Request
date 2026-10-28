@@ -46,3 +46,7 @@ Each design component maps to stable public `@flowdocker/*` package exports, typ
 
 ## Status discipline
 Research completed only if there is actual user evidence; heuristic audit is not user research. Design complete only after artifact + review; prototype complete only after interaction QA; code complete only after real build/API/security tests. Record links/SHA and **DONE/NOT DONE**, no fake evidence.
+
+
+## UI library neutrality (owner decision)
+Read `docs/50-UI-STACK-SELECTION-PRINCIPLES.md`. Do not require Ant Design, shadcn or any other library before UX design and audit. Choose the fit-for-purpose primitives for each screen, keeping a consistent FlowDocker token system and accessible interaction patterns. Ant Design may be used selectively only with documented rationale. Evaluate one primitive foundation per app rather than blind mixing; preserve reusable public component APIs and license notices.

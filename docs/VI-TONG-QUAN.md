@@ -100,3 +100,7 @@ Ngoài các UI component, **Master Data Builder** và **Permission Builder** gi�
 
 ## 15. Quy trình UX/UI Pro Max trước khi code giao diện
 **UX Research → UI/UX Design → Design Audit → Interactive Prototype → Design to Code.** Mỗi bước có sản phẩm bàn giao, tiêu chí QA và ghi rõ cái nào chỉ là giả lập. Prototype FlowDocker đời đầu đã được audit theo ảnh: quá nhiều card/trang trí, trang Overview như landing page, Flow Studio canvas quá chật, panel mapping và thông tin phân quyền khó đọc. Thiết kế mới hướng task-first enterprise console, nhiều không gian dữ liệu, ít hiệu ứng. [Quy trình](47-UX-RESEARCH-TO-DESIGN-TO-CODE.md) · [Audit mẫu cũ](48-V1-PROTOTYPE-AUDIT-AND-UX-RESEARCH.md) · [UI Redesign Brief](49-FLOWDOCKER-UI-REDESIGN-BRIEF.md). **Chưa thực hiện phỏng vấn người dùng, chưa tạo prototype mới hoặc code React production.**
+
+
+## 16. Chọn UI framework theo trải nghiệm, không ép Ant Design
+Owner đã chốt **không bắt buộc Ant Design**. Thiết kế và audit luồng thao tác trước; sau đó chọn thư viện đúng việc, ví dụ shadcn/ui + Radix/Base UI, TanStack Table cho Master/Permission, React Flow cho canvas, dnd-kit cho JSON mapping. Đây là gợi ý POC, chưa cài. Giữ nguyên FlowDocker Design System, component tái sử dụng, accessibility và theme; Ant Design chỉ dùng khi thật sự hợp lý. [Quy tắc chọn công nghệ](50-UI-STACK-SELECTION-PRINCIPLES.md).

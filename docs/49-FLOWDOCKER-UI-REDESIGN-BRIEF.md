@@ -75,3 +75,7 @@ Audit each screen for task discovery, command affordance, information hierarchy,
 
 ## Prototype handoff requirements
 Provide actual browser-playable HTML or React artifact with URLs/hash navigation, click flows, resizable/collapsible panels when meaningful, accessible keyboard flows and visible mock labels. Test actions should update demo UI state; if "Publish" is simulated, label it `SIMULATED`, not `SUCCESS` as if backend accepted it. Run screenshot/browser QA and record the results separately. Do not present proposed layout as completed implementation.
+
+
+## Library neutrality — explicit owner clarification
+The redesign is **not an Ant Design Pro conversion** and no external library is prescribed across all screens. Select UI foundations by task and proven interaction fit. Candidate toolkit to evaluate includes shadcn/ui + a single primitive layer (Radix or Base UI), TanStack Table, React Flow, dnd-kit, theme tokens and Storybook; Ant Design remains a selective option only when justified. Ensure a single cohesive FlowDocker visual language through components and tokens. See [UI Selection ADR](50-UI-STACK-SELECTION-PRINCIPLES.md).

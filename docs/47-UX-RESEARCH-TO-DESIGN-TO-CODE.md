@@ -45,3 +45,7 @@ Each stage records artifact links, reviewer, date, unresolved assumptions and st
 - [Proposed FlowDocker Screen Design Brief](49-FLOWDOCKER-UI-REDESIGN-BRIEF.md)
 - [Existing Component System](39-FLOWDOCKER-COMPONENT-LIBRARY.md)
 - [App Platform](41-FLOWDOCKER-APPLICATION-PLATFORM.md)
+
+
+## Framework choice happens AFTER UX definition
+The owner explicitly states **"choose what fits; Ant Design is NOT mandatory."** UI/UX Design and Design Audit must evaluate appropriate primitives per screen before committing to a toolkit. Favor a consistent FlowDocker design system over enforcing an external component library's appearance. The Design to Code stage records the component choice rationale, public reusable `@flowdocker/*` API, accessibility, performance and license tests. See [ADR-016](50-UI-STACK-SELECTION-PRINCIPLES.md).
