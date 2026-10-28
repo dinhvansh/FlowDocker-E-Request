@@ -1,5 +1,10 @@
+@import "@fontsource/be-vietnam-pro/400.css";
+@import "@fontsource/be-vietnam-pro/500.css";
+@import "@fontsource/be-vietnam-pro/600.css";
+@import "@fontsource/be-vietnam-pro/700.css";
+
 :root {
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: "Be Vietnam Pro", Arial, sans-serif;
   font-synthesis: none;
 }
 * {
@@ -300,7 +305,7 @@ a {
 }
 .fd-global-search kbd {
   font:
-    12px "Segoe UI",
+    12px "Be Vietnam Pro",
     Arial,
     sans-serif;
   border: 1px solid var(--fd-border);
@@ -533,7 +538,7 @@ a {
 }
 .fd-entity-item small {
   font:
-    12px "Segoe UI",
+    12px "Be Vietnam Pro",
     Arial,
     sans-serif;
   color: var(--fd-text-muted);
@@ -569,7 +574,7 @@ a {
 .fd-object-meta code,
 .fd-cell-main code {
   font:
-    11px "Segoe UI",
+    11px "Be Vietnam Pro",
     Arial,
     sans-serif;
   color: var(--fd-text-muted);
@@ -698,7 +703,7 @@ a {
 }
 .fd-inspector-heading small {
   font:
-    11px "Segoe UI",
+    11px "Be Vietnam Pro",
     Arial,
     sans-serif;
   color: var(--fd-text-muted);
@@ -917,7 +922,7 @@ a {
 }
 .fd-matrix td small {
   font:
-    11px "Segoe UI",
+    11px "Be Vietnam Pro",
     Arial,
     sans-serif;
   color: var(--fd-text-muted);
@@ -976,7 +981,7 @@ a {
 }
 .fd-field-rule strong {
   font:
-    12px "Segoe UI",
+    12px "Be Vietnam Pro",
     Arial,
     sans-serif;
 }

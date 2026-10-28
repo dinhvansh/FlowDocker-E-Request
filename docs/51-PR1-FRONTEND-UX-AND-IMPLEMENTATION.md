@@ -27,7 +27,7 @@ Tác vụ ưu tiên PR 1: tìm entity → sửa schema → kiểm tra lỗi; ch�
 | A-05: action mock dễ hiểu nhầm | Nhãn DEMO, publish bị disabled, Test Access ghi SIMULATED |
 | A-06: scope tách xa matrix | Scope ngay dưới matrix, kết quả ở inspector cùng màn |
 | A-07: schema/source/version chưa nổi | Metadata ở object header và tab riêng |
-| A-08: chữ nhỏ | Body 15px, font Segoe UI; metadata 11–12px vẫn cần đánh giá với operator |
+| A-08: chữ nhỏ | Body 15px, font Be Vietnam Pro đóng gói tại chỗ; metadata 11–12px vẫn cần đánh giá với operator |
 | A-09: drag thiếu keyboard | Không có drag trong PR 1; bảng có Enter/Space, các control là native |
 
 P0 của quyền thật vẫn còn đến khi backend áp dụng policy. Không coi ma trận frontend là enforcement.
@@ -76,6 +76,10 @@ Hash navigation, tìm entity/role, tạo entity/role, chỉnh trường, validat
 Ngày 2026-10-28: loại bỏ toàn bộ native `<select>` trong app và examples; thay bằng FlowDocker Select trên Radix. Thay DM Sans/IBM Plex Mono tải ngoài bằng Segoe UI/Arial, tăng cỡ chữ ở nội dung chính và metadata, đổi shell và accent sang trắng–đỏ. Playwright Chromium xác nhận menu mở, chọn bằng ArrowDown/Enter, Test Access vẫn chạy; screenshot desktop, tablet, mobile và dark mode được chụp lại. Console: 0 error/0 warning.
 
 `@radix-ui/react-select` được khóa tại bản giải quyết 2.4.1 trong `package-lock.json`, giấy phép MIT. Bộ dropdown tăng JS bundle khoảng 91 KB trước gzip so với bản HTML control trước đó; đổi lại có menu thống nhất và hỗ trợ bàn phím/focus. Chưa thực hiện đánh giá giấy phép toàn bộ dependency cho phân phối thương mại.
+
+Sau phản hồi tiếp theo của owner, thay Segoe UI bằng Be Vietnam Pro (font chứa glyph tiếng Việt, dùng `@fontsource/be-vietnam-pro` đóng gói local với 4 weight 400/500/600/700). shadcn/ui CLI/component source chưa được thêm; Select đang dùng Radix trực tiếp qua FlowDocker adapter. Thay font độc lập với lựa chọn component library.
+
+QA font trên Vite local: computed `font-family` là `Be Vietnam Pro`, các tệp WOFF2 Latin/Việt trả HTTP 200. Ảnh chụp: [Workspace desktop](../output/playwright/font-workspace-desktop.png), [Master desktop](../output/playwright/font-master-desktop.png), [Select mở](../output/playwright/font-select-desktop.png), [Permission desktop](../output/playwright/font-permissions-desktop.png), [Permission mobile](../output/playwright/font-permissions-mobile.png), [mobile tối](../output/playwright/font-permissions-mobile-dark.png), [desktop tối](../output/playwright/font-permissions-desktop-dark.png). `npm run build`, `typecheck`, `lint`, `format:check` và `npm test` (7 test) đều đạt tại máy phát triển.
 
 ### Chưa xong / cần review
 

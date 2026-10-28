@@ -16,7 +16,7 @@ npm run dev
 
 Mở `http://localhost:5173`. Kiểm tra bằng `npm run build`, `npm run typecheck`, `npm run lint`, `npm test`. Ứng dụng hiện có điều hướng, theme sáng/tối, Master Data Builder và Permission Builder tương tác với mock service typed trong `localStorage`. Nút Publish bị vô hiệu hóa; Test Access chỉ mô phỏng. Connections/Flow Studio là PR 2, Application Builder là PR 3. Xem [UX và ranh giới PR 1](docs/51-PR1-FRONTEND-UX-AND-IMPLEMENTATION.md).
 
-Giao diện dùng trắng–đỏ và font hệ thống Segoe UI. Các ô chọn trong hai Builder dùng FlowDocker Select (Radix), không mở menu mặc định của Chrome.
+Giao diện dùng trắng–đỏ và font Be Vietnam Pro được đóng gói cùng ứng dụng để hiển thị tiếng Việt nhất quán. Các ô chọn trong hai Builder dùng FlowDocker Select (Radix), không mở menu mặc định của Chrome.
 
 UI primitives có [isolated examples](packages/ui/examples/main.tsx) tại `npm run examples:ui` (cổng Vite in ra terminal); không cần backend.
 
