@@ -6,7 +6,7 @@ Owner input: docs/57 and GitHub issue #3, read 2026-10-28. The operator must see
 
 ## 2. UI/UX Design
 
-Use the existing shadcn/Radix wrappers, tokens and VI/EN dictionaries. A grouped searchable toolbox, a real runtime-backed field canvas and a contextual inspector form the workbench. The form catalog is collapsible so it does not become a fourth permanent pane. Designer/Preview/Logic/JSON are explicit modes. Canvas and preview support compact device widths; phone editing switches between panes. Outline remains an optional structural tool. Insert points and move buttons supplement drag and keyboard sorting.
+Use the existing shadcn/Radix wrappers, tokens and VI/EN dictionaries. A grouped searchable toolbox, a real runtime-backed field canvas and a contextual inspector form the workbench. The form catalog and document editor are separate views so the catalog does not become a fourth permanent pane. Designer/Preview/Logic/JSON are explicit modes. Canvas and preview support compact device widths; phone editing switches between panes. Outline remains an optional structural tool. Insert points and move buttons supplement drag and keyboard sorting.
 
 ## 3. Design Audit and fix plan
 
@@ -79,3 +79,27 @@ Owner approved the typography of the two Form Studio pane buttons for shared UI.
 
 Chromium computed-style sampling on Forms, Master Data, Permissions, Applications, Connections and Flow Studio confirmed Inter/12px/400 across sampled visible controls. Screenshot: `output/playwright/compact-ui-typography-1440.png`. Typecheck, lint/i18n, format check and app build passed; build retains its existing main chunk warning. This is owner preference evidence, not a user study.
 Validation follow-up: initial default-worker run hit the existing 5-second canvas interaction timeout (52/53); rerun with `npm test -- --reporter=dot --maxWorkers=2` passed 11 files / 53 tests. No test assertions or timeout settings changed for this typography update.
+
+## Owner toolbar feedback — focused editing journey
+
+### 1. UX Research
+
+The owner marked two stacked toolbars at 626×604: catalog/demo creation actions above document rename/validate/save/publish actions. This is direct owner feedback about unclear task order and crowded controls, not a participant usability study.
+
+### 2. UI/UX Design
+
+Journey: catalog → choose/create → edit actual fields → preview → save local draft. Opening a saved draft enters its editor directly. Back returns to the catalog. The document header contains its name/status, Save and options. Rename/Validate and the unavailable Publish explanation move into Form options. Import/export, form/wizard presentation and canvas width move into Tools. Desktop pane toggles and undo/redo use accessible icons; mobile pane tabs remain explicit.
+
+### 3. Design Audit
+
+Removed duplicated catalog actions from editing, the redundant canvas heading/device toolbar and the extra canvas-header Add action. Retained inline insertion and toolbox controls. A discard cancellation now returns to the editor with Save reachable. Successful save closes the rename disclosure; switching documents resets it. Failed save keeps the editable title and reports failure.
+
+### 4–5. Interactive Prototype / Design to Code
+
+Implemented directly in the existing typed React components and exercised in Chromium. `forms-focused-journey.cjs` covers catalog → create → add a real text input → save → preview, rename/save, Tools import access and responsive overflow. `forms-focused-final.cjs` covers VI/light at 626×604, 390×844, 1366×768 and 1440×900, plus EN/dark at 390×844 and 1440×900, options access, Escape dismissal and Tools import access. No horizontal page overflow was observed. In the 626×604 editor, the real input appears within the first viewport. Earlier final-check execution failed only on an incorrect Vietnamese theme-button locator; corrected and rerun successfully.
+
+Evidence: `output/playwright/forms-focused-{626,390,1366,1440}.png` and `forms-focused-{390,1440}-en-dark.png`. The browser console contains React development informational messages without error/warning entries for these journeys.
+
+Executed checks for this iteration: typecheck PASS; lint including i18n PASS; format check PASS; `npm test -- --reporter=dot --maxWorkers=1` PASS (11 files / 53 tests); app build PASS (existing main-chunk size warning); `npm run build:forms` PASS (53 bundled license entries). The first rerun exposed a real catalog-cancellation issue and it was fixed. A later lint run flagged the standalone browser-function entry point; its CLI-specific expression is now annotated like the existing evidence scripts, and lint passes. The browser journey uses a unique rename value so repeated executions actually modify the draft instead of waiting on the correctly disabled Save button.
+
+Reusable component impact: designer action grouping and responsive styles live in `@flowdocker/form-builder` / shared styles; catalog, persistence and document options remain the E-Request adapter. Shared Button, Modal and Select wrappers and bilingual dictionaries are reused. No dependency, schema, engine, persistence format or public component prop change. All 33 field types remain available. The isolated source export was verified in the earlier iteration; it has not been re-exported for this toolbar change. The reusable library bundle is rebuilt locally. Owner visual acceptance remains pending; PR #4 is not merged.

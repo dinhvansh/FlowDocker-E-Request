@@ -693,4 +693,9 @@ export const en = {
   "Phiên bản {{version}}": "Version {{version}}",
   "Mở mẫu thanh toán": "Open payment sample",
   "Kéo {{type}} vào canvas": "Drag {{type}} onto canvas",
+  "Tùy chọn biểu mẫu": "Form options",
+  "Bản nháp chỉ được lưu trên trình duyệt này.":
+    "Drafts are stored only in this browser.",
+  "Công cụ": "Tools",
+  "Độ rộng canvas": "Canvas width",
 } as const;

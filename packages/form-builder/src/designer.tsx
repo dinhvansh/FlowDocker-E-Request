@@ -25,6 +25,9 @@ import {
   Trash2,
   Undo2,
   Upload,
+  PanelLeft,
+  PanelRight,
+  Settings2,
 } from "lucide-react";
 import {
   Badge,
@@ -388,25 +391,33 @@ export function FormDesigner({
       data-inspector={inspectorOpen}
     >
       <div className="fd-form-product-toolbar">
+        <div className="fd-designer-pane-controls">
+          <Button
+            aria-label={t("Thư viện trường")}
+            title={t("Thư viện trường")}
+            aria-expanded={toolboxOpen}
+            onClick={() => {
+              setToolboxOpen(!toolboxOpen);
+              setPane("toolbox");
+            }}
+          >
+            <PanelLeft />
+          </Button>
+          <Button
+            aria-label={t("Thuộc tính trường")}
+            title={t("Thuộc tính trường")}
+            aria-expanded={inspectorOpen}
+            onClick={() => {
+              setInspectorOpen(!inspectorOpen);
+              setPane("properties");
+            }}
+          >
+            <PanelRight />
+          </Button>
+        </div>
         <Button
-          aria-expanded={toolboxOpen}
-          onClick={() => {
-            setToolboxOpen(!toolboxOpen);
-            setPane("toolbox");
-          }}
-        >
-          {t("Thư viện trường")}
-        </Button>
-        <Button
-          aria-expanded={inspectorOpen}
-          onClick={() => {
-            setInspectorOpen(!inspectorOpen);
-            setPane("properties");
-          }}
-        >
-          {t("Thuộc tính trường")}
-        </Button>
-        <Button
+          aria-label={t("Hoàn tác")}
+          title={t("Hoàn tác")}
           disabled={readOnly || !past.length}
           onClick={() => {
             setFuture([definition, ...future]);
@@ -416,9 +427,10 @@ export function FormDesigner({
           }}
         >
           <Undo2 data-icon="inline-start" />
-          {t("Hoàn tác")}
         </Button>
         <Button
+          aria-label={t("Làm lại")}
+          title={t("Làm lại")}
           disabled={readOnly || !future.length}
           onClick={() => {
             setPast([...past, definition]);
@@ -428,52 +440,68 @@ export function FormDesigner({
           }}
         >
           <Redo2 data-icon="inline-start" />
-          {t("Làm lại")}
         </Button>
-        <Button
-          onClick={() => {
-            try {
-              const blob = new Blob([exportFormDefinition(definition)], {
-                type: "application/json",
-              });
-              const url = URL.createObjectURL(blob);
-              const anchor = document.createElement("a");
-              anchor.href = url;
-              anchor.download = `${definition.id}.json`;
-              anchor.click();
-              setTimeout(() => URL.revokeObjectURL(url), 1000);
-              setError("");
-            } catch {
-              setError("Cấu trúc biểu mẫu chưa hợp lệ.");
-            }
-          }}
-        >
-          <Download data-icon="inline-start" />
-          {t("Xuất schema JSON")}
-        </Button>
-        <Button
-          disabled={readOnly}
-          onClick={() => {
-            setImportOpen(true);
-            setJson("");
-            setError("");
-          }}
-        >
-          <Upload data-icon="inline-start" />
-          {t("Nhập schema JSON")}
-        </Button>
-        <Select
-          label={t("Kiểu biểu mẫu")}
-          disabled={readOnly}
-          value={definition.display ?? "form"}
-          options={[
-            { value: "form", label: t("Một trang") },
-            { value: "wizard", label: t("Nhiều bước") },
-          ]}
-          onValueChange={(display) =>
-            commit({ ...definition, display: display as "form" | "wizard" })
-          }
-        />
+        <details className="fd-designer-tools">
+          <summary>
+            <Settings2 aria-hidden="true" />
+            {t("Công cụ")}
+          </summary>
+          <div className="fd-designer-tools-content">
+            <Select
+              label={t("Độ rộng canvas")}
+              value={device}
+              options={[
+                { value: "desktop", label: t("Máy tính") },
+                { value: "mobile", label: t("Điện thoại") },
+              ]}
+              onValueChange={setDevice}
+            />{" "}
+            <Button
+              onClick={() => {
+                try {
+                  const blob = new Blob([exportFormDefinition(definition)], {
+                    type: "application/json",
+                  });
+                  const url = URL.createObjectURL(blob);
+                  const anchor = document.createElement("a");
+                  anchor.href = url;
+                  anchor.download = `${definition.id}.json`;
+                  anchor.click();
+                  setTimeout(() => URL.revokeObjectURL(url), 1000);
+                  setError("");
+                } catch {
+                  setError("Cấu trúc biểu mẫu chưa hợp lệ.");
+                }
+              }}
+            >
+              <Download data-icon="inline-start" />
+              {t("Xuất schema JSON")}
+            </Button>
+            <Button
+              disabled={readOnly}
+              onClick={() => {
+                setImportOpen(true);
+                setJson("");
+                setError("");
+              }}
+            >
+              <Upload data-icon="inline-start" />
+              {t("Nhập schema JSON")}
+            </Button>
+            <Select
+              label={t("Kiểu biểu mẫu")}
+              disabled={readOnly}
+              value={definition.display ?? "form"}
+              options={[
+                { value: "form", label: t("Một trang") },
+                { value: "wizard", label: t("Nhiều bước") },
+              ]}
+              onValueChange={(display) =>
+                commit({ ...definition, display: display as "form" | "wizard" })
+              }
+            />
+          </div>
+        </details>
       </div>
       {error && !importOpen && <Notice tone="danger">{t(error)}</Notice>}
       <div className="fd-designer-mobile-tabs">
@@ -671,30 +699,6 @@ export function FormDesigner({
             className="fd-form-schema fd-canvas-workspace"
             aria-label={t("Cấu trúc biểu mẫu")}
           >
-            <div className="fd-section-heading">
-              <h2>{t("Canvas trực tiếp")}</h2>
-              <div className="fd-canvas-devices">
-                <Button
-                  aria-pressed={device === "desktop"}
-                  onClick={() => setDevice("desktop")}
-                >
-                  {t("Máy tính")}
-                </Button>
-                <Button
-                  aria-pressed={device === "mobile"}
-                  onClick={() => setDevice("mobile")}
-                >
-                  {t("Điện thoại")}
-                </Button>
-              </div>
-              <Button
-                disabled={readOnly || rows.length >= 300}
-                onClick={() => add("text")}
-              >
-                <Plus data-icon="inline-start" />
-                {t("Thêm trường")}
-              </Button>
-            </div>
             {outlineOpen &&
               (rows.length ? (
                 <SortableContext

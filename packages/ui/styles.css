@@ -2942,3 +2942,161 @@ a {
   font-size: var(--fd-font-ui-size);
   font-weight: var(--fd-font-ui-weight);
 }
+/* Task-focused form editor: catalog actions belong to the catalog. */
+.fd-forms-focused .fd-form-workbench {
+  border: 0;
+  border-radius: 0;
+}
+.fd-forms-focused .fd-form-editor {
+  padding: 0 14px 14px;
+}
+.fd-forms-focused .fd-form-document-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  min-height: 64px;
+  padding: 10px 0;
+}
+.fd-form-document-bar > button:first-child,
+.fd-form-document-bar > button:last-child {
+  width: 34px;
+  padding: 7px;
+  flex-shrink: 0;
+}
+.fd-form-document-name {
+  flex: 1;
+  min-width: 0;
+}
+.fd-form-document-name h1 {
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fd-form-document-name > span {
+  font-size: 12px;
+  color: var(--fd-text-muted);
+}
+.fd-form-secondary-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 16px;
+}
+.fd-forms-focused .fd-form-catalog {
+  padding: 20px;
+}
+.fd-forms-focused .fd-form-workbench[data-catalog="true"] > .fd-form-catalog {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.fd-forms-focused .fd-form-catalog > .fd-search {
+  grid-column: 1 / -1;
+}
+.fd-designer-v2 .fd-form-product-toolbar {
+  padding: 6px 0;
+  align-items: center;
+  flex-wrap: nowrap;
+  border-bottom: 1px solid var(--fd-border);
+}
+.fd-designer-v2 .fd-form-product-toolbar > button {
+  padding: 6px;
+  width: 32px;
+  height: 32px;
+}
+.fd-designer-pane-controls {
+  display: flex;
+  gap: 4px;
+}
+.fd-designer-pane-controls button {
+  padding: 6px;
+  width: 32px;
+  height: 32px;
+}
+.fd-designer-tools {
+  margin-left: auto;
+  position: relative;
+}
+.fd-designer-tools > summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 7px 10px;
+  list-style: none;
+  border: 1px solid var(--fd-border);
+  border-radius: 5px;
+  font-size: 12px;
+}
+.fd-designer-tools > summary::-webkit-details-marker {
+  display: none;
+}
+.fd-designer-tools > summary svg {
+  width: 15px;
+  height: 15px;
+}
+.fd-designer-tools-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--fd-border);
+  background: var(--fd-surface-default);
+  border-radius: 5px;
+  margin-top: 6px;
+  min-width: 220px;
+}
+.fd-designer-tools[open] {
+  align-self: flex-start;
+}
+.fd-forms-focused .fd-designer-v2 {
+  margin-top: 0;
+}
+.fd-forms-focused .fd-canvas-workspace > .fd-section-heading h2 {
+  display: none;
+}
+.fd-forms-focused .fd-canvas-workspace > .fd-section-heading {
+  justify-content: flex-end;
+  margin-bottom: 6px;
+}
+.fd-forms-focused .fd-canvas-paper {
+  margin-top: 6px;
+}
+@media (max-width: 1150px) {
+  .fd-designer-pane-controls {
+    display: none;
+  }
+  .fd-designer-v2 .fd-designer-mobile-tabs {
+    padding: 0;
+  }
+  .fd-designer-mobile-tabs [data-slot="tabs-list"] {
+    width: 100%;
+    height: 36px;
+  }
+  .fd-designer-mobile-tabs [role="tab"] {
+    flex: 1;
+  }
+}
+@media (max-width: 600px) {
+  .fd-forms-focused .fd-form-editor {
+    padding: 0 8px 8px;
+  }
+  .fd-forms-focused .fd-form-document-bar {
+    gap: 6px;
+    min-height: 60px;
+  }
+  .fd-form-document-name h1 {
+    font-size: 14px;
+  }
+  .fd-form-document-bar > button {
+    padding: 6px 8px;
+  }
+  .fd-designer-tools-content {
+    min-width: 190px;
+  }
+}

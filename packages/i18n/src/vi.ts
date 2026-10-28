@@ -111,4 +111,9 @@ export const vi: Record<keyof typeof en, string> = {
   "Phiên bản {{version}}": "Phiên bản {{version}}",
   "Mở mẫu thanh toán": "Mở mẫu thanh toán",
   "Kéo {{type}} vào canvas": "Kéo {{type}} vào canvas",
+  "Tùy chọn biểu mẫu": "Tùy chọn biểu mẫu",
+  "Bản nháp chỉ được lưu trên trình duyệt này.":
+    "Bản nháp chỉ được lưu trên trình duyệt này.",
+  "Công cụ": "Công cụ",
+  "Độ rộng canvas": "Độ rộng canvas",
 };
