@@ -1,3 +1,4 @@
+import { RepeatField } from "./components/repeat-field";
 import {
   useEffect,
   useId,
@@ -5,6 +6,7 @@ import {
   useState,
   type ComponentType,
   type PointerEvent,
+  type ReactNode,
 } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import {
@@ -14,6 +16,7 @@ import {
   Field,
   FieldGroup,
   Input,
+  DatePicker,
   Notice,
   Select,
   Tabs,
@@ -490,6 +493,7 @@ interface RuntimeFieldsProps extends Pick<
   | "renderers"
   | "readOnly"
 > {
+  design?: { wrap(field: FormField, control: ReactNode): ReactNode };
   fields: FormField[];
   data: PreviewValues;
   root: PreviewValues;
@@ -547,7 +551,11 @@ function RuntimeField({
     }
   }, [field.children, field.type, props.revealFieldId]);
   const visible = evaluateRule(field.visibleWhen, context);
-  if (!visible || accessRule?.read === "deny" || field.type === "hidden")
+  if (
+    (!visible && !props.design) ||
+    accessRule?.read === "deny" ||
+    field.type === "hidden"
+  )
     return null;
   if (accessRule?.read === "mask")
     return (
@@ -598,7 +606,11 @@ function RuntimeField({
   if (isContainer(field)) {
     const children = field.children ?? [];
     return (
-      <FieldSet id={id} className="fd-runtime-section">
+      <FieldSet
+        id={id}
+        className="fd-runtime-section"
+        data-field-type={field.type}
+      >
         <FieldLegend>{label}</FieldLegend>
         {field.help?.[locale] && <p>{field.help[locale]}</p>}
         {field.type === "container" ? (
@@ -610,63 +622,22 @@ function RuntimeField({
             onChange={setValue}
           />
         ) : field.type === "repeat" ? (
-          <>
-            {(Array.isArray(value) ? value.filter(isRecord) : []).map(
-              (row, index) => (
-                <div className="fd-repeat-row" key={index}>
-                  <div className="fd-section-heading">
-                    <h3>{t("Dòng {{index}}", { index: index + 1 })}</h3>
-                    <Button
-                      type="button"
-                      disabled={
-                        disabled ||
-                        (Array.isArray(value) &&
-                          value.length <= (field.minRows ?? 0))
-                      }
-                      onClick={() =>
-                        setValue(
-                          (value as FormValue[]).filter(
-                            (_, position) => position !== index,
-                          ),
-                        )
-                      }
-                    >
-                      {t("Xóa dòng")}
-                    </Button>
-                  </div>
-                  <RuntimeFields
-                    {...nextProps}
-                    fields={children}
-                    data={row}
-                    prefix={`${path}.${index}.`}
-                    onChange={(next) =>
-                      setValue(
-                        (value as FormValue[]).map((item, position) =>
-                          position === index ? next : item,
-                        ),
-                      )
-                    }
-                  />
-                </div>
-              ),
+          <RepeatField
+            field={field}
+            rows={Array.isArray(value) ? value.filter(isRecord) : []}
+            onChange={setValue}
+            disabled={disabled}
+            design={!!props.design}
+            renderFields={(fields, row, index, onRowChange) => (
+              <RuntimeFields
+                {...nextProps}
+                fields={fields}
+                data={row}
+                prefix={`${path}.${index}.`}
+                onChange={onRowChange}
+              />
             )}
-            <Button
-              type="button"
-              disabled={
-                disabled ||
-                (Array.isArray(value) ? value.length : 0) >=
-                  (field.maxRows ?? 100)
-              }
-              onClick={() =>
-                setValue([
-                  ...(Array.isArray(value) ? value : []),
-                  defaultValues(children),
-                ])
-              }
-            >
-              {t("Thêm dòng")}
-            </Button>
-          </>
+          />
         ) : field.type === "tabs" ? (
           <>
             <Tabs
@@ -914,6 +885,18 @@ function RuntimeField({
         onChange={(event) => setValue(event.target.value)}
       />
     );
+  else if (field.type === "date" || field.type === "datetime")
+    control = (
+      <DatePicker
+        id={id}
+        label={label}
+        value={text}
+        onValueChange={setValue}
+        withTime={field.type === "datetime"}
+        disabled={disabled}
+        placeholder={field.placeholder?.[locale]}
+      />
+    );
   else
     control = (
       <Input
@@ -921,11 +904,9 @@ function RuntimeField({
         type={
           field.type === "phone"
             ? "tel"
-            : field.type === "datetime"
-              ? "datetime-local"
-              : ["number", "currency"].includes(field.type)
-                ? "number"
-                : field.type
+            : ["number", "currency"].includes(field.type)
+              ? "number"
+              : field.type
         }
         value={text}
         disabled={disabled}
@@ -972,14 +953,18 @@ function RuntimeField({
     </div>
   );
 }
-function RuntimeFields(props: RuntimeFieldsProps) {
+export function RuntimeFields(props: RuntimeFieldsProps) {
   return (
     <>
       {props.fields.map((field) => (
-        <RuntimeField {...props} key={field.id} field={field} />
+        <RuntimeFieldSlot {...props} key={field.id} field={field} />
       ))}
     </>
   );
+}
+function RuntimeFieldSlot(props: RuntimeFieldsProps & { field: FormField }) {
+  const control = <RuntimeField {...props} />;
+  return props.design ? props.design.wrap(props.field, control) : control;
 }
 export function FormRenderer({
   definition,

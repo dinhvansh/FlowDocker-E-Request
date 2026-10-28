@@ -1,0 +1,6 @@
+### Result
+["Independent source host renders Payment","Injected provider loads company and dependent department"]
+### Ran Playwright code
+```js
+await (async page => { const preview=page.locator('.fd-form-preview').last(); await preview.getByRole('combobox',{name:'Công ty (bắt buộc)',exact:true}).click(); await page.getByRole('option',{name:'Công ty mẫu',exact:true}).click(); await preview.getByRole('combobox',{name:'Phòng ban',exact:true}).click(); await page.getByRole('option',{name:'CNTT · mẫu',exact:true}).click(); await page.screenshot({path:'output/playwright/forms-redesign-isolated-host.png'}); return ['Independent source host renders Payment','Injected provider loads company and dependent department']; })(page);
+```

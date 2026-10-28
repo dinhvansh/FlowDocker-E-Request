@@ -6,10 +6,21 @@ import {
   FormDesigner,
   FormPreview,
   createShowcaseDefinition,
+  createPaymentDefinition,
+  type DataProvider,
   type PreviewValues,
 } from "../src";
 import "@flowdocker/ui/styles.css";
 const initial = createShowcaseDefinition();
+const providers: Record<string, DataProvider> = {
+  "demo.companies": async () => [
+    { value: "sample", label: { vi: "Công ty mẫu", en: "Sample company" } },
+  ],
+  "demo.departments": async ({ dependency }) =>
+    dependency
+      ? [{ value: "sample-it", label: { vi: "CNTT · mẫu", en: "IT · sample" } }]
+      : [],
+};
 function Example() {
   const { t } = useI18n();
   const [definition, setDefinition] = useState(initial);
@@ -23,7 +34,17 @@ function Example() {
           {theme === "light" ? t("Bật giao diện tối") : t("Bật giao diện sáng")}
         </Button>
         <h1>{t("Thiết kế biểu mẫu")}</h1>
+        <Button
+          onClick={() => {
+            setDefinition(createPaymentDefinition());
+            setValues({});
+          }}
+        >
+          {t("Mở mẫu thanh toán")}
+        </Button>
         <FormDesigner
+          key={definition.id}
+          providers={providers}
           definition={definition}
           onChange={(next) => {
             setDefinition(next);
@@ -33,6 +54,7 @@ function Example() {
         <FormPreview
           key={JSON.stringify(definition)}
           definition={definition}
+          providers={providers}
           values={values}
           onChange={setValues}
         />

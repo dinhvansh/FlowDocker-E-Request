@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { createPaymentDefinition } from "./payment-example";
 import {
   isFormDefinition,
   validateFormDefinition,
@@ -46,6 +47,9 @@ const form: FormDefinition = {
   ],
 };
 describe("form draft and preview boundaries", () => {
+  it("keeps the full payment fixture valid with distinct repeat and root descriptions", () => {
+    expect(validateFormDefinition(createPaymentDefinition())).toEqual([]);
+  });
   it("rejects malformed persisted shapes but allows repairable incomplete schemas", () => {
     expect(isFormDefinition({ ...form, fields: [null] })).toBe(false);
     expect(

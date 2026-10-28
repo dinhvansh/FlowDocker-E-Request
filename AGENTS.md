@@ -12,7 +12,7 @@ This repo contains design documentation and a **frontend PR 1 prototype with syn
 
 ## Non-negotiables
 - The V1 application is **FlowDocker E-Request**. Do not reuse E-Office Workflow Runtime V2; new workflow integration targets Synergy Codes Workflow Builder CE + Temporal after POC.
-- **Dynamic Forms:** Form.io JS Core candidate; preserve schema version, validation and field ACL at backend, regardless of UI behavior.
+- **Dynamic Forms (owner update, docs/57 and Issue #3):** keep the original FlowDocker Forms engine. Redesign the designer using SurveyJS Creator/Fillout as UX research references only; no Form.io integration or comparison POC for this task. Preserve schema version, validation and field ACL at backend, regardless of UI behavior.
 - **Workflow:** Admin IF/ELSE and parallel approval; graph drafts must be validated/compiled before executing. Never run arbitrary JS in admin-defined expressions.
 - **Approval:** Single source of truth in PostgreSQL. Web and custom Teams Bot use one authenticated, idempotent decision API; transactional state/audit/outbox; durable Temporal signaling.
 - **Teams:** Custom Bot ≠ native Teams Approvals. Avoid unverified Graph beta dependency and design around possible company DLP restrictions.
