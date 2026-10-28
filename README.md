@@ -100,3 +100,12 @@ Connections is **separate** from Sync Pipelines. A reusable endpoint/credential 
 - [Graph/version/lineage SQL reference 006](db/design/006_node_sync_graphs.sql)
 
 **Status: design only, nothing running.** n8n Sustainable Use License does not grant blanket rights to embed n8n editor/runtime in a resold product.
+
+## FlowDocker Component System — reusable components are a project requirement
+The E-Request UI is the first consumer of a **FlowDocker-owned reusable component library**, not a collection of app-specific copies. Component extraction is part of each completed vertical slice, not just a post-project cleanup. Platform UI, graph canvas and visual field mapper are reusable across Master Data Flow Studio and Approval Workflow Studio; domain-specific node configurations and executors remain separate.
+
+- [Component library architecture and catalogs](docs/39-FLOWDOCKER-COMPONENT-LIBRARY.md)
+- [Extraction plan, quality gates and 12 acceptance scenarios](docs/40-COMPONENT-EXTRACTION-ACCEPTANCE.md)
+- [Component-system Agent Skill for Codex](.agents/skills/flowdocker-component-system/SKILL.md)
+
+Proposed workspace packages `@flowdocker/ui`, `@flowdocker/flow-canvas`, `@flowdocker/field-mapper`, `@flowdocker/flow-contracts` and domain adapters are **design targets only**, not published packages or built application code. The repository's own license remains undecided.

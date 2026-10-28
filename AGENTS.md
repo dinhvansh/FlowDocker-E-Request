@@ -52,3 +52,13 @@ Before implementing Administration → Master Data → Connections or any new co
 
 ## Mandatory node-based Master Data Flow Studio design (2026-10-28)
 If working on master source synchronizations, Parse JSON, Split Items, data mapping, Join/Lookup, preview, RAW/STAGING or canonical Upsert, read docs/34 through docs/38 and db/design/006_node_sync_graphs.sql. The master sync graph is **NOT** the human approval workflow. Use `@xyflow/react` for new original UI subject to MIT notices; do NOT copy/embed n8n editor code under an assumed permissive license. Graph compiler must typecheck fields and prohibit arbitrary JS/SQL/HTTP. Verify idempotent page staging, data lineage, checkpoint rules, per-node preview with redaction, graph-version pinning and cross-company/tenant isolation. Reference SQL remains DESIGN; no tests run.
+
+## MANDATORY: Build a reusable FlowDocker Component System (owner requirement, 2026-10-28)
+For **ALL UI work** on Connections, Form Studio, Master Data Flow Studio, Approval Workflow Studio, Tasks, dashboard, visual field mapping or node editors: FIRST read [`.agents/skills/flowdocker-component-system/SKILL.md`](.agents/skills/flowdocker-component-system/SKILL.md), [Component Library Architecture](docs/39-FLOWDOCKER-COMPONENT-LIBRARY.md) and [Extraction Acceptance](docs/40-COMPONENT-EXTRACTION-ACCEPTANCE.md).
+
+- Own our original reusable FlowDocker components: public, typed props/events, CSS tokens, accessible states, examples/stories and tests; do not hardcode E-Request API routes/Temporal/Epicor in generic components.
+- Plan a shared `@flowdocker/ui`, `@flowdocker/flow-canvas`, `@flowdocker/field-mapper` and domain adapters as workspace packages when API stabilizes. Extract from the first stable feature **during development**, not only after every screen is finished.
+- Master Sync Flow and Request Approval Workflow share **visual primitives** only, never business execution engines or permission checks.
+- Every feature PR must include a `Reusable component impact` section and state which parts were added, reused or left domain-specific, plus Storybook/test/consumer evidence where applicable.
+- No copy-paste near-duplicate node cards or mapping components. No copied n8n code; honor React Flow/shadcn third-party license/NOTICE. Do not publish packages or imply ownership of upstream code without legal/licensing review.
+- Do not call a component `platform-ready` or `DONE` without documented Props, isolated example, tests, and a second host (or an explicit pending status).

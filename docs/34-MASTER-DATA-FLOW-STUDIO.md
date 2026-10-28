@@ -110,3 +110,6 @@ Edges carry **records/typed batches**, not only success/failure signals. Each no
 - n8n data mapping concept [n8n docs](https://docs.n8n.io/data/data-mapping/data-mapping-ui/)
 - n8n Sustainable Use License [official repo](https://github.com/n8n-io/n8n/blob/master/LICENSE.md)
 Use **original code** for node palette/editor/worker; no unsupported assumption that n8n editor can be repackaged commercially for free.
+
+## Reuse requirement (new)
+The owner requires **a proprietary-to-FlowDocker/original reusable component library**, not one-off sync editor JSX. Extract BaseNodeCard, FlowCanvas, PortHandle, JSON Tree Explorer, Target Field Slot, Mapping Editor and Input/Output Inspector into proposed workspace packages with typed public APIs, stories and tests. Keep Epicor/Graph connection config and Transform/Upsert execution logic in sync-domain adapters; the approval graph can reuse visual canvas primitives without inheriting sync logic. See [Component library](39-FLOWDOCKER-COMPONENT-LIBRARY.md), [extraction/acceptance](40-COMPONENT-EXTRACTION-ACCEPTANCE.md). This is still a design, not implemented UI.
