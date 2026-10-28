@@ -9,6 +9,7 @@ import type { MasterEntity, Role } from "@flowdocker/app-contracts";
 import { entityService, resources, roleService } from "./mock";
 import { ConnectionsPage } from "./connections";
 import { ProfilePage } from "./profile";
+import { demoProfile } from "./demo-profile";
 import "@flowdocker/ui/styles.css";
 
 const FlowStudioPage = lazy(() =>
@@ -75,6 +76,11 @@ function App() {
   return (
     <AppShell
       page={page}
+      account={{
+        displayName: demoProfile.name,
+        initials: demoProfile.initials,
+        subtitle: demoProfile.sidebarSubtitle,
+      }}
       onPageChange={navigate}
       theme={theme}
       onThemeChange={changeTheme}
@@ -111,7 +117,11 @@ function App() {
         </Suspense>
       )}
       {page === "profile" && (
-        <ProfilePage theme={theme} onThemeChange={changeTheme} />
+        <ProfilePage
+          profile={demoProfile}
+          theme={theme}
+          onThemeChange={changeTheme}
+        />
       )}
       {page === "workspace" && (
         <section className="fd-screen">

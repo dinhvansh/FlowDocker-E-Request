@@ -10,7 +10,7 @@ Nguồn: phản hồi owner muốn tiếp tục PR 2 và bổ sung User Profile;
 
 - Connections: danh sách và chi tiết trên desktop, wizard 4 bước chọn loại → metadata → trạng thái kiểm tra → lưu nháp. Không có ô mật khẩu/token/URL thật trên frontend.
 - Flow Studio: palette node, canvas React Flow, inspector và Data Inspector. Node được kéo/nối; mapper chọn trường bằng dropdown shadcn/Radix; flow draft lưu localStorage. Dry run chỉ biến đổi 2 dòng mẫu. Publish bị vô hiệu.
-- Profile: truy cập bằng avatar ở chân sidebar; trên mobile mở menu rồi bấm avatar ở chân menu. Chỉ hiển thị danh tính tổng hợp và tùy chọn theme. Không cho sửa tên, phòng ban, email hoặc vai trò khi chưa có nguồn danh tính tin cậy.
+- Profile: truy cập bằng avatar ở chân sidebar; trên mobile mở menu rồi bấm avatar ở chân menu. Hiển thị họ tên, email công việc, mã nhân viên, phòng ban, chức danh, quản lý, vai trò (đều là dữ liệu tổng hợp) và tùy chọn theme. Nút Đổi mật khẩu mở dialog có các trường chuẩn nhưng khóa nhập/lưu cho tới khi có dịch vụ xác thực; demo không nhận hoặc lưu mật khẩu. Không cho sửa tên, phòng ban, email hoặc vai trò khi chưa có nguồn danh tính tin cậy.
 - Thiết kế tiếp tục dùng font Inter, nền trắng và điểm nhấn đỏ. Mobile chuyển các pane thành khối dọc.
 
 ## 3. Design Audit và giới hạn
@@ -24,13 +24,13 @@ Nguồn: phản hồi owner muốn tiếp tục PR 2 và bổ sung User Profile;
 
 ## 4. Interactive Prototype
 
-Connections: tạo và tìm bản nháp, chọn chi tiết, đi qua 4 bước; chỉ metadata công khai được lưu localStorage. Flow: thêm/chọn/xóa/kéo/nối node, ánh xạ trường bằng dropdown, lưu/reload draft và xem output mẫu; cấu trúc thiếu node, thiếu đường đi hoặc vòng lặp được báo lỗi. Profile: mở từ avatar ở góc trái dưới và đổi theme, lưu localStorage. Theo phản hồi owner, bỏ nhóm “Tài khoản” trong menu và avatar ở góc phải trên; breadcrumb vẫn hiển thị “Hồ sơ cá nhân” khi mở trang.
+Connections: tạo và tìm bản nháp, chọn chi tiết, đi qua 4 bước; chỉ metadata công khai được lưu localStorage. Flow: thêm/chọn/xóa/kéo/nối node, ánh xạ trường bằng dropdown, lưu/reload draft và xem output mẫu; cấu trúc thiếu node, thiếu đường đi hoặc vòng lặp được báo lỗi. Profile: mở từ avatar ở góc trái dưới, xem trường nhân sự mẫu, mở/đóng dialog Đổi mật khẩu và đổi theme; chỉ theme được lưu localStorage. Theo phản hồi owner, bỏ nhóm “Tài khoản” trong menu và avatar ở góc phải trên; breadcrumb vẫn hiển thị “Hồ sơ cá nhân” khi mở trang.
 
-Ảnh QA: [Connections desktop](../output/playwright/pr2-connections-desktop.png), [Connections mobile](../output/playwright/pr2-connections-mobile.png), [Flow Studio desktop](../output/playwright/pr2-flow-desktop.png), [Flow Studio mobile](../output/playwright/pr2-flow-mobile.png), [Profile desktop](../output/playwright/pr2-profile-desktop.png), [Profile mobile](../output/playwright/pr2-profile-mobile.png). Đã thử wizard lưu nháp, mở mapper, dry run mẫu, bấm avatar ở chân sidebar trên desktop/mobile, điều hướng mobile tự đóng và đổi theme trong Profile. Chromium console: 0 error, 0 warning. Trên mobile canvas là vùng pan/zoom ngang để tránh thu node xuống cỡ chữ không đọc được.
+Ảnh QA: [Connections desktop](../output/playwright/pr2-connections-desktop.png), [Connections mobile](../output/playwright/pr2-connections-mobile.png), [Flow Studio desktop](../output/playwright/pr2-flow-desktop.png), [Flow Studio mobile](../output/playwright/pr2-flow-mobile.png), [Profile desktop](../output/playwright/pr2-profile-desktop.png), [Profile mobile](../output/playwright/pr2-profile-mobile.png), [dialog mật khẩu desktop](../output/playwright/pr2-profile-password-dialog.png), [dialog mật khẩu mobile](../output/playwright/pr2-profile-password-mobile.png). Đã thử wizard lưu nháp, mở mapper, dry run mẫu, bấm avatar ở chân sidebar trên desktop/mobile, mở/đóng dialog bằng Escape, điều hướng mobile tự đóng và đổi theme trong Profile. Chromium console: 0 error, 0 warning. Trên mobile canvas là vùng pan/zoom ngang để tránh thu node xuống cỡ chữ không đọc được.
 
 ## 5. Design to Code / Impact map
 
-`@flowdocker/flow-canvas` là visual primitive typed, không chứa Epicor/Temporal/API E-Request. `apps/e-request-web/src/connections.tsx`, `flow-studio.tsx`, `profile.tsx` là các adapter/page của host đầu tiên. `@xyflow/react` là MIT third-party; giữ attribution trên canvas. Chưa có Storybook hoặc host thứ hai nên không gọi package này là platform-ready.
+`@flowdocker/flow-canvas` là visual primitive typed, không chứa Epicor/Temporal/API E-Request. `apps/e-request-web/src/connections.tsx`, `flow-studio.tsx`, `profile.tsx` là các adapter/page của host đầu tiên. Hồ sơ nhận typed props; fixture tổng hợp trong `demo-profile.ts` được dùng chung cho trang và avatar của `@flowdocker/app-shell`, để sau này thay bằng dữ liệu đã xác thực. `@xyflow/react` là MIT third-party; giữ attribution trên canvas. Chưa có Storybook hoặc host thứ hai nên không gọi package này là platform-ready.
 
 | Lớp | Thay đổi |
 |---|---|

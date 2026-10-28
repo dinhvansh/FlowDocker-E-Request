@@ -47,12 +47,14 @@ const groups: {
 ];
 export function AppShell({
   page,
+  account,
   onPageChange,
   theme,
   onThemeChange,
   children,
 }: {
   page: PageId;
+  account: { displayName: string; initials: string; subtitle: string };
   onPageChange(page: PageId): void;
   theme: "light" | "dark";
   onThemeChange(): void;
@@ -157,10 +159,10 @@ export function AppShell({
           onClick={() => navigate("profile")}
           aria-label="Mở hồ sơ cá nhân"
         >
-          <span className="fd-avatar">VA</span>
+          <span className="fd-avatar">{account.initials}</span>
           <div>
-            <strong>Platform Admin</strong>
-            <small>Vai trò demo</small>
+            <strong>{account.displayName}</strong>
+            <small>{account.subtitle}</small>
           </div>
         </button>
       </aside>
