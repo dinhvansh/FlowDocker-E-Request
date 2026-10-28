@@ -1,6 +1,6 @@
 # Form Studio UX Reference V2 — SurveyJS Creator Structure + Fillout Polish
 
-> **Owner decision 2026-10-28 — KEEP ORIGINAL FLOWDOCKER FORMS ENGINE.** This is a visual/interaction redesign brief, **not a new engine plan**. **Status: SPECIFICATION ONLY; redesigned UI NOT DONE.**
+> **Owner decision 2026-10-28 — KEEP ORIGINAL FLOWDOCKER FORMS ENGINE.** This is a visual/interaction redesign brief, **not a new engine plan**. UX V2 implementation and executed QA are tracked in [docs/58](58-FORMS-UX-V2-IMPLEMENTATION.md). Owner visual acceptance remains pending.
 
 ## 1. Benchmarks (inspiration only — do not copy source, design assets or pixel-level layouts)
 
@@ -110,6 +110,6 @@ Browser test:
 - **Owner visual approval before merge; no automatic merge.**
 
 ## 8. Definition of done
-UX redesigned and built **only when** actual interactive React design canvas is working, the existing original FlowDocker engine functionality is preserved, tests and browser scenarios pass with evidence, and Owner accepts visuals. Today only a reference/brief is committed, **UI REDESIGN NOT DONE**.
+UX redesigned and built **only when** actual interactive React design canvas is working, the existing original FlowDocker engine functionality is preserved, tests and browser scenarios pass with evidence, and Owner accepts visuals. Implementation and executed QA are recorded in docs/58; owner visual acceptance is still pending.
 
 Related: [FlowDocker Forms](56-FLOWDOCKER-FORMS-PRODUCT.md) · [UX audit](48-V1-PROTOTYPE-AUDIT-AND-UX-RESEARCH.md) · [Design process](47-UX-RESEARCH-TO-DESIGN-TO-CODE.md) · [Issue #3](https://github.com/dinhvansh/FlowDocker-E-Request/issues/3).

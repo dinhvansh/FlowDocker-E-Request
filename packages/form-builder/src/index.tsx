@@ -13,3 +13,8 @@ export type {
   UploadHandler,
   CustomControlProps,
 } from "./runtime";
+
+export { FormCanvas } from "./canvas";
+export type { FormCanvasProps } from "./canvas";
+
+export { createPaymentDefinition } from "./payment-example";

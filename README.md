@@ -24,14 +24,14 @@ UI primitives có [isolated examples](packages/ui/examples/main.tsx) tại `npm 
 
 Skill [shadcn/ui chính thức](.agents/skills/shadcn/SKILL.md) đã được cài trong dự án từ [shadcn-ui/ui](https://github.com/shadcn-ui/ui/tree/main/skills/shadcn). Các phần UI tiếp theo dùng skill này cùng quy tắc FlowDocker trong `AGENTS.md`, tái sử dụng `@flowdocker/ui`, token chung và nền song ngữ Việt–Anh.
 
-PR 4 bổ sung [Form Studio](docs/55-PR4-FORM-STUDIO.md) tại `#forms`: tạo/sửa biểu mẫu nháp, nhãn Việt–Anh, sáu kiểu trường, sắp xếp và xem thử với kiểm tra cục bộ. Package dùng chung [`@flowdocker/form-builder`](packages/form-builder/README.md) có ví dụ riêng qua `npm run examples:forms`. Chưa tích hợp Form.io, backend, phát hành hay thực thi phê duyệt.
+Form Studio tại `#forms` dùng [engine FlowDocker tự phát triển](docs/56-FLOWDOCKER-FORMS-PRODUCT.md), 33 loại trường, điều kiện, phép tính và preview cục bộ. [UX V2](docs/58-FORMS-UX-V2-IMPLEMENTATION.md) bổ sung toolbox theo nhóm, canvas input thật dùng chung renderer, inspector theo ngữ cảnh, Designer/Preview/Logic/JSON, mẫu thanh toán và chế độ mobile. Package dùng chung [`@flowdocker/form-builder`](packages/form-builder/README.md) có ví dụ riêng qua `npm run examples:forms`. Theo quyết định owner trong Issue #3: giữ engine riêng, không tích hợp hay tiếp tục POC so sánh Form.io. Backend, phát hành và phê duyệt thật chưa được triển khai.
 
 ## Key architectural choices
 
 | Layer | Proposed choice | Status |
 |---|---|---|
 | Frontend | Next.js / React / TypeScript / shadcn/ui | Proposed |
-| Dynamic forms | Form.io JS Core (builder + renderer) | Proposed; POC required |
+| Dynamic forms | Original FlowDocker Forms engine + UX V2 designer | Frontend implemented; owner visual acceptance pending; see docs/57–58 |
 | Workflow design | Synergy Codes Workflow Builder Community | Proposed; POC required |
 | Workflow execution | Temporal | Proposed; POC required |
 | API and durable data | Node.js / TypeScript / PostgreSQL | Proposed |
