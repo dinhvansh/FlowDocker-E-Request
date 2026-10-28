@@ -96,3 +96,6 @@ Ensure keyboard navigation, ARIA labels, drag/drop alternate interactions and fo
 After each working vertical slice, identify generic components, move them to a package **without changing user-visible behavior**, then prove use in a standalone Storybook harness and a second host example (e.g. approval graph mock fixture). A reusable visual package can demonstrate two hosts without both execution engines being implemented. All production API/worker claims require separate evidence.
 
 See [Extraction and Acceptance](40-COMPONENT-EXTRACTION-ACCEPTANCE.md) and [.agents skill](../.agents/skills/flowdocker-component-system/SKILL.md).
+
+## Platform boundary expanded on 2026-10-28
+The earlier UI-only Component Library is a **subset** of the new [FlowDocker Application Platform](41-FLOWDOCKER-APPLICATION-PLATFORM.md). Reuse now includes **Master Data Builder, Permission Builder, Identity, module manifest, API/authorization contracts and audit**, not only components. Keep the visual component packages app-independent; domain business handlers belong outside. See [Master Builder](42-REUSABLE-MASTER-DATA-BUILDER.md), [Permission Builder](43-REUSABLE-PERMISSION-BUILDER.md), [App Module Contract](44-APP-MODULE-CONTRACT.md) and [Vietnamese overview](46-FLOWDOCKER-PLATFORM-VI.md). Still design-only.

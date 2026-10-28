@@ -62,3 +62,14 @@ For **ALL UI work** on Connections, Form Studio, Master Data Flow Studio, Approv
 - Every feature PR must include a `Reusable component impact` section and state which parts were added, reused or left domain-specific, plus Storybook/test/consumer evidence where applicable.
 - No copy-paste near-duplicate node cards or mapping components. No copied n8n code; honor React Flow/shadcn third-party license/NOTICE. Do not publish packages or imply ownership of upstream code without legal/licensing review.
 - Do not call a component `platform-ready` or `DONE` without documented Props, isolated example, tests, and a second host (or an explicit pending status).
+
+## CRITICAL: Reusable FlowDocker Application Platform, not just UI components (2026-10-28)
+Owner requirement: build a reusable **application shell/foundation** so future apps write only their domain business functions. Before coding any E-Request platform module or a new FlowDocker app, **read [`.agents/skills/flowdocker-app-platform/SKILL.md`](.agents/skills/flowdocker-app-platform/SKILL.md) and docs/41–46**.
+
+- Platform foundation must cover App Shell, Identity/Organization, Permission Builder, Master Data Builder, Connections/Sync, Forms/Approval, Audit/Notifications and existing reusable UI kit; package boundaries are proposals until tested.
+- Reuse **frontend and backend service contracts**. A visual permission matrix is NOT enforcement; backend PDP/PEP + DB-grants/row scope and field projection remain mandatory. Tenant/app scope is explicit and deny-by-default.
+- Every application registers its `AppManifest` resource/action catalog, compatible platform APIs, master schemas and implemented business commands. Manifest actions without backend handlers are invalid.
+- Master Data Builder owns metadata/field classification and can generate safe local catalog CRUD; HR/ERP external masters stay source-owned/read-only, and finance/asset lifecycle transactions remain typed domain handlers.
+- No cross-application automatic data sharing, no blanket Tenant Admin data access, no arbitrary JS/SQL rules, no fallback to insecure generic EAV for sensitive transactions.
+- Implement platform features incrementally **inside E-Request first** while building a second independent synthetic IT Assets reference consumer; no premature empty `flowdocker-platform` repo/npm publish.
+- Every feature PR states reusable foundation vs domain-specific core, version/migration impact, and proof from docs/45. Report DESIGN DONE separately from IMPLEMENTATION NOT DONE.

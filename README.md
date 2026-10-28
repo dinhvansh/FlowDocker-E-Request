@@ -109,3 +109,18 @@ The E-Request UI is the first consumer of a **FlowDocker-owned reusable componen
 - [Component-system Agent Skill for Codex](.agents/skills/flowdocker-component-system/SKILL.md)
 
 Proposed workspace packages `@flowdocker/ui`, `@flowdocker/flow-canvas`, `@flowdocker/field-mapper`, `@flowdocker/flow-contracts` and domain adapters are **design targets only**, not published packages or built application code. The repository's own license remains undecided.
+
+## FlowDocker Application Platform — "Build the shell once, write the business core"
+
+**Owner requirement (2026-10-28):** Beyond reusable UI components, extract an **application platform** with shared App Shell, Identity/Organization, Permission Builder (roles, actions, scope, field masking, test access), Master Data Builder (entity schema, catalog CRUD/lookup, source ownership), Connection Manager, Data Flow Studio, Form/Approval Studios, audit and notification adapters. New apps register a versioned App/Module Manifest and implement **only business-specific typed handlers, tables and tests**. Generic catalog CRUD does **not** replace sensitive domain transaction code.
+
+- [Tổng quan nền tảng bằng tiếng Việt](docs/46-FLOWDOCKER-PLATFORM-VI.md)
+- [Platform Architecture](docs/41-FLOWDOCKER-APPLICATION-PLATFORM.md)
+- [Reusable Master Data Builder](docs/42-REUSABLE-MASTER-DATA-BUILDER.md)
+- [Reusable Permission Builder](docs/43-REUSABLE-PERMISSION-BUILDER.md)
+- [App Manifest / Business Module extension contract](docs/44-APP-MODULE-CONTRACT.md)
+- [Platform rollout / multi-app QA](docs/45-PLATFORM-ACCEPTANCE-AND-ROADMAP.md)
+- [Reference PostgreSQL schema 007](db/design/007_platform_foundation.sql)
+- [FlowDocker app-platform Agent Skill](.agents/skills/flowdocker-app-platform/SKILL.md)
+
+**These are DESIGN artifacts.** There is currently no working platform/package/CLI/policy builder or standalone new app, no migrations/tests run. No new repository has been created. Source repo remains FlowDocker E-Request until compatibility and second-consumer evidence justify extraction.

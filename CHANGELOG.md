@@ -16,3 +16,5 @@
 - Designed visual node-based **Master Data Flow Studio** inspired by n8n UX (not its code): drag/drop JSON mapping, optional Parse JSON, Split Items, Filter, Lookup/Join, Validate, canonical Upsert, RAW/STAGING barrier, typed batch engine, 5 sequence diagrams, 27 QA cases and SQL reference 006. **Design only, not tested.**
 
 - Added owner requirement for reusable FlowDocker-owned component library: shared UI tokens/primitives, flow canvas and field mapper, separated sync/approval domain adapters, Storybook/typed API/a11y quality gates and Codex Agent Skill. **Design only; no component packages or tests.**
+
+- Architectural design addendum: **FlowDocker Application Platform** reusable shell/business module registry, Master Data Builder, Permission Builder (policy simulation and backend PDP/PEP), App Manifest/extension contract, reference PostgreSQL 007, multi-app IT Assets portability QA, and Codex Agent Skill. **Design only, no implementation.**

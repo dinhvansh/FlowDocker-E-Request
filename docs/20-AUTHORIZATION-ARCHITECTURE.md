@@ -80,3 +80,6 @@ Policy edits are admin actions with their own audit, reviewer and version. Role 
 
 ## 10. Business-owner questions
 Does Finance have cross-department search or only assigned requests? Can staff read finished manager decisions? Does Legal/HR require special confidentiality? How to define tenant vs subsidiary? All unanswered questions default to restrictive access.
+
+## Reusable Permission Builder extension
+The E-Request-specific role/task policies defined here will be instantiated as one application consuming a reusable **FlowDocker Permission Builder** and central server-side authorization service. The new builder registers `app_id/module_id/resource/actions`, scoped role grants, typed ABAC rules and field projections; policy authoring/preview never replaces API enforcement or DB RLS. Existing `ereq.roles` and user_role_assignments do not yet have full app/module scope; migration design must reconcile them without silently widening grants. [Reusable Permission Builder](43-REUSABLE-PERMISSION-BUILDER.md) · [App Contract](44-APP-MODULE-CONTRACT.md) · [SQL reference 007](../db/design/007_platform_foundation.sql). Not implemented.
