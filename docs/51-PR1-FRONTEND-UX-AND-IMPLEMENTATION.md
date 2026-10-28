@@ -14,9 +14,9 @@ Tác vụ ưu tiên PR 1: tìm entity → sửa schema → kiểm tra lỗi; ch�
 - Master Builder: entity explorer, schema/records/source/versions, inspector trường.
 - Permission Builder: role explorer, capability matrix, data scope, field rules, Test Access liên kết với role.
 - Màn hình PR 2/3 hiển thị trạng thái kế hoạch rõ ràng, không có CTA giả.
-- Token riêng, nền trung tính, accent xanh có kiểm soát, viền mỏng, không hero hay KPI trang trí. Responsive: dưới 980px inspector chuyển xuống dưới; điện thoại đặt danh sách lên trên editor.
+- Token riêng, nền trắng, đỏ là màu nhấn theo phản hồi owner; màu ngữ nghĩa cho success/warning vẫn tách biệt. Viền mỏng, không hero hay KPI trang trí. Responsive: dưới 980px inspector chuyển xuống dưới; điện thoại đặt danh sách lên trên editor.
 
-**Chọn stack:** Vite + React + TypeScript cho frontend độc lập, nhanh và dễ đóng gói workspace. HTML control có ngữ nghĩa + CSS token làm nền primitive duy nhất ở PR 1; tránh thêm Radix/Ant Design khi chưa cần dialog phức tạp. Tabular data hiện nhỏ nên native table đủ; nếu scale/column state phát triển thì đánh giá TanStack Table. React Flow dành cho canvas PR 2. Lucide chỉ cung cấp icon; không coi là mã FlowDocker. Cần rà soát giấy phép chính xác tại phiên bản khóa trước phân phối.
+**Chọn stack:** Vite + React + TypeScript cho frontend độc lập, nhanh và dễ đóng gói workspace. HTML control có ngữ nghĩa + CSS token làm nền; dropdown dùng một adapter `@flowdocker/ui` trên Radix Select để có menu tùy chỉnh, keyboard, focus và trạng thái disabled nhất quán, không dùng native `<select>`. Tabular data hiện nhỏ nên native table đủ; nếu scale/column state phát triển thì đánh giá TanStack Table. React Flow dành cho canvas PR 2. Lucide chỉ cung cấp icon; không coi là mã FlowDocker. Cần rà soát giấy phép chính xác tại phiên bản khóa trước phân phối.
 
 ## 3. Design Audit
 
@@ -27,7 +27,7 @@ Tác vụ ưu tiên PR 1: tìm entity → sửa schema → kiểm tra lỗi; ch�
 | A-05: action mock dễ hiểu nhầm | Nhãn DEMO, publish bị disabled, Test Access ghi SIMULATED |
 | A-06: scope tách xa matrix | Scope ngay dưới matrix, kết quả ở inspector cùng màn |
 | A-07: schema/source/version chưa nổi | Metadata ở object header và tab riêng |
-| A-08: chữ nhỏ | Body 14px; một số metadata còn 10–11px, cần đánh giá với operator |
+| A-08: chữ nhỏ | Body 15px, font Segoe UI; metadata 11–12px vẫn cần đánh giá với operator |
 | A-09: drag thiếu keyboard | Không có drag trong PR 1; bảng có Enter/Space, các control là native |
 
 P0 của quyền thật vẫn còn đến khi backend áp dụng policy. Không coi ma trận frontend là enforcement.
@@ -38,7 +38,7 @@ Hash navigation, tìm entity/role, tạo entity/role, chỉnh trường, validat
 
 ## 5. Design to Code
 
-`@flowdocker/ui`: button, badge, input, tabs, table, modal, notice và theme token, có isolated examples. `@flowdocker/app-shell`: chrome và điều hướng. `@flowdocker/app-contracts`: entity/role/decision types và validator mô phỏng. `@flowdocker/master-builder`, `@flowdocker/permission-builder`: UI có typed props và service callback; không import E-Request API. Chỉ tạo các package đang có code. Contract service backend, audit, migration và một host thứ hai **chưa triển khai**, nên chưa gọi các module này là platform-ready.
+`@flowdocker/ui`: button, badge, input, tabs, table, modal, notice, Select và theme token, có isolated examples. `@flowdocker/app-shell`: chrome và điều hướng. `@flowdocker/app-contracts`: entity/role/decision types và validator mô phỏng. `@flowdocker/master-builder`, `@flowdocker/permission-builder`: UI có typed props và service callback; không import E-Request API. Chỉ tạo các package đang có code. Contract service backend, audit, migration và một host thứ hai **chưa triển khai**, nên chưa gọi các module này là platform-ready.
 
 ## Impact map và ranh giới
 
@@ -67,8 +67,16 @@ Hash navigation, tìm entity/role, tạo entity/role, chỉnh trường, validat
 
 - [Workspace 1366 sáng](../output/playwright/workspace-1366-light.png)
 - [Master Builder 1440 sáng](../output/playwright/master-1440-light.png), [768 tối](../output/playwright/master-768-dark.png), [375 tối](../output/playwright/master-375-dark.png)
+- [Master Builder với dropdown mới](../output/playwright/master-1440-dropdown.png)
 - [Permission Builder 1440 sáng](../output/playwright/permissions-1440-light.png), [1920 sáng](../output/playwright/permissions-1920-light.png), [768 sáng](../output/playwright/permissions-768-light.png), [375 tối](../output/playwright/permissions-375-dark.png)
+- [Dropdown tùy chỉnh ở 375px](../output/playwright/permissions-375-dropdown.png)
+
+### Điều chỉnh theo phản hồi owner
+
+Ngày 2026-10-28: loại bỏ toàn bộ native `<select>` trong app và examples; thay bằng FlowDocker Select trên Radix. Thay DM Sans/IBM Plex Mono tải ngoài bằng Segoe UI/Arial, tăng cỡ chữ ở nội dung chính và metadata, đổi shell và accent sang trắng–đỏ. Playwright Chromium xác nhận menu mở, chọn bằng ArrowDown/Enter, Test Access vẫn chạy; screenshot desktop, tablet, mobile và dark mode được chụp lại. Console: 0 error/0 warning.
+
+`@radix-ui/react-select` được khóa tại bản giải quyết 2.4.1 trong `package-lock.json`, giấy phép MIT. Bộ dropdown tăng JS bundle khoảng 91 KB trước gzip so với bản HTML control trước đó; đổi lại có menu thống nhất và hỗ trợ bàn phím/focus. Chưa thực hiện đánh giá giấy phép toàn bộ dependency cho phân phối thương mại.
 
 ### Chưa xong / cần review
 
-Chưa có nghiên cứu người dùng thực tế hoặc owner duyệt thiết kế; một số metadata 10–11px cần kiểm tra với người dùng ở zoom 125–150%. Chưa có Storybook, second independent host, API, kiểm thử phân quyền server hoặc CI. Isolated examples chỉ chứng minh UI primitives có thể render riêng, không chứng minh toàn platform tái sử dụng được. PR 1 chỉ bàn giao frontend prototype, không đại diện cho hệ thống production.
+Chưa có nghiên cứu người dùng thực tế hoặc owner duyệt thiết kế; metadata 11–12px cần kiểm tra với người dùng ở zoom 125–150%. Chưa có Storybook, second independent host, API, kiểm thử phân quyền server hoặc CI. Isolated examples chỉ chứng minh UI primitives có thể render riêng, không chứng minh toàn platform tái sử dụng được. PR 1 chỉ bàn giao frontend prototype, không đại diện cho hệ thống production.

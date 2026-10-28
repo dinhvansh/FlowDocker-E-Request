@@ -8,6 +8,7 @@ import {
   Field,
   Modal,
   Notice,
+  Select,
   Tabs,
 } from "../src";
 import "../styles.css";
@@ -17,6 +18,7 @@ function Examples() {
   const [tab, setTab] = useState("default");
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [kind, setKind] = useState("LOCAL_CATALOG");
   return (
     <div className="fd-app" data-theme={theme}>
       <main
@@ -58,6 +60,17 @@ function Examples() {
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                />
+              </Field>
+              <Field label="Loại entity">
+                <Select
+                  label="Loại entity"
+                  value={kind}
+                  onValueChange={setKind}
+                  options={[
+                    { value: "LOCAL_CATALOG", label: "Danh mục nội bộ" },
+                    { value: "EXTERNAL_MIRROR", label: "Dữ liệu nguồn ngoài" },
+                  ]}
                 />
               </Field>
               <DataTable

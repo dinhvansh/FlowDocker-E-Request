@@ -145,7 +145,15 @@ export function Modal({
       dialogRef.current?.querySelector("button")
     )?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (
+        e.key === "Escape" &&
+        !(
+          e.target instanceof HTMLElement &&
+          e.target.closest(".fd-select-content")
+        ) &&
+        !document.querySelector('.fd-select-content[data-state="open"]')
+      )
+        onClose();
       if (e.key !== "Tab" || !dialogRef.current) return;
       const items = [
         ...dialogRef.current.querySelectorAll<HTMLElement>(selectors),

@@ -17,6 +17,7 @@ import {
   Modal,
   Notice,
   SearchInput,
+  Select,
   Tabs,
 } from "@flowdocker/ui";
 
@@ -312,22 +313,23 @@ export function PermissionBuilder({
                         <strong>{f}</strong>
                         <small>Dữ liệu nhạy cảm mẫu</small>
                       </div>
-                      <select
-                        aria-label={`Quyền với ${f}`}
+                      <Select
+                        label={`Quyền với ${f}`}
                         value={role.fieldRules[f] ?? "DENY"}
-                        onChange={(e) =>
+                        onValueChange={(value) =>
                           patch({
                             fieldRules: {
                               ...role.fieldRules,
-                              [f]: e.target.value as "READ" | "MASK" | "DENY",
+                              [f]: value as "READ" | "MASK" | "DENY",
                             },
                           })
                         }
-                      >
-                        <option value="DENY">Từ chối</option>
-                        <option value="MASK">Che giá trị</option>
-                        <option value="READ">Cho xem</option>
-                      </select>
+                        options={[
+                          { value: "DENY", label: "Từ chối" },
+                          { value: "MASK", label: "Che giá trị" },
+                          { value: "READ", label: "Cho xem" },
+                        ]}
+                      />
                     </div>
                   ))}
                 </div>
@@ -361,37 +363,36 @@ export function PermissionBuilder({
               quyền thật.
             </p>
             <Field label="Tài nguyên">
-              <select
+              <Select
+                label="Tài nguyên"
                 value={testResource}
-                onChange={(e) => {
-                  setTestResource(e.target.value);
+                onValueChange={(value) => {
+                  setTestResource(value);
+                  setTestAction(
+                    resources.find((resource) => resource.resource === value)
+                      ?.actions[0] ?? "READ",
+                  );
                   setDecision(null);
                 }}
-              >
-                {resources.map((r) => (
-                  <option value={r.resource} key={r.resource}>
-                    {r.label}
-                  </option>
-                ))}
-              </select>
+                options={resources.map((resource) => ({
+                  value: resource.resource,
+                  label: resource.label,
+                }))}
+              />
             </Field>
             <Field label="Hành động">
-              <select
+              <Select
+                label="Hành động"
                 value={testAction}
-                onChange={(e) => {
-                  setTestAction(e.target.value as Action);
+                onValueChange={(value) => {
+                  setTestAction(value as Action);
                   setDecision(null);
                 }}
-              >
-                {(
+                options={(
                   resources.find((r) => r.resource === testResource)?.actions ??
                   actions
-                ).map((a) => (
-                  <option value={a} key={a}>
-                    {labels[a]}
-                  </option>
-                ))}
-              </select>
+                ).map((action) => ({ value: action, label: labels[action] }))}
+              />
             </Field>
             <div className="fd-fixture-heading">NGỮ CẢNH GIẢ LẬP</div>
             {(

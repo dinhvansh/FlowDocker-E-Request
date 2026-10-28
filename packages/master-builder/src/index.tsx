@@ -9,6 +9,7 @@ import {
   Modal,
   Notice,
   SearchInput,
+  Select,
   Tabs,
 } from "@flowdocker/ui";
 import {
@@ -341,20 +342,16 @@ export function MasterBuilder({
                       prototype.
                     </p>
                     <Field label="Loại entity">
-                      <select
+                      <Select
+                        label="Loại entity"
                         value={entity.kind}
-                        onChange={(e) =>
-                          patch({
-                            kind: e.target.value as MasterEntity["kind"],
-                          })
+                        onValueChange={(value) =>
+                          patch({ kind: value as MasterEntity["kind"] })
                         }
-                      >
-                        {Object.entries(kinds).map(([v, label]) => (
-                          <option key={v} value={v}>
-                            {label}
-                          </option>
-                        ))}
-                      </select>
+                        options={Object.entries(kinds).map(
+                          ([value, label]) => ({ value, label }),
+                        )}
+                      />
                     </Field>
                     <Field label="Nguồn dữ liệu">
                       <input
@@ -371,17 +368,17 @@ export function MasterBuilder({
                       />
                     </Field>
                     <Field label="Phạm vi">
-                      <select
+                      <Select
+                        label="Phạm vi"
                         value={entity.scope}
-                        onChange={(e) =>
-                          patch({
-                            scope: e.target.value as MasterEntity["scope"],
-                          })
+                        onValueChange={(value) =>
+                          patch({ scope: value as MasterEntity["scope"] })
                         }
-                      >
-                        <option value="TENANT">Tenant</option>
-                        <option value="COMPANY">Công ty</option>
-                      </select>
+                        options={[
+                          { value: "TENANT", label: "Tenant" },
+                          { value: "COMPANY", label: "Công ty" },
+                        ]}
+                      />
                     </Field>
                   </div>
                   <Notice tone="warning">
@@ -435,18 +432,20 @@ export function MasterBuilder({
                 />
               </Field>
               <Field label="Kiểu dữ liệu">
-                <select
+                <Select
+                  label="Kiểu dữ liệu"
                   value={field.type}
-                  onChange={(e) =>
-                    patchField({ type: e.target.value as FieldType })
+                  onValueChange={(value) =>
+                    patchField({ type: value as FieldType })
                   }
-                >
-                  <option value="text">Văn bản</option>
-                  <option value="number">Số</option>
-                  <option value="date">Ngày</option>
-                  <option value="boolean">Boolean</option>
-                  <option value="reference">Tham chiếu</option>
-                </select>
+                  options={[
+                    { value: "text", label: "Văn bản" },
+                    { value: "number", label: "Số" },
+                    { value: "date", label: "Ngày" },
+                    { value: "boolean", label: "Boolean" },
+                    { value: "reference", label: "Tham chiếu" },
+                  ]}
+                />
               </Field>
               {field.type === "reference" && (
                 <Field label="Entity tham chiếu">
@@ -459,19 +458,20 @@ export function MasterBuilder({
                 </Field>
               )}
               <Field label="Phân loại">
-                <select
+                <Select
+                  label="Phân loại"
                   value={field.classification}
-                  onChange={(e) =>
+                  onValueChange={(value) =>
                     patchField({
-                      classification: e.target
-                        .value as MasterField["classification"],
+                      classification: value as MasterField["classification"],
                     })
                   }
-                >
-                  <option value="PUBLIC">Công khai</option>
-                  <option value="INTERNAL">Nội bộ</option>
-                  <option value="SENSITIVE">Nhạy cảm</option>
-                </select>
+                  options={[
+                    { value: "PUBLIC", label: "Công khai" },
+                    { value: "INTERNAL", label: "Nội bộ" },
+                    { value: "SENSITIVE", label: "Nhạy cảm" },
+                  ]}
+                />
               </Field>
               <label className="fd-checkbox">
                 <input
@@ -553,18 +553,17 @@ export function MasterBuilder({
               />
             </Field>
             <Field label="Loại entity">
-              <select
+              <Select
+                label="Loại entity"
                 value={newKind}
-                onChange={(e) =>
-                  setNewKind(e.target.value as MasterEntity["kind"])
+                onValueChange={(value) =>
+                  setNewKind(value as MasterEntity["kind"])
                 }
-              >
-                {Object.entries(kinds).map(([v, label]) => (
-                  <option key={v} value={v}>
-                    {label}
-                  </option>
-                ))}
-              </select>
+                options={Object.entries(kinds).map(([value, label]) => ({
+                  value,
+                  label,
+                }))}
+              />
             </Field>
           </div>
         </Modal>

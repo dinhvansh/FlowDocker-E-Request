@@ -1,1 +1,1 @@
-{ "name": "@flowdocker/ui", "private": true, "version": "0.1.0", "type": "module", "exports": { ".": "./src/index.ts", "./styles.css": "./styles.css" }, "dependencies": { "react": "^19.2.0" } }
+{"name":"@flowdocker/ui","private":true,"version":"0.1.0","type":"module","exports":{".":"./src/index.ts","./styles.css":"./styles.css"},"dependencies":{"@radix-ui/react-select":"^2.4.1","react":"^19.2.0"}}
