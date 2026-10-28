@@ -2348,8 +2348,13 @@ a {
 }
 .fd-tabs {
   max-width: 100%;
+  min-height: 44px;
   overflow-x: auto;
+  overflow-y: hidden;
   justify-content: flex-start;
+}
+.fd-tabs [role="tab"]::after {
+  bottom: 0;
 }
 
 .fd-language-trigger {
