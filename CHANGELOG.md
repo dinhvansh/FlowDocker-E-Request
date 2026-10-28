@@ -18,3 +18,5 @@
 - Added owner requirement for reusable FlowDocker-owned component library: shared UI tokens/primitives, flow canvas and field mapper, separated sync/approval domain adapters, Storybook/typed API/a11y quality gates and Codex Agent Skill. **Design only; no component packages or tests.**
 
 - Architectural design addendum: **FlowDocker Application Platform** reusable shell/business module registry, Master Data Builder, Permission Builder (policy simulation and backend PDP/PEP), App Manifest/extension contract, reference PostgreSQL 007, multi-app IT Assets portability QA, and Codex Agent Skill. **Design only, no implementation.**
+
+- Added owner-mandated **UX Research → UI/UX Design → Design Audit → Interactive Prototype → Design to Code** process, UI/UX Pro Max-linked local agent skill, heuristic findings from existing HTML demo screenshots, and task-first enterprise redesign brief. **Documents and audit only — no user interviews, redesigned UI prototype or production code.**

@@ -124,3 +124,6 @@ Proposed workspace packages `@flowdocker/ui`, `@flowdocker/flow-canvas`, `@flowd
 - [FlowDocker app-platform Agent Skill](.agents/skills/flowdocker-app-platform/SKILL.md)
 
 **These are DESIGN artifacts.** There is currently no working platform/package/CLI/policy builder or standalone new app, no migrations/tests run. No new repository has been created. Source repo remains FlowDocker E-Request until compatibility and second-consumer evidence justify extraction.
+
+## Mandatory UX Research → Design → Audit → Prototype → Design to Code
+**Owner's five-stage process for all FlowDocker screens** is recorded in [UX/UI Process](docs/47-UX-RESEARCH-TO-DESIGN-TO-CODE.md), with a [heuristic audit of the old FlowDocker HTML prototype](docs/48-V1-PROTOTYPE-AUDIT-AND-UX-RESEARCH.md) and a [task-first enterprise console redesign brief](docs/49-FLOWDOCKER-UI-REDESIGN-BRIEF.md). All Codex UI work must first read [FlowDocker UX Design Process Agent Skill](.agents/skills/flowdocker-ux-design-process/SKILL.md) and upstream UI/UX Pro Max guidance. The audit is screenshot-based, **not** proof of usability interviews; the redesigned interactive prototype and Design-to-Code are **NOT DONE**.

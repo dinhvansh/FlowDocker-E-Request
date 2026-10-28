@@ -99,3 +99,6 @@ See [Extraction and Acceptance](40-COMPONENT-EXTRACTION-ACCEPTANCE.md) and [.age
 
 ## Platform boundary expanded on 2026-10-28
 The earlier UI-only Component Library is a **subset** of the new [FlowDocker Application Platform](41-FLOWDOCKER-APPLICATION-PLATFORM.md). Reuse now includes **Master Data Builder, Permission Builder, Identity, module manifest, API/authorization contracts and audit**, not only components. Keep the visual component packages app-independent; domain business handlers belong outside. See [Master Builder](42-REUSABLE-MASTER-DATA-BUILDER.md), [Permission Builder](43-REUSABLE-PERMISSION-BUILDER.md), [App Module Contract](44-APP-MODULE-CONTRACT.md) and [Vietnamese overview](46-FLOWDOCKER-PLATFORM-VI.md). Still design-only.
+
+## UX quality and extraction prerequisite
+Before any shared component is declared platform-ready, its parent screen must follow [5-stage UX/UI process](47-UX-RESEARCH-TO-DESIGN-TO-CODE.md), satisfy the [redesign brief](49-FLOWDOCKER-UI-REDESIGN-BRIEF.md), and pass interaction and accessibility prototype QA. Don't standardize an unreviewed generic dashboard template just because it contains reusable JSX. The UI/UX Pro Max source is an external reference; the project uses its own linked agent skill.

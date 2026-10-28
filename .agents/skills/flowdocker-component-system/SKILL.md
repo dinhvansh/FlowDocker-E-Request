@@ -33,3 +33,6 @@ compatibility: FlowDocker E-Request repository, React/TypeScript UI, candidate @
 
 ## Acceptance
 Use [12 reusable UI acceptance tests](../../../docs/40-COMPONENT-EXTRACTION-ACCEPTANCE.md); report exact SHA, build commands, story/test evidence, consumers and remaining blockers.
+
+## Precondition — five-stage UX/UI Pro process
+Before implementing or extracting any UI component for FlowDocker, read `.agents/skills/flowdocker-ux-design-process/SKILL.md`, docs/47–49, and follow **UX Research → UI/UX Design → Design Audit → Interactive Prototype → Design to Code**. Component extraction is the **Design to Code** stage, not a substitute for research/audit/interactive usability checks. Avoid standardizing an unreviewed generic AI template.
