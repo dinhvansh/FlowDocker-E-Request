@@ -6,7 +6,6 @@ import {
   LockKeyhole,
   Menu,
   Moon,
-  UserRound,
   Search,
   Settings2,
   Sun,
@@ -44,10 +43,6 @@ const groups: {
   {
     label: "Quản trị",
     pages: [{ id: "permissions", label: "Phân quyền", icon: LockKeyhole }],
-  },
-  {
-    label: "Tài khoản",
-    pages: [{ id: "profile", label: "Hồ sơ cá nhân", icon: UserRound }],
   },
 ];
 export function AppShell({
@@ -157,6 +152,8 @@ export function AppShell({
         <button
           type="button"
           className="fd-sidebar-bottom fd-profile-link"
+          data-active={page === "profile"}
+          aria-current={page === "profile" ? "page" : undefined}
           onClick={() => navigate("profile")}
           aria-label="Mở hồ sơ cá nhân"
         >
@@ -179,7 +176,10 @@ export function AppShell({
             <Menu size={20} aria-hidden="true" />
           </button>
           <div className="fd-breadcrumb">
-            Workspace <span>/</span> <strong>{selected?.label}</strong>
+            Workspace <span>/</span>{" "}
+            <strong>
+              {page === "profile" ? "Hồ sơ cá nhân" : selected?.label}
+            </strong>
           </div>
           <div className="fd-top-actions">
             <label className="fd-global-search">
@@ -215,14 +215,6 @@ export function AppShell({
             >
               {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
             </Button>
-            <button
-              type="button"
-              className="fd-top-avatar fd-profile-avatar"
-              onClick={() => navigate("profile")}
-              aria-label="Mở hồ sơ cá nhân"
-            >
-              VA
-            </button>
           </div>
         </header>
         <main id="main-content" className="fd-main">
