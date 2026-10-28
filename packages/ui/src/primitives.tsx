@@ -1,10 +1,28 @@
 import {
-  useEffect,
-  useRef,
   type ButtonHTMLAttributes,
   type InputHTMLAttributes,
   type ReactNode,
 } from "react";
+import { Search } from "lucide-react";
+import { Button as ShadButton } from "./components/ui/button";
+import { Badge as ShadBadge } from "./components/ui/badge";
+import { Input } from "./components/ui/input";
+import { Tabs as ShadTabs, TabsList, TabsTrigger } from "./components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./components/ui/table";
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary" | "ghost" | "danger";
@@ -16,13 +34,16 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
+  const shadVariant = {
+    primary: "default",
+    secondary: "outline",
+    ghost: "ghost",
+    danger: "destructive",
+  } as const;
   return (
-    <button
-      className={`fd-button fd-button-${variant} ${className}`}
-      {...props}
-    >
+    <ShadButton variant={shadVariant[variant]} className={className} {...props}>
       {children}
-    </button>
+    </ShadButton>
   );
 }
 export type BadgeProps = {
@@ -30,7 +51,11 @@ export type BadgeProps = {
   children: ReactNode;
 };
 export function Badge({ tone = "neutral", children }: BadgeProps) {
-  return <span className={`fd-badge fd-badge-${tone}`}>{children}</span>;
+  return (
+    <ShadBadge variant="outline" className={`fd-badge fd-badge-${tone}`}>
+      {children}
+    </ShadBadge>
+  );
 }
 export function EmptyState({
   title,
@@ -60,19 +85,15 @@ export function Tabs({
   onChange(id: string): void;
 }) {
   return (
-    <div className="fd-tabs" role="tablist">
-      {tabs.map((t) => (
-        <button
-          key={t.id}
-          role="tab"
-          aria-selected={active === t.id}
-          className={active === t.id ? "active" : ""}
-          onClick={() => onChange(t.id)}
-        >
-          {t.label}
-        </button>
-      ))}
-    </div>
+    <ShadTabs value={active} onValueChange={onChange}>
+      <TabsList variant="line" className="fd-tabs">
+        {tabs.map((t) => (
+          <TabsTrigger key={t.id} value={t.id}>
+            {t.label}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </ShadTabs>
   );
 }
 export function SearchInput(
@@ -82,8 +103,8 @@ export function SearchInput(
   return (
     <label className="fd-search">
       <span className="sr-only">{label}</span>
-      <span aria-hidden="true">⌕</span>
-      <input type="search" placeholder={label} {...rest} />
+      <Search size={15} aria-hidden="true" />
+      <Input type="search" placeholder={label} {...rest} />
     </label>
   );
 }
@@ -135,74 +156,26 @@ export function Modal({
   onClose(): void;
   footer?: ReactNode;
 }) {
-  const dialogRef = useRef<HTMLElement>(null);
-  useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null;
-    const selectors =
-      "button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled)";
-    (
-      dialogRef.current?.querySelector("input") ??
-      dialogRef.current?.querySelector("button")
-    )?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (
-        e.key === "Escape" &&
-        !(
-          e.target instanceof HTMLElement &&
-          e.target.closest(".fd-select-content")
-        ) &&
-        !document.querySelector('.fd-select-content[data-state="open"]')
-      )
-        onClose();
-      if (e.key !== "Tab" || !dialogRef.current) return;
-      const items = [
-        ...dialogRef.current.querySelectorAll<HTMLElement>(selectors),
-      ];
-      if (!items.length) return;
-      const first = items[0],
-        last = items[items.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      previous?.focus();
-    };
-  }, [onClose]);
   return (
-    <div
-      className="fd-modal-backdrop"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose();
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open) onClose();
       }}
     >
-      <section
-        ref={dialogRef}
-        className="fd-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
+      <DialogContent
+        className="fd-modal gap-0 p-0"
+        aria-describedby={undefined}
       >
-        <header>
-          <h2>{title}</h2>
-          <button
-            className="fd-icon-button"
-            aria-label="Đóng"
-            onClick={onClose}
-          >
-            ×
-          </button>
-        </header>
+        <DialogHeader className="border-b px-5 py-4 text-left">
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
         <div className="fd-modal-body">{children}</div>
-        {footer && <footer>{footer}</footer>}
-      </section>
-    </div>
+        {footer && (
+          <DialogFooter className="border-t px-5 py-4">{footer}</DialogFooter>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
 export type TableColumn<T> = {
@@ -229,19 +202,19 @@ export function DataTable<T>({
   if (!rows.length) return <EmptyState title={empty} />;
   return (
     <div className="fd-table-scroll">
-      <table className="fd-table">
-        <thead>
-          <tr>
+      <Table className="fd-table">
+        <TableHeader>
+          <TableRow>
             {columns.map((c) => (
-              <th key={c.key} style={{ width: c.width }}>
+              <TableHead key={c.key} style={{ width: c.width }}>
                 {c.heading}
-              </th>
+              </TableHead>
             ))}
-          </tr>
-        </thead>
-        <tbody>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {rows.map((row) => (
-            <tr
+            <TableRow
               key={rowKey(row)}
               className={selectedKey === rowKey(row) ? "selected" : ""}
               tabIndex={onRowClick ? 0 : undefined}
@@ -254,12 +227,12 @@ export function DataTable<T>({
               }}
             >
               {columns.map((c) => (
-                <td key={c.key}>{c.render(row)}</td>
+                <TableCell key={c.key}>{c.render(row)}</TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

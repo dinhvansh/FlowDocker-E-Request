@@ -27,7 +27,7 @@ Tác vụ ưu tiên PR 1: tìm entity → sửa schema → kiểm tra lỗi; ch�
 | A-05: action mock dễ hiểu nhầm | Nhãn DEMO, publish bị disabled, Test Access ghi SIMULATED |
 | A-06: scope tách xa matrix | Scope ngay dưới matrix, kết quả ở inspector cùng màn |
 | A-07: schema/source/version chưa nổi | Metadata ở object header và tab riêng |
-| A-08: chữ nhỏ | Body 15px, font Be Vietnam Pro đóng gói tại chỗ; metadata 11–12px vẫn cần đánh giá với operator |
+| A-08: chữ nhỏ | Body 15px, font Inter đóng gói tại chỗ; chữ phụ được tăng cỡ trong lượt shadcn/ui, vẫn cần đánh giá với operator |
 | A-09: drag thiếu keyboard | Không có drag trong PR 1; bảng có Enter/Space, các control là native |
 
 P0 của quyền thật vẫn còn đến khi backend áp dụng policy. Không coi ma trận frontend là enforcement.
@@ -79,7 +79,11 @@ Ngày 2026-10-28: loại bỏ toàn bộ native `<select>` trong app và example
 
 Sau phản hồi tiếp theo của owner, thay Segoe UI bằng Be Vietnam Pro (font chứa glyph tiếng Việt, dùng `@fontsource/be-vietnam-pro` đóng gói local với 4 weight 400/500/600/700). shadcn/ui CLI/component source chưa được thêm; Select đang dùng Radix trực tiếp qua FlowDocker adapter. Thay font độc lập với lựa chọn component library.
 
-QA font trên Vite local: computed `font-family` là `Be Vietnam Pro`, các tệp WOFF2 Latin/Việt trả HTTP 200. Ảnh chụp: [Workspace desktop](../output/playwright/font-workspace-desktop.png), [Master desktop](../output/playwright/font-master-desktop.png), [Select mở](../output/playwright/font-select-desktop.png), [Permission desktop](../output/playwright/font-permissions-desktop.png), [Permission mobile](../output/playwright/font-permissions-mobile.png), [mobile tối](../output/playwright/font-permissions-mobile-dark.png), [desktop tối](../output/playwright/font-permissions-desktop-dark.png). `npm run build`, `typecheck`, `lint`, `format:check` và `npm test` (7 test) đều đạt tại máy phát triển.
+QA font trên Vite local: computed `font-family` là `Inter`, các tệp WOFF2 Latin/Việt trả HTTP 200. Ảnh font trước được giữ lại ở các file `font-*`; ảnh shadcn mới được liệt kê bên dưới. Các lệnh build, typecheck, lint, format:check và npm test (7 test) đều đạt tại máy phát triển.
+
+Ngày 2026-10-28, theo yêu cầu tiếp theo của owner: dùng `shadcn@4.23.0 add` để đưa source Button, Badge, Input, Textarea, Checkbox, Select, Dialog, Tabs và Table vào `packages/ui/src/components/ui/`. `@flowdocker/ui` bọc các component này trong API hiện có; các ô nhập của hai Builder và App Shell dùng Input, checkbox dùng Checkbox. Chọn Radix làm primitive foundation, Tailwind CSS v4 để biên dịch utility và giữ token trắng–đỏ của FlowDocker. Font đổi sang Inter (Latin + Vietnamese) vì cảm nhận font trước vẫn khó đọc; đây là lựa chọn visual đang chờ owner xem, không phải kết quả nghiên cứu người dùng. Không đổi schema/API hay logic phân quyền. Mã nguồn shadcn là bên thứ ba, xem [notices](../packages/ui/THIRD_PARTY_NOTICES.md).
+
+QA lượt này trên Vite local: Select mở và chọn bằng ArrowDown/Enter, Dialog mở và đóng bằng Escape, checkbox render trong ma trận, ảnh [Master desktop](../output/playwright/shadcn-master-first.png), [Select](../output/playwright/shadcn-master-select.png), [Dialog](../output/playwright/shadcn-master-dialog.png), [Permission desktop](../output/playwright/shadcn-permissions-desktop-final.png), [Permission mobile](../output/playwright/shadcn-permissions-mobile.png), [mobile tối](../output/playwright/shadcn-permissions-mobile-dark.png). Chromium console sau reload: 0 error, 0 warning. Đây vẫn là frontend demo; quyền thật và publish cần backend.
 
 ### Chưa xong / cần review
 

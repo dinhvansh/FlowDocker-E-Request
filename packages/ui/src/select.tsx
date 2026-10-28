@@ -1,4 +1,10 @@
-import * as SelectPrimitive from "@radix-ui/react-select";
+import {
+  Select as ShadSelect,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./components/ui/select";
 
 export type SelectOption = {
   value: string;
@@ -15,7 +21,7 @@ export type SelectProps = {
   placeholder?: string;
 };
 
-/** FlowDocker-styled accessible select. The menu stays inside the app theme root. */
+/** FlowDocker Select built from the shadcn/ui Radix source. */
 export function Select({
   label,
   value,
@@ -30,51 +36,26 @@ export function Select({
       : (document.querySelector<HTMLElement>(".fd-app") ?? undefined);
 
   return (
-    <SelectPrimitive.Root
-      value={value}
-      onValueChange={onValueChange}
-      disabled={disabled}
-    >
-      <SelectPrimitive.Trigger className="fd-select-trigger" aria-label={label}>
-        <SelectPrimitive.Value placeholder={placeholder} />
-        <SelectPrimitive.Icon className="fd-select-chevron" aria-hidden="true">
-          <svg viewBox="0 0 16 16" width="16" height="16" fill="none">
-            <path
-              d="m4 6 4 4 4-4"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </SelectPrimitive.Icon>
-      </SelectPrimitive.Trigger>
-      <SelectPrimitive.Portal container={themeRoot}>
-        <SelectPrimitive.Content
-          className="fd-select-content"
-          position="popper"
-          sideOffset={5}
-          collisionPadding={8}
-        >
-          <SelectPrimitive.Viewport className="fd-select-viewport">
-            {options.map((option) => (
-              <SelectPrimitive.Item
-                className="fd-select-item"
-                key={option.value}
-                value={option.value}
-                disabled={option.disabled}
-              >
-                <SelectPrimitive.ItemText>
-                  {option.label}
-                </SelectPrimitive.ItemText>
-                <SelectPrimitive.ItemIndicator className="fd-select-check">
-                  ✓
-                </SelectPrimitive.ItemIndicator>
-              </SelectPrimitive.Item>
-            ))}
-          </SelectPrimitive.Viewport>
-        </SelectPrimitive.Content>
-      </SelectPrimitive.Portal>
-    </SelectPrimitive.Root>
+    <ShadSelect value={value} onValueChange={onValueChange} disabled={disabled}>
+      <SelectTrigger className="w-full" aria-label={label}>
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent
+        position="popper"
+        sideOffset={5}
+        collisionPadding={8}
+        portalContainer={themeRoot}
+      >
+        {options.map((option) => (
+          <SelectItem
+            key={option.value}
+            value={option.value}
+            disabled={option.disabled}
+          >
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </ShadSelect>
   );
 }

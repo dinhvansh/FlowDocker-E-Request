@@ -12,6 +12,7 @@
     "allowImportingTsExtensions": true,
     "types": ["vite/client", "vitest/globals"],
     "paths": {
+      "@/*": ["./packages/ui/src/*"],
       "@flowdocker/ui": ["./packages/ui/src/index.ts"],
       "@flowdocker/app-shell": ["./packages/app-shell/src/index.tsx"],
       "@flowdocker/app-contracts": ["./packages/app-contracts/src/index.ts"],

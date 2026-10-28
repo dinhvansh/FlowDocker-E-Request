@@ -6,6 +6,7 @@ import {
   DataTable,
   EmptyState,
   Field,
+  Input,
   Modal,
   Notice,
   Select,
@@ -57,7 +58,7 @@ function Examples() {
           {tab === "default" ? (
             <>
               <Field label="Tìm dữ liệu mẫu">
-                <input
+                <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -102,7 +103,7 @@ function Examples() {
             footer={<Button onClick={() => setOpen(false)}>Đóng</Button>}
           >
             <Field label="Tên">
-              <input placeholder="Nhập tên" />
+              <Input placeholder="Nhập tên" />
             </Field>
           </Modal>
         )}

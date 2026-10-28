@@ -40,7 +40,7 @@ describe("UI primitives", () => {
         Form
       </Modal>,
     );
-    fireEvent.keyDown(window, { key: "Escape" });
+    fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
     expect(close).toHaveBeenCalledOnce();
   });
 });

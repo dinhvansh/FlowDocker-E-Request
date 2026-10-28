@@ -9,7 +9,7 @@ import {
   Settings2,
   Sun,
 } from "lucide-react";
-import { Badge, Button } from "@flowdocker/ui";
+import { Badge, Button, Input } from "@flowdocker/ui";
 
 export type PageId =
   | "workspace"
@@ -137,7 +137,7 @@ export function AppShell({
             <label className="fd-global-search">
               <Search size={16} />
               <span className="sr-only">Tìm trong menu</span>
-              <input
+              <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Tìm trong menu..."

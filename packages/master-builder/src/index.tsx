@@ -6,6 +6,8 @@ import {
   DataTable,
   EmptyState,
   Field,
+  Input,
+  Checkbox,
   Modal,
   Notice,
   SearchInput,
@@ -354,13 +356,13 @@ export function MasterBuilder({
                       />
                     </Field>
                     <Field label="Nguồn dữ liệu">
-                      <input
+                      <Input
                         value={entity.sourceOwner}
                         onChange={(e) => patch({ sourceOwner: e.target.value })}
                       />
                     </Field>
                     <Field label="Business owner">
-                      <input
+                      <Input
                         value={entity.businessOwner}
                         onChange={(e) =>
                           patch({ businessOwner: e.target.value })
@@ -420,13 +422,13 @@ export function MasterBuilder({
                 </div>
               </div>
               <Field label="Tên hiển thị">
-                <input
+                <Input
                   value={field.label}
                   onChange={(e) => patchField({ label: e.target.value })}
                 />
               </Field>
               <Field label="Mã trường">
-                <input
+                <Input
                   value={field.key}
                   onChange={(e) => patchField({ key: e.target.value })}
                 />
@@ -449,7 +451,7 @@ export function MasterBuilder({
               </Field>
               {field.type === "reference" && (
                 <Field label="Entity tham chiếu">
-                  <input
+                  <Input
                     value={field.referenceEntity ?? ""}
                     onChange={(e) =>
                       patchField({ referenceEntity: e.target.value })
@@ -474,10 +476,11 @@ export function MasterBuilder({
                 />
               </Field>
               <label className="fd-checkbox">
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={field.required}
-                  onChange={(e) => patchField({ required: e.target.checked })}
+                  onCheckedChange={(checked) =>
+                    patchField({ required: checked === true })
+                  }
                 />{" "}
                 Bắt buộc
               </label>
@@ -525,7 +528,7 @@ export function MasterBuilder({
         >
           <div className="fd-form-stack">
             <Field label="Tên entity">
-              <input
+              <Input
                 autoFocus
                 value={newName}
                 onChange={(e) => {
@@ -547,7 +550,7 @@ export function MasterBuilder({
               label="Mã kỹ thuật"
               hint="Chữ thường, số, dấu gạch dưới; bắt đầu bằng chữ"
             >
-              <input
+              <Input
                 value={newKey}
                 onChange={(e) => setNewKey(e.target.value)}
               />

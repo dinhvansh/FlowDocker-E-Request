@@ -14,6 +14,8 @@ import {
   Button,
   EmptyState,
   Field,
+  Input,
+  Checkbox,
   Modal,
   Notice,
   SearchInput,
@@ -253,13 +255,14 @@ export function PermissionBuilder({
                             {actions.map((a) => (
                               <td key={a}>
                                 {res.actions.includes(a) ? (
-                                  <input
-                                    type="checkbox"
+                                  <Checkbox
                                     aria-label={`${res.label}: ${labels[a]}`}
                                     checked={(
                                       role.grants[res.resource] ?? []
                                     ).includes(a)}
-                                    onChange={() => toggle(res.resource, a)}
+                                    onCheckedChange={() =>
+                                      toggle(res.resource, a)
+                                    }
                                   />
                                 ) : (
                                   <span className="fd-na">—</span>
@@ -406,11 +409,10 @@ export function PermissionBuilder({
               ] as const
             ).map(([key, label]) => (
               <label className="fd-checkbox fd-fixture" key={key}>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={fixture[key]}
-                  onChange={(e) => {
-                    setFixture({ ...fixture, [key]: e.target.checked });
+                  onCheckedChange={(checked) => {
+                    setFixture({ ...fixture, [key]: checked === true });
                     setDecision(null);
                   }}
                 />
@@ -468,7 +470,7 @@ export function PermissionBuilder({
           }
         >
           <Field label="Tên vai trò">
-            <input
+            <Input
               autoFocus
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
