@@ -95,3 +95,15 @@ Removed decorative plus icons from the toolbox and canvas insert actions while p
 Palette dragging now keeps the field visible in a floating preview card while the pointer moves across the canvas. Valid field targets receive a restrained highlight, and column/group containers expose a dedicated bottom drop zone with a clear insertion message. Dropping on the container appends the new field to that group while preserving the existing children; cancelling the gesture leaves the schema unchanged. The interaction uses the existing dnd-kit engine and keeps the existing keyboard insert actions.
 
 Browser evidence: `output/playwright/forms-dnd-during.png` captures the Email preview over the highlighted payment-details column layout at 1440×900. The browser journey reported `preview: 1`, `active: 1`, and `inserted: 1`; the focused canvas regression suite remains green.
+
+### Repeating table usability correction (2026-10-29)
+
+Research evidence: owner screenshot shows six columns squeezed into a narrow designer, broken words and overflowing inline actions. Task: configure a 4–7 column repeating table without losing readable inputs or discovering row limits in unrelated property categories.
+
+Design/audit: keep real runtime inputs on canvas; contain horizontal scrolling inside the table on desktop, retain stacked rows on phones, and wrap selected-cell actions inside their cell. Keep all simple leaf column counts tabular instead of silently switching to cards above six. Complex nested field layouts continue to use the existing stacked presentation. Add a contextual repeat settings section with min/max row controls, column type insertion, column selection and keyboard-operable reorder buttons.
+
+Reusable component impact: `RepeatField` presentation and exported `FieldInspector` are reused; inspector adds optional typed `onSelectField` and `onAddColumn` callbacks. Designer owns history and selection. No schema/engine/storage/API/Temporal/Teams/security/migration change. No new dependencies. New seven-column renderer regression test preserves actual controls and accessible table semantics.
+
+Interactive prototype / code evidence: added three columns to the synthetic Payment table through the new inspector (five total); table viewport 570px, content 948px at 1440px, document width 1425px (no global overflow). Inspector screenshots at 1366×768, 1440×900 and 390px; all report no horizontal page overflow. Changed maximum rows to two, reordered Number before Date, added Email while retaining repeat selection, and preview Add row disables at two rows. VI Light designer and EN Dark runtime/mobile inspected. Screenshots: `output/playwright/repeat-improved-1440.png`, `repeat-settings-{1366,1440,390}.png`, `repeat-preview-en-dark.png`, `repeat-preview-mobile-en-dark.png`. These are focused combinations, not a full theme/language/device matrix. Owner visual acceptance remains pending; no merge.
+
+Validation: full pre-regression suite 14 files / 60 tests PASS; new focused repeat suite 2 tests PASS. Typecheck, lint/i18n, format, app build and forms build PASS. Existing app chunk-size advisory remains.

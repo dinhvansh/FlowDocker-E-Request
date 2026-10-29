@@ -45,6 +45,8 @@ export interface FieldInspectorProps {
   historyRevision: number;
   width: number;
   onWidthChange(width: number): void;
+  onSelectField?(id: string): void;
+  onAddColumn?(type: FormFieldType): void;
 }
 /** Contextual configuration only; persistence and history are owned by the host designer. */
 export function FieldInspector({
@@ -68,6 +70,8 @@ export function FieldInspector({
   historyRevision,
   width,
   onWidthChange,
+  onSelectField,
+  onAddColumn,
 }: FieldInspectorProps) {
   const { t, locale } = useI18n();
   const required = (
@@ -100,6 +104,112 @@ export function FieldInspector({
           { value: "advanced", label: t("Nâng cao") },
         ]}
       />
+      {field.type === "repeat" && (
+        <section
+          className="fd-repeat-settings"
+          aria-label={t("Cài đặt bảng dòng lặp")}
+        >
+          <h3>{t("Cài đặt bảng dòng lặp")}</h3>
+          <FieldGroup>
+            <Field label={t("Số dòng tối thiểu")}>
+              <Input
+                type="number"
+                min={0}
+                max={100}
+                disabled={readOnly}
+                value={field.minRows ?? ""}
+                onChange={(event) =>
+                  patch({
+                    minRows:
+                      event.target.value === ""
+                        ? undefined
+                        : Number(event.target.value),
+                  })
+                }
+              />
+            </Field>
+            <Field label={t("Số dòng tối đa")}>
+              <Input
+                type="number"
+                min={0}
+                max={100}
+                disabled={readOnly}
+                value={field.maxRows ?? ""}
+                onChange={(event) =>
+                  patch({
+                    maxRows:
+                      event.target.value === ""
+                        ? undefined
+                        : Number(event.target.value),
+                  })
+                }
+              />
+            </Field>
+            {onAddColumn && (
+              <Field label={t("Thêm cột vào bảng")}>
+                <Select
+                  label={t("Thêm cột vào bảng")}
+                  value=""
+                  disabled={readOnly}
+                  options={[
+                    "text",
+                    "textarea",
+                    "number",
+                    "currency",
+                    "select",
+                    "date",
+                    "checkbox",
+                    "email",
+                  ].map((type) => ({
+                    value: type,
+                    label: t(fieldTypeLabels[type as FormFieldType]),
+                  }))}
+                  onValueChange={(type) => onAddColumn(type as FormFieldType)}
+                />
+              </Field>
+            )}
+          </FieldGroup>
+          <p>{t("Chọn cột để sửa nhãn, kiểu dữ liệu và kiểm tra dữ liệu.")}</p>
+          {(field.children ?? []).map((child, index, children) => (
+            <div className="fd-repeat-column-setting" key={child.id}>
+              <Button
+                disabled={!onSelectField}
+                onClick={() => onSelectField?.(child.id)}
+              >
+                {child.label[locale]}
+              </Button>
+              <Button
+                aria-label={t("Lên trên")}
+                disabled={readOnly || index === 0}
+                onClick={() => {
+                  const next = [...children];
+                  [next[index - 1], next[index]] = [
+                    next[index],
+                    next[index - 1],
+                  ];
+                  patch({ children: next });
+                }}
+              >
+                <ArrowUp />
+              </Button>
+              <Button
+                aria-label={t("Xuống dưới")}
+                disabled={readOnly || index === children.length - 1}
+                onClick={() => {
+                  const next = [...children];
+                  [next[index + 1], next[index]] = [
+                    next[index],
+                    next[index + 1],
+                  ];
+                  patch({ children: next });
+                }}
+              >
+                <ArrowDown />
+              </Button>
+            </div>
+          ))}
+        </section>
+      )}
       <div className="fd-inspector-layout">
         <div className="fd-inspector-layout-heading">
           <strong>{t("Vị trí trường")}</strong>

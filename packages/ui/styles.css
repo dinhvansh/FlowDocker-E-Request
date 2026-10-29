@@ -3589,3 +3589,79 @@ a {
 .fd-form-properties .fd-combobox-trigger > svg {
   flex-shrink: 0;
 }
+
+.fd-repeat-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+.fd-repeat-table-scroll .fd-repeat-table {
+  table-layout: auto;
+}
+.fd-repeat-table-scroll .fd-repeat-table th:not(:first-child),
+.fd-repeat-table-scroll .fd-repeat-table td {
+  min-width: 180px;
+  overflow-wrap: normal;
+}
+.fd-repeat-table-scroll .fd-repeat-table th:first-child {
+  min-width: 48px;
+}
+.fd-repeat-field[data-design="false"]
+  .fd-repeat-table-scroll
+  .fd-repeat-table
+  th:last-child,
+.fd-repeat-field[data-design="false"]
+  .fd-repeat-table-scroll
+  .fd-repeat-table
+  td:last-child {
+  min-width: 44px;
+  width: 44px;
+}
+.fd-repeat-table-scroll .fd-canvas-field-bar {
+  flex-wrap: wrap;
+}
+.fd-repeat-table-scroll .fd-canvas-inline-actions {
+  width: 100%;
+  flex-wrap: wrap;
+}
+.fd-repeat-table-scroll .fd-canvas-insert {
+  width: 100%;
+  white-space: normal;
+}
+.fd-repeat-settings {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--fd-border);
+  border-radius: 8px;
+}
+.fd-repeat-settings h3 {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+.fd-repeat-settings p {
+  color: var(--fd-text-muted);
+  font-size: 12px;
+  margin: 12px 0;
+}
+.fd-repeat-column-setting {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  min-width: 0;
+}
+.fd-repeat-column-setting > button:first-child {
+  flex: 1;
+  min-width: 0;
+  white-space: normal;
+  justify-content: flex-start;
+}
+.fd-repeat-column-setting > button:not(:first-child) {
+  padding: 6px;
+}
+@media (max-width: 600px) {
+  .fd-repeat-table-scroll .fd-repeat-table th:not(:first-child),
+  .fd-repeat-table-scroll .fd-repeat-table td {
+    min-width: 0;
+  }
+}

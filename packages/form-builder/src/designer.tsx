@@ -930,6 +930,16 @@ export function FormDesigner({
                 historyRevision={historyRevision}
                 width={inspectorWidth}
                 onWidthChange={setInspectorWidth}
+                onSelectField={setSelectedId}
+                onAddColumn={
+                  rows.length < 300
+                    ? (type) => {
+                        add(type, field.id);
+                        setSelectedId(field.id);
+                        setPane("properties");
+                      }
+                    : undefined
+                }
               />
             ) : (
               <EmptyState title={t("Chọn hoặc thêm một trường")} />

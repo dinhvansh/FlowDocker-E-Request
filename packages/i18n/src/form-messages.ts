@@ -1,4 +1,8 @@
 export const formMessages = {
+  "Cài đặt bảng dòng lặp": "Repeating table settings",
+  "Thêm cột vào bảng": "Add a table column",
+  "Chọn cột để sửa nhãn, kiểu dữ liệu và kiểm tra dữ liệu.":
+    "Select a column to edit its label, type and validation.",
   "Địa chỉ": "Address",
   "Ngày tách thành phần": "Date parts",
   "Nhóm dữ liệu": "Data container",

@@ -90,3 +90,36 @@ it("edits actual repeat-table cells, calculates decimals and retains sibling val
     screen.getByRole("button", { name: "Xóa dòng 1" }).hasAttribute("disabled"),
   ).toBe(true);
 });
+
+it("keeps seven simple columns in a real table with accessible required headers", () => {
+  const table = form.fields[1];
+  const wide: FormDefinition = {
+    ...form,
+    fields: [
+      {
+        ...table,
+        children: Array.from({ length: 7 }, (_, index) => ({
+          ...table.children![0],
+          id: `column_${index}`,
+          key: `column_${index}`,
+          label: { vi: `Cột ${index + 1}`, en: `Column ${index + 1}` },
+        })),
+      },
+    ],
+  };
+  render(
+    <I18nProvider>
+      <FormRenderer
+        definition={wide}
+        values={{ lines: [{}] }}
+        onChange={() => {}}
+      />
+    </I18nProvider>,
+  );
+  expect(screen.getByRole("table", { name: "Dòng chi phí" })).toBeTruthy();
+  expect(screen.getAllByRole("columnheader")).toHaveLength(9);
+  expect(screen.getAllByRole("spinbutton")).toHaveLength(7);
+  expect(screen.getByRole("region", { name: "Dòng chi phí" }).className).toBe(
+    "fd-repeat-table-scroll",
+  );
+});

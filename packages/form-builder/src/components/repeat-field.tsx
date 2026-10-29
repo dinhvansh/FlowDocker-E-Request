@@ -32,7 +32,6 @@ export function RepeatField({
   const displayed = design ? [rows[0] ?? defaultValues(children)] : rows;
   const tabular =
     children.length > 0 &&
-    children.length <= 6 &&
     children.every(
       (child) =>
         !isContainer(child) &&
@@ -67,38 +66,50 @@ export function RepeatField({
   return (
     <div className="fd-repeat-field" data-design={design}>
       {tabular ? (
-        <table className="fd-repeat-table" aria-label={field.label[locale]}>
-          <thead>
-            <tr>
-              <th scope="col">{t("Dòng")}</th>
-              {children.map((child) => (
-                <th scope="col" key={child.id}>
-                  {child.label[locale]}
-                </th>
-              ))}
-              {!design && (
-                <th scope="col">
-                  <span className="sr-only">{t("Thao tác")}</span>
-                </th>
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {displayed.map((row, index) => (
-              <tr key={index}>
-                <th scope="row">{index + 1}</th>
+        <div
+          className="fd-repeat-table-scroll"
+          role="region"
+          aria-label={field.label[locale]}
+          tabIndex={0}
+        >
+          <table className="fd-repeat-table" aria-label={field.label[locale]}>
+            <thead>
+              <tr>
+                <th scope="col">{t("Dòng")}</th>
                 {children.map((child) => (
-                  <td key={child.id}>
-                    {renderFields([child], row, index, (next) =>
-                      update(index, next),
+                  <th scope="col" key={child.id}>
+                    {child.label[locale]}
+                    {child.required && (
+                      <span className="fd-required-mark" aria-hidden="true">
+                        *
+                      </span>
                     )}
-                  </td>
+                  </th>
                 ))}
-                {!design && <td>{remove(index)}</td>}
+                {!design && (
+                  <th scope="col">
+                    <span className="sr-only">{t("Thao tác")}</span>
+                  </th>
+                )}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {displayed.map((row, index) => (
+                <tr key={index}>
+                  <th scope="row">{index + 1}</th>
+                  {children.map((child) => (
+                    <td key={child.id}>
+                      {renderFields([child], row, index, (next) =>
+                        update(index, next),
+                      )}
+                    </td>
+                  ))}
+                  {!design && <td>{remove(index)}</td>}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         displayed.map((row, index) => (
           <div className="fd-repeat-row" key={index}>
