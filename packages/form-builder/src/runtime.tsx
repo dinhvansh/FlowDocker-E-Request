@@ -1029,7 +1029,10 @@ export function FormRenderer({
     setResult("");
   };
   return (
-    <div className="fd-form-preview">
+    <div
+      className="fd-form-preview"
+      data-orientation={definition.orientation ?? "portrait"}
+    >
       <h2>{definition.title[locale]}</h2>
       {props.preview && (
         <Notice>

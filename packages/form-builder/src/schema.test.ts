@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { createPaymentDefinition } from "./payment-example";
 import {
   isFormDefinition,
+  exportFormDefinition,
+  importFormDefinition,
   validateFormDefinition,
   validatePreview,
   type FormDefinition,
@@ -47,6 +49,17 @@ const form: FormDefinition = {
   ],
 };
 describe("form draft and preview boundaries", () => {
+  it("round-trips optional form orientation and rejects unknown values", () => {
+    expect(isFormDefinition(form)).toBe(true);
+    for (const orientation of ["portrait", "landscape"] as const) {
+      const next = { ...form, orientation };
+      expect(validateFormDefinition(next)).toEqual([]);
+      expect(importFormDefinition(exportFormDefinition(next)).orientation).toBe(
+        orientation,
+      );
+    }
+    expect(isFormDefinition({ ...form, orientation: "diagonal" })).toBe(false);
+  });
   it("keeps the full payment fixture valid with distinct repeat and root descriptions", () => {
     expect(validateFormDefinition(createPaymentDefinition())).toEqual([]);
   });

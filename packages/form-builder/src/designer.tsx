@@ -524,6 +524,21 @@ export function FormDesigner({
         >
           <Redo2 data-icon="inline-start" />
         </Button>
+        <Select
+          label={t("Hướng biểu mẫu")}
+          disabled={readOnly}
+          value={definition.orientation ?? "portrait"}
+          options={[
+            { value: "portrait", label: t("Khổ dọc") },
+            { value: "landscape", label: t("Khổ ngang") },
+          ]}
+          onValueChange={(orientation) =>
+            commit({
+              ...definition,
+              orientation: orientation as "portrait" | "landscape",
+            })
+          }
+        />
         <details className="fd-designer-tools">
           <summary>
             <Settings2 aria-hidden="true" />
@@ -874,7 +889,11 @@ export function FormDesigner({
               items={rows.map((row) => row.field.id)}
               strategy={verticalListSortingStrategy}
             >
-              <div className="fd-canvas-paper" data-device={device}>
+              <div
+                className="fd-canvas-paper"
+                data-device={device}
+                data-orientation={definition.orientation ?? "portrait"}
+              >
                 <FormCanvas
                   definition={definition}
                   providers={providers}

@@ -338,7 +338,11 @@ export function FormsPage() {
                       {t("Điện thoại")}
                     </Button>
                   </div>
-                  <div className="fd-preview-paper" data-device={previewDevice}>
+                  <div
+                    className="fd-preview-paper"
+                    data-device={previewDevice}
+                    data-orientation={draft.orientation ?? "portrait"}
+                  >
                     <FormPreview
                       key={draft.id}
                       definition={draft}

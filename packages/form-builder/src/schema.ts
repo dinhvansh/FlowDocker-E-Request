@@ -108,6 +108,7 @@ export interface FormDefinition {
   fields: FormField[];
   schemaVersion?: 1 | 2;
   display?: "form" | "wizard";
+  orientation?: "portrait" | "landscape";
 }
 export interface FormIssue {
   fieldId?: string;
@@ -404,6 +405,7 @@ export function isFormDefinition(value: unknown): value is FormDefinition {
         "fields",
         "schemaVersion",
         "display",
+        "orientation",
       ].includes(key),
     ) &&
     typeof value.id === "string" &&
@@ -416,6 +418,8 @@ export function isFormDefinition(value: unknown): value is FormDefinition {
       [1, 2].includes(Number(value.schemaVersion))) &&
     (value.display === undefined ||
       ["form", "wizard"].includes(String(value.display))) &&
+    (value.orientation === undefined ||
+      ["portrait", "landscape"].includes(String(value.orientation))) &&
     fieldsShape(value.fields)
   );
 }

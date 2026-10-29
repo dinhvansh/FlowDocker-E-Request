@@ -3683,3 +3683,29 @@ a {
     display: none;
   }
 }
+
+.fd-canvas-paper[data-orientation="landscape"],
+.fd-preview-paper[data-orientation="landscape"],
+.fd-form-preview[data-orientation="landscape"] {
+  max-width: 1120px;
+}
+.fd-canvas-paper[data-device="mobile"],
+.fd-preview-paper[data-device="mobile"] {
+  max-width: 390px;
+}
+@media (max-width: 600px) {
+  .fd-canvas-paper[data-orientation],
+  .fd-preview-paper[data-orientation],
+  .fd-form-preview[data-orientation] {
+    max-width: 100%;
+  }
+}
+.fd-designer-v2 .fd-form-product-toolbar > [data-slot="select-trigger"] {
+  width: 140px;
+  flex-shrink: 0;
+}
+@media (max-width: 600px) {
+  .fd-designer-v2 .fd-form-product-toolbar > [data-slot="select-trigger"] {
+    width: 125px;
+  }
+}

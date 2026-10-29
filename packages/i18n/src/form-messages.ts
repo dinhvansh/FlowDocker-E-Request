@@ -1,4 +1,7 @@
 export const formMessages = {
+  "Hướng biểu mẫu": "Form orientation",
+  "Khổ dọc": "Portrait",
+  "Khổ ngang": "Landscape",
   "Mở thanh điều hướng": "Show navigation",
   "Thu gọn thanh điều hướng": "Hide navigation",
   "Cài đặt bảng dòng lặp": "Repeating table settings",
