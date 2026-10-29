@@ -8,7 +8,6 @@ import {
   ArrowUp,
   Copy,
   GripVertical,
-  Plus,
   Trash2,
   Pencil,
 } from "lucide-react";
@@ -224,7 +223,6 @@ function FieldOverlay({
           disabled={props.readOnly}
           onClick={() => props.onInsert(field)}
         >
-          <Plus data-icon="inline-start" />
           {t("Chèn trường bên dưới")}
         </Button>
       )}
@@ -297,7 +295,6 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
         disabled={props.readOnly}
         onClick={() => props.onInsert()}
       >
-        <Plus data-icon="inline-start" />
         {t("Chèn trường")}
       </Button>
     </div>

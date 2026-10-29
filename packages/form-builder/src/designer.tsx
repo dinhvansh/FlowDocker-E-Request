@@ -17,7 +17,6 @@ import {
 import {
   Download,
   GripVertical,
-  Plus,
   Redo2,
   Undo2,
   Upload,
@@ -177,9 +176,6 @@ function PaletteItem({
         aria-label={t("Thêm {{type}}", { type: t(fieldTypeLabels[type]) })}
       >
         <FieldTypeIcon type={type} />
-        <span>
-          <Plus aria-hidden="true" size={13} />
-        </span>
         {t(fieldTypeLabels[type])}
       </Button>
     </div>

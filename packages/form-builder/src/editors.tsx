@@ -380,25 +380,7 @@ export function AdvancedProperties({
           )}
         </>
       )}
-      {(section === "all" || section === "appearance") && (
-        <>
-          {["columns", "table"].includes(field.type) && (
-            <Field label={t("Số cột")}>
-              <Select
-                label={t("Số cột")}
-                value={String(field.columns ?? 2)}
-                options={[1, 2, 3].map((number) => ({
-                  value: String(number),
-                  label: String(number),
-                }))}
-                onValueChange={(value) =>
-                  patch({ columns: Number(value) as 1 | 2 | 3 })
-                }
-              />
-            </Field>
-          )}
-        </>
-      )}
+      {(section === "all" || section === "appearance") && <></>}
       {(section === "all" || section === "validation") && (
         <>
           <Field label={t("Chỉ đọc")}>

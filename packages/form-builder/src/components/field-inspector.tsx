@@ -131,6 +131,21 @@ export function FieldInspector({
             }
           />
         </Field>
+        {["columns", "table"].includes(field.type) && (
+          <Field label={t("Trường trên mỗi hàng")}>
+            <Select
+              label={t("Trường trên mỗi hàng")}
+              value={String(field.columns ?? 2)}
+              options={[1, 2, 3].map((number) => ({
+                value: String(number),
+                label: t("{{count}} trường", { count: number }),
+              }))}
+              onValueChange={(value) =>
+                patch({ columns: Number(value) as 1 | 2 | 3 })
+              }
+            />
+          </Field>
+        )}
         <div className="fd-inspector-layout-actions">
           <Button
             type="button"

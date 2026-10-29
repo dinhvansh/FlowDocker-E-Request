@@ -47,6 +47,8 @@ export const formMessages = {
   "Sắp xếp trường trong canvas": "Arrange the field on the canvas",
   "Tìm nhóm...": "Search groups...",
   "Không tìm thấy nhóm": "No groups found",
+  "Trường trên mỗi hàng": "Fields per row",
+  "{{count}} trường": "{{count}} fields",
   "Nhân bản trường": "Duplicate field",
   "Thay cấu trúc bằng schema": "Replace with schema",
   "Nhập schema FlowDocker, không nhận JavaScript hoặc HTML thực thi. Có thể hoàn tác sau khi nhập.":

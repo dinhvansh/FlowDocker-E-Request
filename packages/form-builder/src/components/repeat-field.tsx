@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useI18n } from "@flowdocker/i18n";
-import { Plus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { Button } from "@flowdocker/ui";
 import { defaultValues } from "../engine";
 import { isContainer, type FormField, type PreviewValues } from "../schema";
@@ -121,7 +121,6 @@ export function RepeatField({
           disabled={disabled || rows.length >= (field.maxRows ?? 100)}
           onClick={() => onChange([...rows, defaultValues(children)])}
         >
-          <Plus />
           {t("Thêm dòng")}
         </Button>
       )}

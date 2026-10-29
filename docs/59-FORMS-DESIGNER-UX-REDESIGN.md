@@ -12,14 +12,14 @@ Journey: create/open → insert/drag → select/edit in place → configure prop
 
 ## 3. Design Audit / impact map
 
-| Priority | Observed issue | Correction / acceptance |
-| --- | --- | --- |
-| P1 | Field selection still requires navigating to inspector to rename | Edit selected label on canvas; keyboard alternative; undo restores it |
-| P1 | Expense repeat renders vertically as cards | Real table headers/rows/cells in designer and runtime; two rows calculate correctly |
-| P1 | Six inspector tabs take several rows at laptop widths | Context header and one category selector; labels/required first, technical key afterward |
-| P1 | Drop position lacks a clear field indicator | Mark valid target and insertion intent, preserve container-cycle guard |
-| P1 | Payment fixture lacks explicit currency/amount/description controls | Complete synthetic fixture without changing engine contracts |
-| P2 | Large designer mixes property forms and orchestration | Extract typed contextual FieldInspector; retain shared AdvancedProperties logic |
+| Priority | Observed issue                                                      | Correction / acceptance                                                                  |
+| -------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| P1       | Field selection still requires navigating to inspector to rename    | Edit selected label on canvas; keyboard alternative; undo restores it                    |
+| P1       | Expense repeat renders vertically as cards                          | Real table headers/rows/cells in designer and runtime; two rows calculate correctly      |
+| P1       | Six inspector tabs take several rows at laptop widths               | Context header and one category selector; labels/required first, technical key afterward |
+| P1       | Drop position lacks a clear field indicator                         | Mark valid target and insertion intent, preserve container-cycle guard                   |
+| P1       | Payment fixture lacks explicit currency/amount/description controls | Complete synthetic fixture without changing engine contracts                             |
+| P2       | Large designer mixes property forms and orchestration               | Extract typed contextual FieldInspector; retain shared AdvancedProperties logic          |
 
 Shared toolkit: canvas, inspector, repeat presentation and designer. Shared primitives/i18n: existing UI package. E-Request adapter: storage, navigation, synthetic providers. Schema/engine/API/DB/Temporal/Teams/security/migration: no planned change. No production backend claim; local draft and preview semantics stay explicit. No new runtime dependencies planned.
 
@@ -42,14 +42,14 @@ The interactive implementation now uses the existing runtime controls, a context
 
 Evidence scripts/results under `output/playwright/forms-redesign-*`:
 
-| Flow | Actual operations and results |
-| --- | --- |
-| Create | Dialog creates a new draft; keyboard Enter inserts a textbox; inline label retains focus; Required updates real input; Undo/Redo; Save; reload; reopen from catalog restores field. |
-| Nested drag | Pointer drags Email from toolbox into columns; existing children survive; Undo removes insertion. Pointer drag also reorders Vendor among nested siblings with a valid-target indicator. Escape cancels label edit. |
-| New repeating table | Toolbox creates repeat; container selector inserts currency child; root currency field configured with Sum and `lines.amount`; preview rows 0.20 + 0.30 produce 0.50. This was authored through controls, not injected state. |
-| Payment | Change visibility condition using the option label; Preview applies it; Undo restores advance-only visibility. Missing inputs produce an error summary. Company/dependent department providers load; vendor/amount/advance reason and two expense rows filled; total 0.50; local validation succeeds. Removing first row gives 0.30; minimum row removal disabled. Saved payment reopens after reload. |
-| Responsive/themes/languages | All 16 combinations: 1366×768, 1440×900, 1920×1080, 390×844 × VI/EN × Light/Dark. Screenshot each; document scrollWidth equals viewport width throughout. Mobile preview and stacked expense rows inspected. |
-| Independent source | Separate source directory served at port 5182, outside repository; Payment renders and injected company/dependent department providers work. |
+| Flow                        | Actual operations and results                                                                                                                                                                                                                                                                                                                                                                          |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Create                      | Dialog creates a new draft; keyboard Enter inserts a textbox; inline label retains focus; Required updates real input; Undo/Redo; Save; reload; reopen from catalog restores field.                                                                                                                                                                                                                    |
+| Nested drag                 | Pointer drags Email from toolbox into columns; existing children survive; Undo removes insertion. Pointer drag also reorders Vendor among nested siblings with a valid-target indicator. Escape cancels label edit.                                                                                                                                                                                    |
+| New repeating table         | Toolbox creates repeat; container selector inserts currency child; root currency field configured with Sum and `lines.amount`; preview rows 0.20 + 0.30 produce 0.50. This was authored through controls, not injected state.                                                                                                                                                                          |
+| Payment                     | Change visibility condition using the option label; Preview applies it; Undo restores advance-only visibility. Missing inputs produce an error summary. Company/dependent department providers load; vendor/amount/advance reason and two expense rows filled; total 0.50; local validation succeeds. Removing first row gives 0.30; minimum row removal disabled. Saved payment reopens after reload. |
+| Responsive/themes/languages | All 16 combinations: 1366×768, 1440×900, 1920×1080, 390×844 × VI/EN × Light/Dark. Screenshot each; document scrollWidth equals viewport width throughout. Mobile preview and stacked expense rows inspected.                                                                                                                                                                                           |
+| Independent source          | Separate source directory served at port 5182, outside repository; Payment renders and injected company/dependent department providers work.                                                                                                                                                                                                                                                           |
 
 These are separate connected verification flows, not a claim that the entire payment schema was hand-built in one continuous recording. Saved drafts are opened from the catalog after reload; startup currently opens the first stored draft. Browser scripts were corrected where selectors assumed a host-only wrapper or a unique manually reused title. Earlier duplicate-ID console errors occurred before the fixture correction; corrected Payment and new-draft journeys completed afterward.
 
@@ -62,15 +62,15 @@ These are separate connected verification flows, not a claim that the entire pay
 
 ### Verification results
 
-| Command | Result |
-| --- | --- |
-| `npm run typecheck` | PASS |
-| `npm run lint` | PASS, includes i18n check |
-| `npm test -- --maxWorkers=1` | PASS — 13 files, 59 tests |
-| `npm run format:check` | PASS |
-| `npm run build` | PASS — existing large-chunk advisory remains |
-| `npm run build:forms` | PASS — JS/CSS/declarations and 57 bundled license entries |
-| Independent source `npm install`, typecheck, test, build | PASS — 8 files, 44 tests; no E-Request source required |
+| Command                                                  | Result                                                    |
+| -------------------------------------------------------- | --------------------------------------------------------- |
+| `npm run typecheck`                                      | PASS                                                      |
+| `npm run lint`                                           | PASS, includes i18n check                                 |
+| `npm test -- --maxWorkers=1`                             | PASS — 13 files, 59 tests                                 |
+| `npm run format:check`                                   | PASS                                                      |
+| `npm run build`                                          | PASS — existing large-chunk advisory remains              |
+| `npm run build:forms`                                    | PASS — JS/CSS/declarations and 57 bundled license entries |
+| Independent source `npm install`, typecheck, test, build | PASS — 8 files, 44 tests; no E-Request source required    |
 
 Three new regression checks cover inline label history/focus/cancellation, real repeat table/calculated total/minimum rows and complete payment fixture validity. Initial full run hit the 5-second timeout in the existing multi-step canvas test; two interactive canvas journey tests now have explicit 15-second limits. Assertions were retained; no global timeout or skipped tests. Final run passes. Logs: `output/forms-redesign-{typecheck,lint,tests,format,build,build-forms}.log`.
 
@@ -85,3 +85,7 @@ Local draft/preview remains frontend-only. File upload requires a host adapter a
 The follow-up slice adds a reusable searchable `Combobox` built from the existing Radix/shadcn Popover and shared FlowDocker primitives. Runtime select fields and the designer's parent-container picker now support filtering without changing persisted values or provider contracts. The inspector exposes a persistent **Layout position** group with searchable parent selection and explicit move up/down actions. All 33 toolbox types now carry a consistent Lucide type icon in the palette and outline; the field-type schema and renderer contracts remain unchanged.
 
 Browser evidence: the Purchase Request category picker filtered `văn` to `Văn phòng phẩm`; the layout picker displayed an explicit empty state for an unmatched group; 1366 and 390 screenshots are in `output/playwright/forms-upgrade-1366.png` and `forms-upgrade-390.png`, with no horizontal overflow at 390px. The new UI test covers filtering and selection. Verification after this slice: **14 files / 60 tests PASS**, typecheck/lint/i18n/format PASS, application and portable forms builds PASS. Existing chunk-size advisory remains.
+
+### Layout simplification follow-up
+
+Removed decorative plus icons from the toolbox and canvas insert actions while preserving their accessible text labels and keyboard actions. The layout position panel now exposes **Fields per row** directly for `columns` and `table` containers; values 1, 2 and 3 map to the existing `FormField.columns` contract. Desktop canvas uses the selected grid, while the existing mobile breakpoint collapses to one column. Browser evidence: `output/playwright/forms-layout-3-columns.png` shows three payment fields in one row with the inspector set to `3 fields`.
