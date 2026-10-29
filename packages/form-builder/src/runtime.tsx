@@ -13,12 +13,12 @@ import {
   Badge,
   Button,
   Checkbox,
+  Combobox,
   Field,
   FieldGroup,
   Input,
   DatePicker,
   Notice,
-  Select,
   Tabs,
   Textarea,
   FieldSet,
@@ -779,7 +779,7 @@ function RuntimeField({
     );
   else if (field.type === "select")
     control = (
-      <Select
+      <Combobox
         id={id}
         label={label}
         value={text}

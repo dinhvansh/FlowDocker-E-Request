@@ -24,10 +24,43 @@ import {
   PanelLeft,
   PanelRight,
   Settings2,
+  AlignJustify,
+  CalendarDays,
+  CalendarClock,
+  CheckSquare,
+  CircleAlert,
+  CircleDollarSign,
+  CircleDot,
+  ClipboardList,
+  Columns3,
+  EyeOff,
+  Hash,
+  KeyRound,
+  LayoutPanelTop,
+  Link,
+  List,
+  ListChecks,
+  LockKeyhole,
+  Mail,
+  MapPin,
+  PanelsTopLeft,
+  Paperclip,
+  PenLine,
+  Phone,
+  SquareMousePointer,
+  Table2,
+  TableProperties,
+  Tags,
+  Text,
+  Type,
+  Clock3,
+  Box,
+  type LucideIcon,
 } from "lucide-react";
 import {
   Badge,
   Button,
+  Combobox,
   EmptyState,
   Field,
   Input,
@@ -143,6 +176,7 @@ function PaletteItem({
         onClick={onAdd}
         aria-label={t("Thêm {{type}}", { type: t(fieldTypeLabels[type]) })}
       >
+        <FieldTypeIcon type={type} />
         <span>
           <Plus aria-hidden="true" size={13} />
         </span>
@@ -150,6 +184,45 @@ function PaletteItem({
       </Button>
     </div>
   );
+}
+const fieldTypeIcons: Partial<Record<FormFieldType, LucideIcon>> = {
+  text: Type,
+  textarea: AlignJustify,
+  email: Mail,
+  url: Link,
+  phone: Phone,
+  password: LockKeyhole,
+  number: Hash,
+  currency: CircleDollarSign,
+  date: CalendarDays,
+  datetime: CalendarClock,
+  time: Clock3,
+  checkbox: CheckSquare,
+  select: List,
+  radio: CircleDot,
+  multiselect: ListChecks,
+  checkboxes: CheckSquare,
+  tags: Tags,
+  file: Paperclip,
+  signature: PenLine,
+  hidden: EyeOff,
+  content: Text,
+  section: LayoutPanelTop,
+  columns: Columns3,
+  tabs: PanelsTopLeft,
+  repeat: Table2,
+  keyvalue: KeyRound,
+  survey: ClipboardList,
+  address: MapPin,
+  day: CalendarClock,
+  container: Box,
+  table: TableProperties,
+  alert: CircleAlert,
+  button: SquareMousePointer,
+};
+function FieldTypeIcon({ type }: { type: FormFieldType }) {
+  const Icon = fieldTypeIcons[type] ?? Type;
+  return <Icon className="fd-field-type-icon" aria-hidden="true" />;
 }
 function OutlineRow({
   field,
@@ -197,7 +270,12 @@ function OutlineRow({
         <strong>{field.label[locale] || field.key}</strong>
         <small className="fd-form-key">{field.key}</small>
       </TableCell>
-      <TableCell>{t(fieldTypeLabels[field.type])}</TableCell>
+      <TableCell>
+        <span className="fd-field-type-label">
+          <FieldTypeIcon type={field.type} />
+          {t(fieldTypeLabels[field.type])}
+        </span>
+      </TableCell>
       <TableCell>
         {field.required ? (
           <Badge tone="warning">{t("Bắt buộc")}</Badge>
@@ -591,7 +669,7 @@ export function FormDesigner({
               onChange={(event) => setQuery(event.target.value)}
             />
             <Field label={t("Thêm vào nhóm")}>
-              <Select
+              <Combobox
                 label={t("Thêm vào nhóm")}
                 value={
                   containers.some((row) => row.field.id === destination)

@@ -79,3 +79,9 @@ Independent editable source: `C:\Users\van.nguyendinh\Documents\Codex\2026-10-28
 ### Practical limits / owner review
 
 Local draft/preview remains frontend-only. File upload requires a host adapter and is explicitly unavailable in the example; no submission/backend success is simulated. Complex repeated layouts use stacked rows. Formula source identifiers remain an advanced text input with validation. The package still includes global font/preflight styles, so embedding hosts must review style interaction. No production accessibility certification, commercial licensing terms, publishing, backend enforcement or quantified equivalence to another product is claimed. Owner visual acceptance and merge are pending. PR #1/#2 remain untouched.
+
+### Follow-up field UX slice
+
+The follow-up slice adds a reusable searchable `Combobox` built from the existing Radix/shadcn Popover and shared FlowDocker primitives. Runtime select fields and the designer's parent-container picker now support filtering without changing persisted values or provider contracts. The inspector exposes a persistent **Layout position** group with searchable parent selection and explicit move up/down actions. All 33 toolbox types now carry a consistent Lucide type icon in the palette and outline; the field-type schema and renderer contracts remain unchanged.
+
+Browser evidence: the Purchase Request category picker filtered `văn` to `Văn phòng phẩm`; the layout picker displayed an explicit empty state for an unmatched group; 1366 and 390 screenshots are in `output/playwright/forms-upgrade-1366.png` and `forms-upgrade-390.png`, with no horizontal overflow at 390px. The new UI test covers filtering and selection. Verification after this slice: **14 files / 60 tests PASS**, typecheck/lint/i18n/format PASS, application and portable forms builds PASS. Existing chunk-size advisory remains.

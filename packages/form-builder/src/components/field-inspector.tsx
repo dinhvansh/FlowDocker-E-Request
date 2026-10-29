@@ -3,6 +3,7 @@ import { ArrowDown, ArrowUp, Copy, Trash2 } from "lucide-react";
 import {
   Button,
   Checkbox,
+  Combobox,
   Field,
   FieldGroup,
   Input,
@@ -99,6 +100,56 @@ export function FieldInspector({
           { value: "advanced", label: t("Nâng cao") },
         ]}
       />
+      <div className="fd-inspector-layout">
+        <div className="fd-inspector-layout-heading">
+          <strong>{t("Vị trí bố cục")}</strong>
+          <span>{t("Sắp xếp trường trong canvas")}</span>
+        </div>
+        <Field label={t("Đặt trong nhóm")}>
+          <Combobox
+            label={t("Đặt trong nhóm")}
+            value={parent || "__root__"}
+            searchPlaceholder={t("Tìm nhóm...")}
+            emptyLabel={t("Không tìm thấy nhóm")}
+            options={[
+              { value: "__root__", label: t("Cấp ngoài cùng") },
+              ...containers
+                .filter(
+                  (item) =>
+                    !flattenFields([field]).some(
+                      (child) => child.id === item.id,
+                    ),
+                )
+                .map((item) => ({
+                  value: item.id,
+                  label: item.label[locale],
+                })),
+            ]}
+            disabled={readOnly}
+            onValueChange={(value) =>
+              onParentChange(value === "__root__" ? "" : value)
+            }
+          />
+        </Field>
+        <div className="fd-inspector-layout-actions">
+          <Button
+            type="button"
+            aria-label={t("Lên trên")}
+            disabled={readOnly || !canMoveUp}
+            onClick={() => onMove(-1)}
+          >
+            <ArrowUp data-icon="inline-start" /> {t("Lên trên")}
+          </Button>
+          <Button
+            type="button"
+            aria-label={t("Xuống dưới")}
+            disabled={readOnly || !canMoveDown}
+            onClick={() => onMove(1)}
+          >
+            <ArrowDown data-icon="inline-start" /> {t("Xuống dưới")}
+          </Button>
+        </div>
+      </div>
       <fieldset disabled={readOnly} className="fd-form-property-fieldset">
         {section === "basic" ? (
           <FieldGroup>
@@ -162,29 +213,6 @@ export function FieldInspector({
               patch={patch}
               section="general"
             />
-            <Field label={t("Đặt trong nhóm")}>
-              <Select
-                label={t("Đặt trong nhóm")}
-                value={parent || "__root__"}
-                options={[
-                  { value: "__root__", label: t("Cấp ngoài cùng") },
-                  ...containers
-                    .filter(
-                      (item) =>
-                        !flattenFields([field]).some(
-                          (child) => child.id === item.id,
-                        ),
-                    )
-                    .map((item) => ({
-                      value: item.id,
-                      label: item.label[locale],
-                    })),
-                ]}
-                onValueChange={(value) =>
-                  onParentChange(value === "__root__" ? "" : value)
-                }
-              />
-            </Field>
           </FieldGroup>
         ) : (
           <>

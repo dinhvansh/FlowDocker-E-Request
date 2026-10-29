@@ -12,6 +12,8 @@ export {
 export type { ButtonProps, BadgeProps, Tab, TableColumn } from "./primitives";
 export { Select } from "./select";
 export type { SelectProps, SelectOption } from "./select";
+export { Combobox } from "./combobox";
+export type { ComboboxProps, ComboboxOption } from "./combobox";
 export { Input } from "./components/ui/input";
 export { Textarea } from "./components/ui/textarea";
 export { Checkbox } from "./components/ui/checkbox";
