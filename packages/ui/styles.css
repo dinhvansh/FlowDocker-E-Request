@@ -3550,3 +3550,21 @@ a {
     min-width: 190px;
   }
 }
+
+/* Keep inspector controls within the narrow property panel. */
+.fd-inspector-layout > [data-slot="field"] {
+  grid-column: 1 / -1;
+}
+.fd-form-properties .fd-combobox-trigger {
+  width: 100%;
+  min-width: 0;
+}
+.fd-form-properties .fd-combobox-trigger > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fd-form-properties .fd-combobox-trigger > svg {
+  flex-shrink: 0;
+}
