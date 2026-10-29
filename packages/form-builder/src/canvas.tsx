@@ -61,12 +61,18 @@ function FieldOverlay({
     disabled: props.readOnly,
     data: { field },
   });
+  const containerDrop = useDroppable({
+    id: `container:${field.id}`,
+    disabled: !isContainer(field) || props.readOnly,
+    data: { parentId: field.id },
+  });
   return (
     <div
       ref={sortable.setNodeRef}
       data-canvas-field={field.id}
       data-selected={selected}
       data-drop-active={!!sortable.isOver && !!validDrop}
+      data-dragging={sortable.isDragging || undefined}
       className="fd-canvas-field"
       style={{
         transform: CSS.Transform.toString(sortable.transform),
@@ -206,6 +212,17 @@ function FieldOverlay({
           </Badge>
         )}
       </div>
+      {isContainer(field) && active && validDrop && (
+        <div
+          ref={containerDrop.setNodeRef}
+          className="fd-container-drop-zone"
+          data-drop-active={containerDrop.isOver || undefined}
+        >
+          {containerDrop.isOver
+            ? t("Thả vào nhóm này")
+            : t("Kéo vào đây để thêm vào nhóm")}
+        </div>
+      )}
       {isContainer(field) && !field.children?.length && (
         <Button
           disabled={props.readOnly}

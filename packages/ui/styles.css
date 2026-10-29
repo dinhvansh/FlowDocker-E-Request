@@ -2462,6 +2462,17 @@ a {
 .fd-canvas-field[data-drop-active="true"] {
   outline: 2px dashed var(--fd-color-brand);
   outline-offset: 2px;
+  background: color-mix(in srgb, var(--fd-brand-soft) 68%, transparent);
+  transition:
+    background 160ms ease,
+    outline-color 160ms ease,
+    box-shadow 160ms ease;
+  box-shadow: 0 0 0 4px
+    color-mix(in srgb, var(--fd-color-brand) 12%, transparent);
+}
+.fd-canvas-field[data-dragging="true"] {
+  opacity: 0.32;
+  transition: opacity 140ms ease;
 }
 .fd-canvas-drop-indicator {
   position: absolute;
@@ -2473,6 +2484,70 @@ a {
   pointer-events: none;
   font-size: 12px;
   border-radius: 4px;
+  animation: fd-drop-pulse 1.15s ease-in-out infinite;
+}
+.fd-container-drop-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  margin: 8px 0 2px;
+  border: 1px dashed
+    color-mix(in srgb, var(--fd-color-brand) 50%, var(--fd-border));
+  border-radius: 6px;
+  color: var(--fd-text-muted);
+  background: color-mix(in srgb, var(--fd-brand-soft) 42%, transparent);
+  font-size: 11px;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+.fd-container-drop-zone[data-drop-active="true"] {
+  border-color: var(--fd-color-brand);
+  color: var(--fd-color-brand);
+  background: var(--fd-brand-soft);
+  transform: scale(1.01);
+}
+.fd-dnd-preview {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 4px 8px;
+  min-width: 190px;
+  max-width: 280px;
+  padding: 10px 12px;
+  border: 1px solid var(--fd-color-brand);
+  border-radius: 8px;
+  background: var(--fd-surface-default);
+  color: var(--fd-text-primary);
+  box-shadow: 0 12px 28px
+    color-mix(in srgb, var(--fd-color-brand) 20%, transparent);
+  pointer-events: none;
+  transform: rotate(1deg) scale(1.02);
+}
+.fd-dnd-preview > svg {
+  width: 16px;
+  height: 16px;
+  color: var(--fd-color-brand);
+}
+.fd-dnd-preview span {
+  font-weight: 600;
+}
+.fd-dnd-preview small {
+  grid-column: 2;
+  color: var(--fd-text-muted);
+  font-size: 11px;
+}
+@keyframes fd-drop-pulse {
+  0%,
+  100% {
+    opacity: 0.78;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 .fd-repeat-table {
   border-collapse: collapse;

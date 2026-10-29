@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import {
   DndContext,
+  DragOverlay,
   KeyboardSensor,
   PointerSensor,
   closestCenter,
@@ -154,7 +155,11 @@ function PaletteItem({
   disabled: boolean;
 }) {
   const { t } = useI18n();
-  const drag = useDraggable({ id: `palette:${type}`, disabled });
+  const drag = useDraggable({
+    id: `palette:${type}`,
+    disabled,
+    data: { paletteType: type },
+  });
   return (
     <div ref={drag.setNodeRef} className="fd-toolbox-item">
       <button
@@ -312,6 +317,10 @@ export function FormDesigner({
   const [importOpen, setImportOpen] = useState(false);
   const [json, setJson] = useState("");
   const [error, setError] = useState("");
+  const [activeDrag, setActiveDrag] = useState<{
+    type: FormFieldType;
+    label: string;
+  } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const rows = outline(definition.fields);
   const field =
@@ -604,8 +613,46 @@ export function FormDesigner({
             onDragCancel: () => t("Đã hủy di chuyển."),
           },
         }}
+        onDragStart={({ active }) => {
+          const data = active.data.current as
+            { paletteType?: FormFieldType; field?: FormField } | undefined;
+          const dragged = data?.field;
+          const type = data?.paletteType ?? dragged?.type;
+          if (type)
+            setActiveDrag({
+              type,
+              label: dragged?.label[locale] ?? t(fieldTypeLabels[type]),
+            });
+        }}
+        onDragCancel={() => setActiveDrag(null)}
         onDragEnd={({ active, over }) => {
+          setActiveDrag(null);
           if (!over || readOnly) return;
+          const overId = String(over.id);
+          if (overId.startsWith("container:")) {
+            const parentId = overId.slice("container:".length);
+            const list =
+              rows.find((row) => row.field.id === parentId)?.field.children ??
+              [];
+            if (String(active.id).startsWith("palette:")) {
+              add(
+                String(active.id).slice(8) as FormFieldType,
+                parentId,
+                list.length,
+              );
+            } else {
+              commit({
+                ...definition,
+                fields: moveField(
+                  definition.fields,
+                  String(active.id),
+                  parentId,
+                  list.length,
+                ),
+              });
+            }
+            return;
+          }
           if (String(active.id).startsWith("palette:")) {
             const target = rows.find((row) => row.field.id === over.id);
             const parentId =
@@ -875,6 +922,20 @@ export function FormDesigner({
             )}
           </aside>
         </div>
+        <DragOverlay
+          dropAnimation={{
+            duration: 180,
+            easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
+          }}
+        >
+          {activeDrag ? (
+            <div className="fd-dnd-preview" aria-hidden="true">
+              <FieldTypeIcon type={activeDrag.type} />
+              <span>{activeDrag.label}</span>
+              <small>{t("Thả vào bố cục")}</small>
+            </div>
+          ) : null}
+        </DragOverlay>
       </DndContext>
       {importOpen && (
         <Modal

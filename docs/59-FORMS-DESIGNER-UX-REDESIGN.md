@@ -89,3 +89,9 @@ Browser evidence: the Purchase Request category picker filtered `văn` to `Văn 
 ### Layout simplification follow-up
 
 Removed decorative plus icons from the toolbox and canvas insert actions while preserving their accessible text labels and keyboard actions. The layout position panel now exposes **Fields per row** directly for `columns` and `table` containers; values 1, 2 and 3 map to the existing `FormField.columns` contract. Desktop canvas uses the selected grid, while the existing mobile breakpoint collapses to one column. Browser evidence: `output/playwright/forms-layout-3-columns.png` shows three payment fields in one row with the inspector set to `3 fields`.
+
+### Drag and drop polish follow-up
+
+Palette dragging now keeps the field visible in a floating preview card while the pointer moves across the canvas. Valid field targets receive a restrained highlight, and column/group containers expose a dedicated bottom drop zone with a clear insertion message. Dropping on the container appends the new field to that group while preserving the existing children; cancelling the gesture leaves the schema unchanged. The interaction uses the existing dnd-kit engine and keeps the existing keyboard insert actions.
+
+Browser evidence: `output/playwright/forms-dnd-during.png` captures the Email preview over the highlighted payment-details column layout at 1440×900. The browser journey reported `preview: 1`, `active: 1`, and `inserted: 1`; the focused canvas regression suite remains green.

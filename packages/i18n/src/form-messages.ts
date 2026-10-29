@@ -47,6 +47,8 @@ export const formMessages = {
   "Sắp xếp trường trong canvas": "Arrange the field on the canvas",
   "Tìm nhóm...": "Search groups...",
   "Không tìm thấy nhóm": "No groups found",
+  "Thả vào bố cục": "Drop into the layout",
+  "Kéo vào đây để thêm vào nhóm": "Drag here to add to the group",
   "Trường trên mỗi hàng": "Fields per row",
   "{{count}} trường": "{{count}} fields",
   "Nhân bản trường": "Duplicate field",
