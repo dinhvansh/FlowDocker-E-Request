@@ -57,6 +57,7 @@ const demoProviders: Record<string, DataProvider> = {
 const formDataSources: readonly FormDataSource[] = [
   {
     id: "organization.people",
+    kind: "person",
     label: { vi: "Người trong tổ chức", en: "Organization people" },
     description: {
       vi: "Người đang hoạt động từ Master Data nội bộ và tài khoản demo hiện tại. Chưa kết nối Microsoft 365 hay hệ thống nhân sự.",
@@ -65,6 +66,7 @@ const formDataSources: readonly FormDataSource[] = [
   },
   {
     id: "demo.companies",
+    kind: "record",
     label: { vi: "Công ty · dữ liệu mẫu", en: "Companies · demo data" },
     description: {
       vi: "Một công ty minh họa, dùng để thử biểu mẫu.",
@@ -73,6 +75,7 @@ const formDataSources: readonly FormDataSource[] = [
   },
   {
     id: "demo.departments",
+    kind: "record",
     label: { vi: "Phòng ban · dữ liệu mẫu", en: "Departments · demo data" },
     description: {
       vi: "Danh sách phòng ban minh họa. Điền mã trường công ty vào Phụ thuộc mã trường, rồi chọn công ty trong Xem thử.",

@@ -8,6 +8,50 @@ import {
 import { createField } from "./schema";
 
 afterEach(cleanup);
+it("limits people sources while preserving an incompatible saved source until explicitly changed", () => {
+  const patch = vi.fn();
+  const field = {
+    ...createField("person", []),
+    dataSource: { provider: "departments" },
+  };
+  render(
+    <I18nProvider initialLocale="en">
+      <DataSourceEditor
+        field={field}
+        sources={[
+          { ...sources[0], kind: "person" },
+          {
+            ...sources[0],
+            id: "departments",
+            kind: "record",
+            label: { vi: "Phòng ban", en: "Departments" },
+          },
+          {
+            ...sources[0],
+            id: "companies",
+            kind: "record",
+            label: { vi: "Công ty", en: "Companies" },
+          },
+        ]}
+        patch={patch}
+      />
+    </I18nProvider>,
+  );
+  expect(patch).not.toHaveBeenCalled();
+  fireEvent.keyDown(screen.getByRole("combobox", { name: "Data source" }), {
+    key: "ArrowDown",
+  });
+  expect(
+    screen.queryByRole("option", { name: "Departments" }),
+  ).toBeNull();
+  expect(
+    screen.queryByRole("option", { name: "Companies" }),
+  ).toBeNull();
+  fireEvent.click(screen.getByRole("option", { name: "Example people" }));
+  expect(patch).toHaveBeenCalledWith({
+    dataSource: { provider: "example.people" },
+  });
+});
 const sources: FormDataSource[] = [
   {
     id: "example.people",

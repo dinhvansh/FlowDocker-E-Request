@@ -763,6 +763,8 @@ export const en = {
   "Nguồn {{source}} chưa có trong ứng dụng này. Chọn nguồn khác hoặc dùng danh sách nhập tay.":
     "Source {{source}} is unavailable in this application. Choose another source or use manual choices.",
   "Nguồn không khả dụng: {{source}}": "Unavailable source: {{source}}",
+  "Nguồn này không chứa danh sách người. Chọn Người trong tổ chức hoặc nhập danh sách người thủ công.":
+    "This source does not contain people. Choose Organization people or enter a people list manually.",
   "Người đang tạo biểu mẫu": "Current form creator",
   "Nhập giá trị": "Enter a value",
   "Cho phép đổi người": "Allow changing person",
