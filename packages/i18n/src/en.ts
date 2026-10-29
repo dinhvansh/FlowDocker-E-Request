@@ -1,5 +1,18 @@
 import { formMessages } from "./form-messages";
 export const en = {
+  "Sơ đồ": "Diagram",
+  "Danh sách": "List",
+  "{{count}} nhân viên · {{departments}} phòng ban":
+    "{{count}} employees · {{departments}} departments",
+  "Đang tải sơ đồ tổ chức...": "Loading organization chart...",
+  "Thông tin nhân viên": "Employee details",
+  "Đóng thông tin": "Close details",
+  "Xem thông tin {{name}}": "View details for {{name}}",
+  "Mở nhánh của {{name}}": "Expand branch for {{name}}",
+  "Thu gọn nhánh của {{name}}": "Collapse branch for {{name}}",
+  "Sơ đồ tổ chức tương tác": "Interactive organization chart",
+  "Kéo nền để di chuyển · dùng nút + / − để phóng to, thu nhỏ":
+    "Drag the background to pan · use + / − to zoom",
   "Chọn người": "People picker",
   "Cho phép chọn nhiều người": "Allow multiple people",
   "Tìm tên, email hoặc phòng ban...": "Search name, email or department...",

@@ -40,6 +40,7 @@ async (page) => {
   if(await page.getByText('Trường requester là bắt buộc.',{exact:true}).count()) throw Error('Valid requester rejected');
   await page.getByRole('button',{name:'Master Data',exact:true}).click();
   await page.getByRole('tab',{name:'Sơ đồ tổ chức',exact:true}).click();
+  await page.getByRole('tab',{name:'Danh sách',exact:true}).click();
   await page.getByRole('heading',{name:'Sơ đồ tổ chức',exact:true}).waitFor();
   if(await page.locator('.fd-org-person').count()!==7) throw Error('Wrong chart count');
   await page.screenshot({path:'output/playwright/organization-1366-vi-light.png'});
