@@ -7,6 +7,7 @@ import {
 } from "react";
 import type { MasterEntity } from "@flowdocker/app-contracts";
 import { peopleOptions } from "./organization";
+import { demoCurrentPersonId, demoProfile } from "./demo-profile";
 import { useI18n } from "@flowdocker/i18n";
 import {
   ArrowLeft,
@@ -58,8 +59,8 @@ const formDataSources: readonly FormDataSource[] = [
     id: "organization.people",
     label: { vi: "Người trong tổ chức", en: "Organization people" },
     description: {
-      vi: "Lấy người đang hoạt động từ Master Data nội bộ trên máy. Chưa kết nối Microsoft 365 hay hệ thống nhân sự.",
-      en: "Active people from local Master Data on this device. Microsoft 365 and HR systems are not connected.",
+      vi: "Người đang hoạt động từ Master Data nội bộ và tài khoản demo hiện tại. Chưa kết nối Microsoft 365 hay hệ thống nhân sự.",
+      en: "Active people from local Master Data and the current demo account. Microsoft 365 and HR systems are not connected.",
     },
   },
   {
@@ -99,7 +100,19 @@ export function FormsPage({
   const providers = useMemo(
     () => ({
       ...demoProviders,
-      "organization.people": async () => peopleOptions(entities),
+      "organization.people": async () => [
+        ...peopleOptions(entities).filter(
+          (person) => person.value !== demoCurrentPersonId,
+        ),
+        {
+          value: demoCurrentPersonId,
+          label: { vi: demoProfile.name, en: demoProfile.name },
+          description: {
+            vi: "Tài khoản hiện tại · Demo",
+            en: "Current account · Demo",
+          },
+        },
+      ],
     }),
     [entities],
   );
@@ -360,6 +373,7 @@ export function FormsPage({
                   </FieldGroup>
                 </div>
                 <FormDesigner
+                  runtimeContext={{ currentUserId: demoCurrentPersonId }}
                   dataSources={formDataSources}
                   providers={providers}
                   inspectorSection={tab === "logic" ? "logic" : "basic"}
@@ -390,6 +404,7 @@ export function FormsPage({
                     data-orientation={draft.orientation ?? "portrait"}
                   >
                     <FormPreview
+                      runtimeContext={{ currentUserId: demoCurrentPersonId }}
                       key={draft.id}
                       definition={draft}
                       providers={providers}

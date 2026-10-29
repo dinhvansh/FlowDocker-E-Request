@@ -163,9 +163,14 @@ export function calculate(
     return null;
   }
 }
+export interface FormRuntimeContext {
+  /** Stable directory ID supplied by the host. Not authentication or server authorization. */
+  currentUserId?: string;
+}
 export function defaultValues(
   fields: FormField[],
   budget = { count: 0 },
+  runtimeContext: FormRuntimeContext = {},
 ): PreviewValues {
   const result: PreviewValues = {};
   for (const field of fields) {
@@ -173,13 +178,28 @@ export function defaultValues(
     if (field.type === "repeat")
       result[field.key] = Array.from(
         { length: Math.min(field.minRows ?? 0, 100) },
-        () => defaultValues(field.children ?? [], budget),
+        () => defaultValues(field.children ?? [], budget, runtimeContext),
       );
     else if (field.type === "container")
-      result[field.key] = defaultValues(field.children ?? [], budget);
+      result[field.key] = defaultValues(
+        field.children ?? [],
+        budget,
+        runtimeContext,
+      );
     else if (isContainer(field))
-      Object.assign(result, defaultValues(field.children ?? [], budget));
-    else if (field.defaultValue !== undefined)
+      Object.assign(
+        result,
+        defaultValues(field.children ?? [], budget, runtimeContext),
+      );
+    else if (
+      field.type === "person" &&
+      field.defaultValueSource === "currentUser"
+    ) {
+      if (runtimeContext.currentUserId?.trim())
+        result[field.key] = field.multiple
+          ? [runtimeContext.currentUserId]
+          : runtimeContext.currentUserId;
+    } else if (field.defaultValue !== undefined)
       result[field.key] = structuredClone(field.defaultValue);
   }
   return result;
@@ -189,9 +209,13 @@ export function prepareValues(
   form: FormDefinition,
   input: PreviewValues,
   access: FieldAccess = {},
+  runtimeContext: FormRuntimeContext = {},
 ): PreviewValues {
   if (!isFormDefinition(form) || !validRuntimeValues(input)) return {};
-  let result: PreviewValues = { ...defaultValues(form.fields), ...input };
+  let result: PreviewValues = {
+    ...defaultValues(form.fields, undefined, runtimeContext),
+    ...input,
+  };
   const pass = (
     fields: FormField[],
     local: PreviewValues,
@@ -222,7 +246,14 @@ export function prepareValues(
               isRecord(row) && index < 100
                 ? pass(
                     field.children ?? [],
-                    { ...defaultValues(field.children ?? []), ...row },
+                    {
+                      ...defaultValues(
+                        field.children ?? [],
+                        undefined,
+                        runtimeContext,
+                      ),
+                      ...row,
+                    },
                     root,
                     budget,
                     `${path}.${index}.`,
@@ -233,7 +264,10 @@ export function prepareValues(
       else if (field.type === "container" && isRecord(next[field.key]))
         next[field.key] = pass(
           field.children ?? [],
-          next[field.key] as PreviewValues,
+          {
+            ...defaultValues(field.children ?? [], undefined, runtimeContext),
+            ...(next[field.key] as PreviewValues),
+          },
           root,
           budget,
           `${path}.`,
@@ -289,12 +323,13 @@ export function validatePreview(
   values: PreviewValues,
   access: FieldAccess = {},
   suppliedOptions: Record<string, string[]> = {},
+  runtimeContext: FormRuntimeContext = {},
 ): FormIssue[] {
   const issues = validateFormDefinition(form);
   if (issues.length) return issues;
   if (!validRuntimeValues(values))
     return [{ message: "Dữ liệu biểu mẫu vượt giới hạn xử lý." }];
-  const prepared = prepareValues(form, values, access);
+  const prepared = prepareValues(form, values, access, runtimeContext);
   const walk = (
     fields: FormField[],
     data: PreviewValues,
@@ -624,9 +659,10 @@ export function submissionValues(
   form: FormDefinition,
   values: PreviewValues,
   access: FieldAccess = {},
+  runtimeContext: FormRuntimeContext = {},
 ): PreviewValues {
   if (!isFormDefinition(form) || !validRuntimeValues(values)) return {};
-  const prepared = prepareValues(form, values, access);
+  const prepared = prepareValues(form, values, access, runtimeContext);
   const pick = (
     fields: FormField[],
     data: PreviewValues,

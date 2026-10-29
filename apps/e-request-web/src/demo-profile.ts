@@ -11,6 +11,7 @@ export type UserProfile = {
 };
 
 /** Synthetic fixture only; real identity and HR fields require verified APIs. */
+export const demoCurrentPersonId = "demo_current_person";
 export const demoProfile: UserProfile = {
   name: "Nguyễn Văn A",
   initials: "VA",

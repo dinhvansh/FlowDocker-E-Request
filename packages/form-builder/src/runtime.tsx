@@ -37,6 +37,7 @@ import {
   submissionValues,
   validatePreview,
   type FieldAccess,
+  type FormRuntimeContext,
 } from "./engine";
 import {
   flattenFields,
@@ -77,6 +78,7 @@ export interface CustomControlProps {
   "aria-invalid"?: boolean;
 }
 export interface FormRendererProps {
+  runtimeContext?: FormRuntimeContext;
   definition: FormDefinition;
   values: PreviewValues;
   onChange(values: PreviewValues): void;
@@ -496,6 +498,7 @@ interface RuntimeFieldsProps extends Pick<
   | "onRemoveFile"
   | "renderers"
   | "readOnly"
+  | "runtimeContext"
 > {
   design?: { wrap(field: FormField, control: ReactNode): ReactNode };
   fields: FormField[];
@@ -635,6 +638,7 @@ function RuntimeField({
           />
         ) : field.type === "repeat" ? (
           <RepeatField
+            runtimeContext={props.runtimeContext}
             field={field}
             rows={Array.isArray(value) ? value.filter(isRecord) : []}
             onChange={setValue}
@@ -965,6 +969,14 @@ function RuntimeField({
     );
   return (
     <div className="fd-runtime-field">
+      {field.defaultValueSource === "currentUser" &&
+        !props.runtimeContext?.currentUserId && (
+          <Notice tone="warning">
+            {t(
+              "Chưa xác định được người đang tạo. Ứng dụng cần cung cấp tài khoản hiện tại.",
+            )}
+          </Notice>
+        )}
       {field.dataSource && (
         <>
           {field.type !== "person" && (
@@ -1035,9 +1047,20 @@ export function FormRenderer({
   );
   const summary = useRef<HTMLDivElement>(null);
   const schemaIssues = validateFormDefinition(definition);
-  const prepared = prepareValues(definition, values, access);
+  const prepared = prepareValues(
+    definition,
+    values,
+    access,
+    props.runtimeContext,
+  );
   const allIssues = checked
-    ? validatePreview(definition, values, access, optionValues)
+    ? validatePreview(
+        definition,
+        values,
+        access,
+        optionValues,
+        props.runtimeContext,
+      )
     : [];
   const stepIndex = Math.min(step, Math.max(0, definition.fields.length - 1));
   const wizard = definition.display === "wizard";
@@ -1063,7 +1086,7 @@ export function FormRenderer({
       </Notice>
     );
   const update = (next: PreviewValues) => {
-    onChange(prepareValues(definition, next, access));
+    onChange(prepareValues(definition, next, access, props.runtimeContext));
     setChecked(false);
     setResult("");
   };
@@ -1130,7 +1153,9 @@ export function FormRenderer({
         onReset={(event) => {
           event.preventDefault();
           if (props.readOnly || busy.current) return;
-          update(defaultValues(definition.fields));
+          update(
+            defaultValues(definition.fields, undefined, props.runtimeContext),
+          );
           setStep(0);
           setResetKey((key) => key + 1);
         }}
@@ -1144,6 +1169,7 @@ export function FormRenderer({
             values,
             access,
             optionValues,
+            props.runtimeContext,
           );
           if (problems.length) {
             props.onInvalid?.(problems);
@@ -1163,7 +1189,12 @@ export function FormRenderer({
           setSubmitting(true);
           try {
             await props.onSubmit(
-              submissionValues(definition, prepared, access),
+              submissionValues(
+                definition,
+                prepared,
+                access,
+                props.runtimeContext,
+              ),
             );
             setResult("Bộ tích hợp đã xử lý dữ liệu biểu mẫu.");
             setFailed(false);
@@ -1257,7 +1288,13 @@ export function FormRenderer({
             type="button"
             disabled={props.readOnly || submitting}
             onClick={() => {
-              update(defaultValues(definition.fields));
+              update(
+                defaultValues(
+                  definition.fields,
+                  undefined,
+                  props.runtimeContext,
+                ),
+              );
               setStep(0);
               setResetKey((key) => key + 1);
             }}

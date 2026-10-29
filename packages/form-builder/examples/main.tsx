@@ -13,6 +13,12 @@ import {
 import "@flowdocker/ui/styles.css";
 const initial = createShowcaseDefinition();
 const providers: Record<string, DataProvider> = {
+  "organization.people": async () => [
+    {
+      value: "example-current-person",
+      label: { vi: "Người dùng ví dụ", en: "Example user" },
+    },
+  ],
   "demo.companies": async () => [
     { value: "sample", label: { vi: "Công ty mẫu", en: "Sample company" } },
   ],
@@ -43,9 +49,18 @@ function Example() {
           {t("Mở mẫu thanh toán")}
         </Button>
         <FormDesigner
+          runtimeContext={{ currentUserId: "example-current-person" }}
           key={definition.id}
           providers={providers}
           dataSources={[
+            {
+              id: "organization.people",
+              label: { vi: "Người dùng ví dụ", en: "Example users" },
+              description: {
+                vi: "Tài khoản giả lập trong ví dụ độc lập.",
+                en: "Synthetic account in the standalone example.",
+              },
+            },
             {
               id: "demo.companies",
               label: { vi: "Công ty mẫu", en: "Sample companies" },
@@ -70,6 +85,7 @@ function Example() {
           }}
         />
         <FormPreview
+          runtimeContext={{ currentUserId: "example-current-person" }}
           key={JSON.stringify(definition)}
           definition={definition}
           providers={providers}

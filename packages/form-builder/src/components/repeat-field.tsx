@@ -2,7 +2,7 @@ import { useRef, type FocusEvent, type ReactNode } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import { Trash2 } from "lucide-react";
 import { Button } from "@flowdocker/ui";
-import { defaultValues } from "../engine";
+import { defaultValues, type FormRuntimeContext } from "../engine";
 import { isContainer, type FormField, type PreviewValues } from "../schema";
 
 // False is an unchecked checkbox; numeric zero is intentional row data.
@@ -15,6 +15,7 @@ function hasRowData(value: unknown): boolean {
 }
 
 export interface RepeatFieldProps {
+  runtimeContext?: FormRuntimeContext;
   field: FormField;
   rows: PreviewValues[];
   onChange(rows: PreviewValues[]): void;
@@ -29,6 +30,7 @@ export interface RepeatFieldProps {
 }
 /** Presentation adapter. The existing engine still owns row validation and calculations. */
 export function RepeatField({
+  runtimeContext,
   field,
   rows,
   onChange,
@@ -45,9 +47,9 @@ export function RepeatField({
     rows.length < (field.maxRows ?? 100) &&
     (!rows.length || hasRowData(rows[rows.length - 1]));
   const displayed = design
-    ? [rows[0] ?? defaultValues(children)]
+    ? [rows[0] ?? defaultValues(children, undefined, runtimeContext)]
     : placeholder
-      ? [...rows, defaultValues(children)]
+      ? [...rows, defaultValues(children, undefined, runtimeContext)]
       : rows;
   const leaveRow = (index: number, event: FocusEvent<HTMLElement>) => {
     const target = event.relatedTarget;
@@ -201,7 +203,11 @@ export function RepeatField({
                     'input:not([disabled]):not([type="hidden"]), textarea:not([disabled]), select:not([disabled]), button:not([disabled]), [tabindex="0"]',
                   )
                   ?.focus();
-              } else onChange([...rows, defaultValues(children)]);
+              } else
+                onChange([
+                  ...rows,
+                  defaultValues(children, undefined, runtimeContext),
+                ]);
             }}
           >
             {t("Thêm dòng")}

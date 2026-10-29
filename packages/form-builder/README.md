@@ -102,3 +102,11 @@ Toolbox fields can be dragged by their full name tile or grip. Pointer placement
 `FormDesigner` accepts optional `dataSources: readonly FormDataSource[]`. Each entry has `id`, bilingual `label` and bilingual `description`. The inspector offers only IDs present in `providers`; registered IDs without metadata use their ID as the label. Saved unavailable IDs remain visible and unchanged until the owner chooses another source. Selecting a different source clears the old dependency; switching to manual choices preserves existing options and defaults. Schema and runtime callbacks are unchanged.
 
 The standalone example in `examples/main.tsx` supplies display metadata alongside its synthetic providers. `DataSourceEditor` is exported for isolated host composition/testing; its `sources` prop must contain only host-approved available sources. Read-only hosts must disable the editor using a containing disabled fieldset.
+
+## Current creator default
+
+Person fields accept optional `defaultValueSource: "currentUser"` instead of a literal `defaultValue`. Pass `runtimeContext={{ currentUserId: "stable-person-id" }}` to FormDesigner/FormCanvas and FormRenderer/FormPreview. The ID must be included in the configured choice source. The standalone example supplies a synthetic account independently of E-Request.
+
+The person inspector offers Current form creator and Allow changing person (uses existing `readOnly`). Single-person fields receive a string; multiple-person fields receive an array. Explicit saved or cleared values take precedence. Reset restores the current context default. Missing context does not guess or fall back to a literal default; the runtime explains that identity is unavailable and required validation still applies.
+
+Headless consumers pass the same context as the fourth argument to `prepareValues` / `submissionValues`, fifth to `validatePreview`, or third to `defaultValues` (the existing second budget argument is unchanged). Context is never exported with the form. This optional schema property requires updating older strict consumers, although schema versions remain 1/2. UI read-only is presentation only: a real backend must independently verify and bind the request creator. No login or server authorization is implemented by this feature.

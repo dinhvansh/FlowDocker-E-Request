@@ -25,6 +25,7 @@ import {
 import { InlineLabelEditor } from "./components/inline-label-editor";
 
 export interface FormCanvasProps {
+  runtimeContext?: FormRendererProps["runtimeContext"];
   dropAfter?: boolean;
   providers?: FormRendererProps["providers"];
   definition: FormDefinition;
@@ -261,7 +262,7 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
   const { locale, t } = useI18n();
   const id = useId();
   const [values, setValues] = useState<PreviewValues>(() =>
-    defaultValues(definition.fields),
+    defaultValues(definition.fields, undefined, props.runtimeContext),
   );
   const reveal = (fields: FormField[]): FormField[] =>
     fields.map((field) => ({
@@ -272,6 +273,8 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
   const prepared = prepareValues(
     { ...definition, fields: reveal(definition.fields) },
     values,
+    {},
+    props.runtimeContext,
   );
   const { active } = useDndContext();
   const drop = useDroppable({ id: "canvas-root", disabled: props.readOnly });
@@ -304,6 +307,7 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
           revealFieldId={props.selectedId}
           readOnly={props.readOnly}
           providers={props.providers}
+          runtimeContext={props.runtimeContext}
           onOptions={() => {}}
           design={{
             wrap: (field, control) => (

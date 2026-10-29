@@ -365,6 +365,9 @@ export function FieldInspector({
                   }
                   patch({
                     type,
+                    ...(type !== "person"
+                      ? { defaultValueSource: undefined }
+                      : {}),
                     ...(type === "person"
                       ? {
                           options: [],

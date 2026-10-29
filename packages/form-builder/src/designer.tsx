@@ -106,6 +106,7 @@ import type { FormRendererProps } from "./runtime";
 import { FormCanvas } from "./canvas";
 import type { FormDataSource } from "./components/data-source-editor";
 export interface FormDesignerProps {
+  runtimeContext?: FormRendererProps["runtimeContext"];
   providers?: FormRendererProps["providers"];
   dataSources?: readonly FormDataSource[];
   definition: FormDefinition;
@@ -338,6 +339,7 @@ export function FormDesigner({
   inspectorSection,
   providers,
   dataSources = [],
+  runtimeContext,
 }: FormDesignerProps) {
   const { t, locale } = useI18n();
   const [selectedId, setSelectedId] = useState("");
@@ -949,6 +951,7 @@ export function FormDesigner({
                 data-orientation={definition.orientation ?? "portrait"}
               >
                 <FormCanvas
+                  runtimeContext={runtimeContext}
                   dropAfter={dropAfter}
                   definition={definition}
                   providers={providers}

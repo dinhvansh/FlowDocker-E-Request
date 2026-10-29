@@ -333,25 +333,76 @@ export function AdvancedProperties({
       )}
       {(section === "all" || section === "data" || section === "general") && (
         <>
-          <Field label={t("Giá trị mặc định")}>
-            <Input
-              value={
-                typeof field.defaultValue === "string" ||
-                typeof field.defaultValue === "number" ||
-                typeof field.defaultValue === "boolean"
-                  ? String(field.defaultValue)
-                  : ""
-              }
-              onChange={(event) =>
-                patch({
-                  defaultValue:
-                    field.type === "checkbox"
-                      ? event.target.value === "true"
-                      : event.target.value,
-                })
-              }
-            />
-          </Field>
+          {field.type === "person" && (
+            <>
+              <Field
+                label={t("Giá trị mặc định")}
+                hint={
+                  field.defaultValueSource === "currentUser"
+                    ? t(
+                        "Tự điền tài khoản hiện tại khi trường chưa có giá trị. Không thay người đã lưu trong phiếu.",
+                      )
+                    : undefined
+                }
+              >
+                <Select
+                  label={t("Giá trị mặc định")}
+                  value={field.defaultValueSource ?? "fixed"}
+                  options={[
+                    { value: "fixed", label: t("Nhập giá trị") },
+                    {
+                      value: "currentUser",
+                      label: t("Người đang tạo biểu mẫu"),
+                    },
+                  ]}
+                  onValueChange={(value) =>
+                    patch({
+                      defaultValueSource:
+                        value === "currentUser" ? "currentUser" : undefined,
+                      defaultValue: undefined,
+                    })
+                  }
+                />
+              </Field>
+              {field.defaultValueSource === "currentUser" && (
+                <Field label={t("Cho phép đổi người")}>
+                  <Checkbox
+                    checked={!field.readOnly}
+                    onCheckedChange={(checked) =>
+                      patch({ readOnly: checked !== true })
+                    }
+                  />
+                </Field>
+              )}
+            </>
+          )}
+          {field.defaultValueSource !== "currentUser" && (
+            <Field
+              label={t(
+                field.type === "person"
+                  ? "Mã người mặc định"
+                  : "Giá trị mặc định",
+              )}
+            >
+              <Input
+                value={
+                  typeof field.defaultValue === "string" ||
+                  typeof field.defaultValue === "number" ||
+                  typeof field.defaultValue === "boolean"
+                    ? String(field.defaultValue)
+                    : ""
+                }
+                onChange={(event) =>
+                  patch({
+                    defaultValue:
+                      field.type === "checkbox"
+                        ? event.target.value === "true"
+                        : event.target.value,
+                  })
+                }
+              />
+            </Field>
+          )}
           {field.type === "button" && (
             <Field label={t("Hành động nút")}>
               <Select

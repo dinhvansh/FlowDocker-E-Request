@@ -763,4 +763,12 @@ export const en = {
   "Nguồn {{source}} chưa có trong ứng dụng này. Chọn nguồn khác hoặc dùng danh sách nhập tay.":
     "Source {{source}} is unavailable in this application. Choose another source or use manual choices.",
   "Nguồn không khả dụng: {{source}}": "Unavailable source: {{source}}",
+  "Người đang tạo biểu mẫu": "Current form creator",
+  "Nhập giá trị": "Enter a value",
+  "Cho phép đổi người": "Allow changing person",
+  "Mã người mặc định": "Default person ID",
+  "Tự điền tài khoản hiện tại khi trường chưa có giá trị. Không thay người đã lưu trong phiếu.":
+    "Fill the current account when the field has no value. Keep the person already saved on the request.",
+  "Chưa xác định được người đang tạo. Ứng dụng cần cung cấp tài khoản hiện tại.":
+    "The current creator is unavailable. The application must supply the current account.",
 } as const;

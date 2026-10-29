@@ -74,6 +74,8 @@ export interface FormField {
   help?: BilingualText;
   placeholder?: BilingualText;
   defaultValue?: FormValue;
+  /** Resolved from host context when no saved value exists; never an identity credential. */
+  defaultValueSource?: "currentUser";
   readOnly?: boolean;
   disabled?: boolean;
   min?: number;
@@ -252,6 +254,7 @@ const allowedKeys = new Set([
   "help",
   "placeholder",
   "defaultValue",
+  "defaultValueSource",
   "readOnly",
   "multiple",
   "disabled",
@@ -357,6 +360,13 @@ function fieldsShape(
       )
         return false;
       if (field.defaultValue !== undefined && !boundedValue(field.defaultValue))
+        return false;
+      if (
+        field.defaultValueSource !== undefined &&
+        (field.defaultValueSource !== "currentUser" ||
+          field.type !== "person" ||
+          field.defaultValue !== undefined)
+      )
         return false;
       if (
         field.children !== undefined &&
