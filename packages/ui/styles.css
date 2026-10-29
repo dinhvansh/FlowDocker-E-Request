@@ -3112,7 +3112,34 @@ a {
   padding-top: 12px;
 }
 .fd-designer-v2 .fd-form-properties [data-slot="field-group"] {
-  gap: 14px;
+  gap: 9px;
+}
+.fd-designer-v2 .fd-form-properties .fd-field {
+  gap: 4px;
+  margin-bottom: 0;
+}
+.fd-designer-v2
+  .fd-form-properties
+  .fd-form-property-fieldset
+  .fd-field:has(> [data-slot="checkbox"]) {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 30px;
+}
+.fd-designer-v2
+  .fd-form-properties
+  .fd-form-property-fieldset
+  .fd-field:has(> [data-slot="checkbox"])
+  > [data-slot="field-label"] {
+  min-height: 0;
+}
+.fd-designer-v2
+  .fd-form-properties
+  .fd-form-property-fieldset
+  .fd-field:has(> [data-slot="checkbox"])
+  > [data-slot="checkbox"] {
+  margin-left: auto;
 }
 @media (max-width: 1150px) {
   .fd-inspector-heading input {
