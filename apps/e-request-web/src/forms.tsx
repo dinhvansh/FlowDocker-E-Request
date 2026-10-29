@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useImperativeHandle, useState, type Ref } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import {
   ArrowLeft,
@@ -10,8 +10,6 @@ import {
 import {
   FormDesigner,
   FormPreview,
-  createShowcaseDefinition,
-  createPaymentDefinition,
   type DataProvider,
   exportFormDefinition,
   validateFormDefinition,
@@ -31,8 +29,11 @@ import {
   Tabs,
   Textarea,
 } from "@flowdocker/ui";
-import { formDraftStorageKey, readFormDrafts } from "./form-drafts";
-import { createExpenseRequestTemplate } from "./expense-request-template";
+import {
+  formCatalog,
+  formDraftStorageKey,
+  readFormDrafts,
+} from "./form-drafts";
 
 const demoProviders: Record<string, DataProvider> = {
   "demo.companies": async () => [
@@ -50,14 +51,20 @@ function load() {
     return { forms: [] as FormDefinition[], failed: true };
   }
 }
-export function FormsPage() {
+export interface FormsPageHandle {
+  openCatalog(): void;
+}
+export function FormsPage({ ref }: { ref?: Ref<FormsPageHandle> }) {
   const { t, locale } = useI18n();
   const [initial] = useState(load);
   const [forms, setForms] = useState(initial.forms);
-  const [draft, setDraft] = useState<FormDefinition | null>(
-    initial.forms[0] ?? null,
+  const [draft, setDraft] = useState<FormDefinition | null>(null);
+  const [catalogOpen, setCatalogOpen] = useState(true);
+  useImperativeHandle(
+    ref,
+    () => ({ openCatalog: () => setCatalogOpen(true) }),
+    [],
   );
-  const [catalogOpen, setCatalogOpen] = useState(false);
   const [previewDevice, setPreviewDevice] = useState("desktop");
   const [actionsOpen, setActionsOpen] = useState(false);
   const [titlesOpen, setTitlesOpen] = useState(false);
@@ -75,7 +82,8 @@ export function FormsPage() {
   const [pending, setPending] = useState<FormDefinition | "create" | null>(
     null,
   );
-  const saved = forms.find((form) => form.id === draft?.id);
+  const catalog = initial.failed ? forms : formCatalog(forms);
+  const saved = catalog.find((form) => form.id === draft?.id);
   const dirty = !!draft && JSON.stringify(draft) !== JSON.stringify(saved);
   useEffect(() => {
     if (!dirty) return;
@@ -139,8 +147,8 @@ export function FormsPage() {
       <div className="fd-page-toolbar" hidden={!catalogOpen && !!draft}>
         <div>
           <div className="fd-overline">{t("ỨNG DỤNG / BIỂU MẪU")}</div>
-          <h1>{t("Thiết kế biểu mẫu")}</h1>
-          <p>{t("Thiết kế trường, kiểm tra và xem thử bản nháp song ngữ")}</p>
+          <h1>{t("Biểu mẫu")}</h1>
+          <p>{t("Chọn biểu mẫu để chỉnh sửa hoặc tạo biểu mẫu mới.")}</p>
         </div>
         <div className="fd-toolbar-actions">
           {draft && (
@@ -149,24 +157,6 @@ export function FormsPage() {
             </Button>
           )}
           <Badge tone="warning">{t("Chỉ lưu cục bộ")}</Badge>
-          <Button
-            disabled={initial.failed}
-            onClick={() => request(createPaymentDefinition())}
-          >
-            {t("Mở mẫu thanh toán")}
-          </Button>
-          <Button
-            disabled={initial.failed}
-            onClick={() => request(createExpenseRequestTemplate())}
-          >
-            {t("Mở mẫu chi phí theo PDF")}
-          </Button>
-          <Button
-            disabled={initial.failed}
-            onClick={() => request(createShowcaseDefinition())}
-          >
-            {t("Mở mẫu nâng cao")}
-          </Button>
           <Button
             variant="primary"
             disabled={initial.failed || forms.length >= 100}
@@ -191,7 +181,7 @@ export function FormsPage() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
-          {forms
+          {catalog
             .filter((form) =>
               `${form.title.vi} ${form.title.en}`
                 .toLowerCase()
@@ -216,7 +206,7 @@ export function FormsPage() {
                 </span>
               </button>
             ))}
-          {!forms.some((form) =>
+          {!catalog.some((form) =>
             `${form.title.vi} ${form.title.en}`
               .toLowerCase()
               .includes(query.toLowerCase()),

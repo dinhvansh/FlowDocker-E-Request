@@ -7,6 +7,8 @@ async (page) => {
     await page.getByRole('option',{name:'Tiếng Việt',exact:true}).click();
   }
   await page.setViewportSize({width:1440,height:900});
+  const catalogItem=page.getByRole('button',{name:/Đề nghị thanh toán · mẫu chi phí VND.*trường/});
+  if(await catalogItem.isVisible()) await catalogItem.click();
   await page.getByRole('tab',{name:'Xem thử biểu mẫu',exact:true}).click();
   await page.getByRole('button',{name:'Xóa dữ liệu thử',exact:true}).click();
   await page.getByRole('textbox',{name:'Người yêu cầu (bắt buộc)',exact:true}).fill('Người dùng minh họa');

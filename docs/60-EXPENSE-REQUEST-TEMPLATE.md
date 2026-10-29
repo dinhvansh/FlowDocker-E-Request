@@ -26,8 +26,8 @@ The input does not ask users to supply approval signatures/history. An explanato
 ## How to try
 
 1. Open Forms, then **Danh sách biểu mẫu**.
-2. Select **Mở mẫu chi phí theo PDF**.
-3. Select **Lưu bản nháp** to retain the design on this browser; its name is **Đề nghị thanh toán · mẫu chi phí VND**.
+2. Select the **Đề nghị thanh toán · mẫu chi phí VND** item alongside the other forms. Templates are catalog entries, not toolbar shortcuts.
+3. Edit the definition if needed and select **Lưu bản nháp** to retain changes on this browser. Existing saved edits take precedence over the built-in template.
 4. Open **Xem thử biểu mẫu**, enter synthetic requester/beneficiary/invoice data and use **Thêm dòng** for further expenses.
 5. Inspect calculations and use **Kiểm tra dữ liệu thử**. Preview values are not saved or submitted.
 

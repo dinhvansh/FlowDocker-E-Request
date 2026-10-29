@@ -1,5 +1,5 @@
 import { I18nProvider, useI18n } from "@flowdocker/i18n";
-import React, { Suspense, lazy, useEffect, useState } from "react";
+import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { ArrowRight, Blocks, Database, LockKeyhole } from "lucide-react";
 import { AppShell, type PageId } from "@flowdocker/app-shell";
@@ -10,7 +10,7 @@ import type { MasterEntity, Role } from "@flowdocker/app-contracts";
 import { entityService, resources, roleService } from "./mock";
 import { ConnectionsPage } from "./connections";
 import { ApplicationsPage } from "./applications";
-import { FormsPage } from "./forms";
+import { FormsPage, type FormsPageHandle } from "./forms";
 import { ProfilePage } from "./profile";
 import { demoProfile } from "./demo-profile";
 import "@flowdocker/ui/styles.css";
@@ -43,6 +43,7 @@ function App() {
   }, [t]);
 
   const [page, setPage] = useState<PageId>(initialPage);
+  const formsRef = useRef<FormsPageHandle>(null);
   const [theme, setTheme] = useState<"light" | "dark">(() =>
     localStorage.getItem("flowdocker.theme") === "dark" ? "dark" : "light",
   );
@@ -60,11 +61,16 @@ function App() {
       .finally(() => setLoading(false));
   }, []);
   useEffect(() => {
-    const onHash = () => setPage(initialPage());
+    const onHash = () => {
+      const next = initialPage();
+      if (next === "forms") formsRef.current?.openCatalog();
+      setPage(next);
+    };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
   const navigate = (id: PageId) => {
+    if (id === "forms") formsRef.current?.openCatalog();
     location.hash = id;
     setPage(id);
   };
@@ -270,7 +276,7 @@ function App() {
       )}
       {page === "applications" && <ApplicationsPage onOpenModule={navigate} />}
       <div hidden={page !== "forms"}>
-        <FormsPage />
+        <FormsPage ref={formsRef} />
       </div>
     </AppShell>
   );

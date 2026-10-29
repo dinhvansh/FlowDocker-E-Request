@@ -1,4 +1,6 @@
 export const formMessages = {
+  "Chọn biểu mẫu để chỉnh sửa hoặc tạo biểu mẫu mới.":
+    "Choose a form to edit or create a new one.",
   "Mở mẫu chi phí theo PDF": "Open PDF expense template",
   "Tự động chừa dòng trống": "Keep an empty entry row",
   "Dòng trống gợi ý không tính vào dữ liệu. Dòng bị xóa hết nội dung sẽ bỏ khi rời dòng, trừ số dòng tối thiểu.":
