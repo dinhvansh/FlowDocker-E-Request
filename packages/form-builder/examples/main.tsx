@@ -45,6 +45,24 @@ function Example() {
         <FormDesigner
           key={definition.id}
           providers={providers}
+          dataSources={[
+            {
+              id: "demo.companies",
+              label: { vi: "Công ty mẫu", en: "Sample companies" },
+              description: {
+                vi: "Danh sách công ty minh họa trong ví dụ độc lập.",
+                en: "Synthetic companies in the standalone example.",
+              },
+            },
+            {
+              id: "demo.departments",
+              label: { vi: "Phòng ban mẫu", en: "Sample departments" },
+              description: {
+                vi: "Chọn công ty trước; đặt mã trường công ty trong Phụ thuộc mã trường.",
+                en: "Select a company first; set its field key in Depends on field key.",
+              },
+            },
+          ]}
           definition={definition}
           onChange={(next) => {
             setDefinition(next);

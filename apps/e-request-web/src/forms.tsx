@@ -19,6 +19,7 @@ import {
   FormDesigner,
   FormPreview,
   type DataProvider,
+  type FormDataSource,
   exportFormDefinition,
   validateFormDefinition,
   type FormDefinition,
@@ -52,6 +53,32 @@ const demoProviders: Record<string, DataProvider> = {
       ? [{ value: "demo-it", label: { vi: "CNTT · mẫu", en: "IT · sample" } }]
       : [],
 };
+const formDataSources: readonly FormDataSource[] = [
+  {
+    id: "organization.people",
+    label: { vi: "Người trong tổ chức", en: "Organization people" },
+    description: {
+      vi: "Lấy người đang hoạt động từ Master Data nội bộ trên máy. Chưa kết nối Microsoft 365 hay hệ thống nhân sự.",
+      en: "Active people from local Master Data on this device. Microsoft 365 and HR systems are not connected.",
+    },
+  },
+  {
+    id: "demo.companies",
+    label: { vi: "Công ty · dữ liệu mẫu", en: "Companies · demo data" },
+    description: {
+      vi: "Một công ty minh họa, dùng để thử biểu mẫu.",
+      en: "One synthetic company for trying the form.",
+    },
+  },
+  {
+    id: "demo.departments",
+    label: { vi: "Phòng ban · dữ liệu mẫu", en: "Departments · demo data" },
+    description: {
+      vi: "Danh sách phòng ban minh họa. Điền mã trường công ty vào Phụ thuộc mã trường, rồi chọn công ty trong Xem thử.",
+      en: "Synthetic departments. Set Depends on field key to the company field key, then select a company in Preview.",
+    },
+  },
+];
 function load() {
   try {
     return { forms: readFormDrafts(localStorage), failed: false };
@@ -333,6 +360,7 @@ export function FormsPage({
                   </FieldGroup>
                 </div>
                 <FormDesigner
+                  dataSources={formDataSources}
                   providers={providers}
                   inspectorSection={tab === "logic" ? "logic" : "basic"}
                   key={draft.id}

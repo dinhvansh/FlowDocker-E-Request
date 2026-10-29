@@ -104,8 +104,10 @@ import {
 } from "./components/field-inspector";
 import type { FormRendererProps } from "./runtime";
 import { FormCanvas } from "./canvas";
+import type { FormDataSource } from "./components/data-source-editor";
 export interface FormDesignerProps {
   providers?: FormRendererProps["providers"];
+  dataSources?: readonly FormDataSource[];
   definition: FormDefinition;
   onChange(definition: FormDefinition): void;
   readOnly?: boolean;
@@ -335,6 +337,7 @@ export function FormDesigner({
   readOnly = false,
   inspectorSection,
   providers,
+  dataSources = [],
 }: FormDesignerProps) {
   const { t, locale } = useI18n();
   const [selectedId, setSelectedId] = useState("");
@@ -976,6 +979,17 @@ export function FormDesigner({
           >
             {field ? (
               <FieldInspector
+                dataSources={Object.keys(providers ?? {}).map(
+                  (id) =>
+                    dataSources.find((source) => source.id === id) ?? {
+                      id,
+                      label: { vi: id, en: id },
+                      description: {
+                        vi: "Nguồn dữ liệu do ứng dụng cung cấp.",
+                        en: "Data source supplied by the application.",
+                      },
+                    },
+                )}
                 field={field}
                 section={properties}
                 onSectionChange={setProperties}

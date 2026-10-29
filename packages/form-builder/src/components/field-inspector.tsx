@@ -11,6 +11,7 @@ import {
   Select,
 } from "@flowdocker/ui";
 import { AdvancedProperties, OptionsEditor } from "../editors";
+import type { FormDataSource } from "./data-source-editor";
 import {
   choiceTypes,
   containerTypes,
@@ -25,6 +26,7 @@ import {
 export type InspectorSection =
   "basic" | "validation" | "logic" | "data" | "appearance" | "advanced";
 export interface FieldInspectorProps {
+  dataSources?: readonly FormDataSource[];
   field: FormField;
   section: InspectorSection;
   onSectionChange(section: InspectorSection): void;
@@ -50,6 +52,7 @@ export interface FieldInspectorProps {
 }
 /** Contextual configuration only; persistence and history are owned by the host designer. */
 export function FieldInspector({
+  dataSources,
   field,
   section,
   onSectionChange,
@@ -385,23 +388,26 @@ export function FieldInspector({
             />
           </FieldGroup>
         ) : (
-          <>
+          <FieldGroup>
             {section === "validation" && required}
-            {section === "data" && choiceTypes.includes(field.type) && (
-              <OptionsEditor
-                key={`${field.id}-${historyRevision}`}
-                field={field}
-                onChange={(options) => patch({ options })}
-              />
-            )}
             <AdvancedProperties
+              dataSources={dataSources}
               key={field.id}
               field={field}
               fields={references}
               patch={patch}
               section={section}
             />
-          </>
+            {section === "data" &&
+              choiceTypes.includes(field.type) &&
+              !field.dataSource && (
+                <OptionsEditor
+                  key={`${field.id}-${historyRevision}`}
+                  field={field}
+                  onChange={(options) => patch({ options })}
+                />
+              )}
+          </FieldGroup>
         )}
       </fieldset>
       <div className="fd-field-inspector-actions">

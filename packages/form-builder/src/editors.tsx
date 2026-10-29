@@ -10,6 +10,10 @@ import {
   Textarea,
 } from "@flowdocker/ui";
 import { type FormField, type FormRule, type RuleOperator } from "./schema";
+import {
+  DataSourceEditor,
+  type FormDataSource,
+} from "./components/data-source-editor";
 function ConditionValue({
   condition,
   fields,
@@ -233,11 +237,13 @@ export function RuleEditor({
   );
 }
 export function AdvancedProperties({
+  dataSources,
   section = "all",
   field,
   fields,
   patch,
 }: {
+  dataSources?: readonly FormDataSource[];
   section?: string;
   field: FormField;
   fields: FormField[];
@@ -616,26 +622,11 @@ export function AdvancedProperties({
             field.type,
           ) && (
             <>
-              <Field
-                label={t("Mã nguồn lựa chọn")}
-                hint={t(
-                  "Ứng dụng chủ đăng ký provider; schema không chứa URL hay token.",
-                )}
-              >
-                <Input
-                  value={field.dataSource?.provider ?? ""}
-                  onChange={(event) =>
-                    patch({
-                      dataSource: event.target.value
-                        ? {
-                            provider: event.target.value,
-                            dependsOn: field.dataSource?.dependsOn,
-                          }
-                        : undefined,
-                    })
-                  }
-                />
-              </Field>
+              <DataSourceEditor
+                field={field}
+                sources={dataSources}
+                patch={patch}
+              />
               {field.dataSource && (
                 <Field label={t("Phụ thuộc mã trường")}>
                   <Input

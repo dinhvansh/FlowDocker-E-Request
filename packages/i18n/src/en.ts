@@ -757,4 +757,10 @@ export const en = {
   "Chèn trước trường này": "Insert before this field",
   "Xóa dòng {{index}}": "Remove row {{index}}",
   "Thao tác": "Actions",
+  "Danh sách nhập tay": "Manual choices",
+  "Tự nhập các lựa chọn bên dưới; không lấy dữ liệu từ nguồn khác.":
+    "Enter choices below; data is not loaded from another source.",
+  "Nguồn {{source}} chưa có trong ứng dụng này. Chọn nguồn khác hoặc dùng danh sách nhập tay.":
+    "Source {{source}} is unavailable in this application. Choose another source or use manual choices.",
+  "Nguồn không khả dụng: {{source}}": "Unavailable source: {{source}}",
 } as const;

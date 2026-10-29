@@ -3,6 +3,8 @@ export * from "./engine";
 export { createShowcaseDefinition } from "./showcase";
 export { FormDesigner, moveField } from "./designer";
 export type { FormDesignerProps } from "./designer";
+export { DataSourceEditor } from "./components/data-source-editor";
+export type { FormDataSource } from "./components/data-source-editor";
 export { FormRenderer, FormPreview } from "./runtime";
 export type {
   FormRendererProps,
