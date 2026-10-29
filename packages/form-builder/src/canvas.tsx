@@ -25,6 +25,7 @@ import {
 import { InlineLabelEditor } from "./components/inline-label-editor";
 
 export interface FormCanvasProps {
+  dropAfter?: boolean;
   providers?: FormRendererProps["providers"];
   definition: FormDefinition;
   selectedId?: string;
@@ -112,10 +113,19 @@ function FieldOverlay({
       }}
     >
       {sortable.isOver && validDrop && (
-        <div className="fd-canvas-drop-indicator">
+        <div
+          className="fd-canvas-drop-indicator"
+          data-placement={
+            !isContainer(field) && props.dropAfter ? "after" : "before"
+          }
+        >
           {isContainer(field)
             ? t("Thả vào nhóm này")
-            : t("Chèn trước trường này")}
+            : t(
+                props.dropAfter
+                  ? "Chèn sau trường này"
+                  : "Chèn trước trường này",
+              )}
         </div>
       )}
       <div className="fd-canvas-field-bar">
@@ -263,7 +273,8 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
     { ...definition, fields: reveal(definition.fields) },
     values,
   );
-  const drop = useDroppable({ id: "canvas-root" });
+  const { active } = useDndContext();
+  const drop = useDroppable({ id: "canvas-root", disabled: props.readOnly });
   return (
     <div
       ref={drop.setNodeRef}
@@ -307,6 +318,11 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
           }}
         />
       </FieldGroup>
+      {active && !props.readOnly && (
+        <div className="fd-canvas-root-drop" data-drop-active={drop.isOver}>
+          {t("Thả vào đây để thêm cuối mẫu")}
+        </div>
+      )}
       <Button
         className="fd-canvas-add"
         disabled={props.readOnly}

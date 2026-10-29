@@ -3202,6 +3202,35 @@ a {
 }
 .fd-toolbox-item > button:last-child {
   flex: 1;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+.fd-toolbox-item[data-dragging="true"] {
+  opacity: 0.45;
+}
+.fd-toolbox-item[data-dragging="true"] > button {
+  cursor: grabbing;
+}
+.fd-canvas-drop-indicator[data-placement="after"] {
+  top: auto;
+  bottom: -12px;
+}
+.fd-canvas-root-drop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 16px;
+  border: 1px dashed var(--fd-border);
+  border-radius: 6px;
+  color: var(--fd-text-muted);
+  pointer-events: none;
+}
+.fd-canvas-root-drop[data-drop-active="true"] {
+  border-color: var(--fd-color-brand);
+  color: var(--fd-color-brand);
+  background: var(--fd-brand-soft);
 }
 .fd-toolbox-item > button:last-child,
 .fd-field-type-label {

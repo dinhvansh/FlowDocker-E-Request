@@ -1,5 +1,8 @@
 import { formMessages } from "./form-messages";
 export const en = {
+  "Kéo vào mẫu hoặc bấm để thêm": "Drag into the form or click to add",
+  "Chèn sau trường này": "Insert after this field",
+  "Thả vào đây để thêm cuối mẫu": "Drop here to append to the form",
   "Sơ đồ": "Diagram",
   "Danh sách": "List",
   "{{count}} nhân viên · {{departments}} phòng ban":

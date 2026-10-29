@@ -4,8 +4,12 @@ import {
   DndContext,
   DragOverlay,
   KeyboardSensor,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   closestCenter,
+  pointerWithin,
+  type CollisionDetection,
+  type DragMoveEvent,
   useDraggable,
   useSensor,
   useSensors,
@@ -163,7 +167,11 @@ function PaletteItem({
     data: { paletteType: type },
   });
   return (
-    <div ref={drag.setNodeRef} className="fd-toolbox-item">
+    <div
+      ref={drag.setNodeRef}
+      className="fd-toolbox-item"
+      data-dragging={drag.isDragging || undefined}
+    >
       <button
         type="button"
         className="fd-toolbox-drag"
@@ -177,15 +185,46 @@ function PaletteItem({
         <GripVertical aria-hidden="true" />
       </button>
       <Button
+        {...drag.listeners}
+        {...drag.attributes}
         type="button"
         disabled={disabled}
-        onClick={onAdd}
+        onClick={() => {
+          if (!drag.isDragging) onAdd();
+        }}
+        title={t("Kéo vào mẫu hoặc bấm để thêm")}
         aria-label={t("Thêm {{type}}", { type: t(fieldTypeLabels[type]) })}
       >
         <FieldTypeIcon type={type} />
         {t(fieldTypeLabels[type])}
       </Button>
     </div>
+  );
+}
+/** Pointer release outside the canvas must never insert into the nearest field. */
+const formDropCollision: CollisionDetection = (args) => {
+  if (!args.pointerCoordinates) return closestCenter(args);
+  return pointerWithin(args).sort((a, b) => {
+    const first = args.droppableRects.get(a.id);
+    const second = args.droppableRects.get(b.id);
+    return (
+      (first ? first.width * first.height : Infinity) -
+      (second ? second.width * second.height : Infinity)
+    );
+  });
+};
+function paletteDropAfter({
+  active,
+  over,
+  activatorEvent,
+  delta,
+}: DragMoveEvent) {
+  return (
+    String(active.id).startsWith("palette:") &&
+    !!over &&
+    "clientY" in activatorEvent &&
+    typeof activatorEvent.clientY === "number" &&
+    activatorEvent.clientY + delta.y > over.rect.top + over.rect.height / 2
   );
 }
 const fieldTypeIcons: Partial<Record<FormFieldType, LucideIcon>> = {
@@ -324,6 +363,7 @@ export function FormDesigner({
     type: FormFieldType;
     label: string;
   } | null>(null);
+  const [dropAfter, setDropAfter] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const rows = outline(definition.fields);
   const field =
@@ -453,8 +493,12 @@ export function FormDesigner({
     );
   };
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 180, tolerance: 8 },
+    }),
     useSensor(KeyboardSensor, {
+      keyboardCodes: { start: ["Space"], cancel: ["Escape"], end: ["Space"] },
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
@@ -621,7 +665,7 @@ export function FormDesigner({
       </div>
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCenter}
+        collisionDetection={formDropCollision}
         accessibility={{
           screenReaderInstructions: {
             draggable: t(
@@ -636,6 +680,7 @@ export function FormDesigner({
           },
         }}
         onDragStart={({ active }) => {
+          setDropAfter(false);
           const data = active.data.current as
             { paletteType?: FormFieldType; field?: FormField } | undefined;
           const dragged = data?.field;
@@ -647,7 +692,9 @@ export function FormDesigner({
             });
         }}
         onDragCancel={() => setActiveDrag(null)}
-        onDragEnd={({ active, over }) => {
+        onDragMove={(event) => setDropAfter(paletteDropAfter(event))}
+        onDragEnd={(event) => {
+          const { active, over } = event;
           setActiveDrag(null);
           if (!over || readOnly) return;
           const overId = String(over.id);
@@ -689,7 +736,8 @@ export function FormDesigner({
               String(active.id).slice(8) as FormFieldType,
               parentId,
               target && !isContainer(target.field)
-                ? list.findIndex((item) => item.id === target.field.id)
+                ? list.findIndex((item) => item.id === target.field.id) +
+                    (paletteDropAfter(event) ? 1 : 0)
                 : list.length,
             );
             return;
@@ -898,6 +946,7 @@ export function FormDesigner({
                 data-orientation={definition.orientation ?? "portrait"}
               >
                 <FormCanvas
+                  dropAfter={dropAfter}
                   definition={definition}
                   providers={providers}
                   selectedId={field?.id}
