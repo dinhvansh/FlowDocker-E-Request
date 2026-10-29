@@ -40,6 +40,7 @@ import {
   Link,
   List,
   ListChecks,
+  ListTree,
   LockKeyhole,
   Mail,
   MapPin,
@@ -706,9 +707,16 @@ export function FormDesigner({
             </div>
             <Button
               aria-pressed={outlineOpen}
-              onClick={() => setOutlineOpen(!outlineOpen)}
+              aria-label={
+                outlineOpen ? t("Ẩn danh sách trường") : t("Danh sách trường")
+              }
+              title={
+                outlineOpen ? t("Ẩn danh sách trường") : t("Danh sách trường")
+              }
+              onClick={() => setOutlineOpen((open) => !open)}
             >
-              {t("Cây cấu trúc")}
+              <ListTree data-icon="inline-start" />
+              {outlineOpen ? t("Ẩn danh sách trường") : t("Danh sách trường")}
             </Button>
             <SearchInput
               label={t("Tìm kiểu trường...")}

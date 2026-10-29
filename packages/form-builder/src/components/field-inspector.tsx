@@ -102,7 +102,7 @@ export function FieldInspector({
       />
       <div className="fd-inspector-layout">
         <div className="fd-inspector-layout-heading">
-          <strong>{t("Vị trí bố cục")}</strong>
+          <strong>{t("Vị trí trường")}</strong>
           <span>{t("Sắp xếp trường trong canvas")}</span>
         </div>
         <Field label={t("Đặt trong nhóm")}>
