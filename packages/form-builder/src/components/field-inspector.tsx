@@ -111,6 +111,18 @@ export function FieldInspector({
         >
           <h3>{t("Cài đặt bảng dòng lặp")}</h3>
           <FieldGroup>
+            <Field
+              label={t("Tự động chừa dòng trống")}
+              hint={t(
+                "Dòng trống gợi ý không tính vào dữ liệu. Dòng bị xóa hết nội dung sẽ bỏ khi rời dòng, trừ số dòng tối thiểu.",
+              )}
+            >
+              <Checkbox
+                disabled={readOnly}
+                checked={!!field.autoRows}
+                onCheckedChange={(value) => patch({ autoRows: value === true })}
+              />
+            </Field>
             <Field label={t("Số dòng tối thiểu")}>
               <Input
                 type="number"

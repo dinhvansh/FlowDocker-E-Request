@@ -1,4 +1,10 @@
 export const formMessages = {
+  "Tự động chừa dòng trống": "Keep an empty entry row",
+  "Dòng trống gợi ý không tính vào dữ liệu. Dòng bị xóa hết nội dung sẽ bỏ khi rời dòng, trừ số dòng tối thiểu.":
+    "The empty entry row is not saved. Cleared rows are removed on leaving, subject to the minimum row count.",
+  "Dòng trống cuối bảng chỉ là gợi ý, không được lưu.":
+    "The empty entry row is a placeholder and is not saved.",
+  "{{count}} dòng": "{{count}} rows",
   "Hướng biểu mẫu": "Form orientation",
   "Khổ dọc": "Portrait",
   "Khổ ngang": "Landscape",

@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
 import { I18nProvider } from "@flowdocker/i18n";
 import { FormRenderer } from "../runtime";
+import { validatePreview } from "../engine";
 import { type FormDefinition, type PreviewValues } from "../schema";
 
 afterEach(cleanup);
@@ -121,5 +122,103 @@ it("keeps seven simple columns in a real table with accessible required headers"
   expect(screen.getAllByRole("spinbutton")).toHaveLength(7);
   expect(screen.getByRole("region", { name: "Dòng chi phí" }).className).toBe(
     "fd-repeat-table-scroll",
+  );
+});
+
+it("keeps automatic entry rows out of data, preserves zero and removes cleared rows on leaving", () => {
+  const autoForm: FormDefinition = {
+    ...form,
+    fields: [
+      form.fields[0],
+      { ...form.fields[1], minRows: 0, maxRows: 2, autoRows: true },
+    ],
+  };
+  function AutoHost() {
+    const [values, setValues] = useState<PreviewValues>({ lines: [] });
+    return (
+      <I18nProvider>
+        <FormRenderer
+          definition={autoForm}
+          values={values}
+          onChange={setValues}
+        />
+        <output data-testid="auto-values">{JSON.stringify(values)}</output>
+      </I18nProvider>
+    );
+  }
+  render(<AutoHost />);
+  const values = () =>
+    JSON.parse(screen.getByTestId("auto-values").textContent!);
+  const cells = () =>
+    screen.getAllByRole("spinbutton", { name: "Chi phí dòng (bắt buộc)" });
+  expect(cells()).toHaveLength(1);
+  expect(values().lines).toEqual([]);
+  expect(validatePreview(autoForm, values())).toEqual([]);
+  fireEvent.change(cells()[0], { target: { value: "0" } });
+  expect(values().lines).toEqual([{ expense: "0" }]);
+  expect(cells()).toHaveLength(2);
+  expect(validatePreview(autoForm, values())).toEqual([]);
+  fireEvent.change(cells()[1], { target: { value: "0.20" } });
+  expect(cells()).toHaveLength(2);
+  expect(
+    screen.getByRole("button", { name: "Thêm dòng" }).hasAttribute("disabled"),
+  ).toBe(true);
+  fireEvent.change(cells()[0], { target: { value: "" } });
+  fireEvent.blur(cells()[0], {
+    relatedTarget: screen.getByRole("textbox", { name: "Ghi chú" }),
+  });
+  expect(values().lines).toEqual([{ expense: "0.20" }]);
+  expect(cells()).toHaveLength(2);
+});
+
+it("keeps minimum rows and validates partly filled automatic rows", () => {
+  const autoForm: FormDefinition = {
+    ...form,
+    fields: [
+      {
+        ...form.fields[1],
+        autoRows: true,
+        minRows: 1,
+        children: [
+          ...form.fields[1].children!,
+          { ...form.fields[0], id: "line_note", required: true },
+        ],
+      },
+      form.fields[0],
+    ],
+  };
+  function AutoHost() {
+    const [values, setValues] = useState<PreviewValues>({
+      lines: [{ expense: "" }],
+    });
+    return (
+      <I18nProvider>
+        <FormRenderer
+          definition={autoForm}
+          values={values}
+          onChange={setValues}
+        />
+        <output data-testid="auto-values">{JSON.stringify(values)}</output>
+      </I18nProvider>
+    );
+  }
+  render(<AutoHost />);
+  const cell = screen.getAllByRole("spinbutton", {
+    name: "Chi phí dòng (bắt buộc)",
+  })[0];
+  fireEvent.blur(cell, {
+    relatedTarget: screen.getByRole("textbox", { name: "Ghi chú" }),
+  });
+  expect(
+    JSON.parse(screen.getByTestId("auto-values").textContent!).lines,
+  ).toHaveLength(1);
+  fireEvent.change(cell, { target: { value: "3" } });
+  const problems = validatePreview(
+    autoForm,
+    JSON.parse(screen.getByTestId("auto-values").textContent!),
+  );
+  expect(problems.some((issue) => issue.path === "lines.0.note")).toBe(true);
+  expect(problems.some((issue) => issue.path?.startsWith("lines.1"))).toBe(
+    false,
   );
 });

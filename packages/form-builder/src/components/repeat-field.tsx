@@ -1,9 +1,18 @@
-import type { ReactNode } from "react";
+import { useRef, type FocusEvent, type ReactNode } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import { Trash2 } from "lucide-react";
 import { Button } from "@flowdocker/ui";
 import { defaultValues } from "../engine";
 import { isContainer, type FormField, type PreviewValues } from "../schema";
+
+// False is an unchecked checkbox; numeric zero is intentional row data.
+function hasRowData(value: unknown): boolean {
+  if (value === null || value === undefined || value === false) return false;
+  if (typeof value === "string") return value.trim().length > 0;
+  if (Array.isArray(value)) return value.some(hasRowData);
+  if (typeof value === "object") return Object.values(value).some(hasRowData);
+  return true;
+}
 
 export interface RepeatFieldProps {
   field: FormField;
@@ -29,7 +38,33 @@ export function RepeatField({
 }: RepeatFieldProps) {
   const { t, locale } = useI18n();
   const children = field.children ?? [];
-  const displayed = design ? [rows[0] ?? defaultValues(children)] : rows;
+  const root = useRef<HTMLDivElement>(null);
+  const auto = !!field.autoRows && !design && !disabled;
+  const placeholder =
+    auto &&
+    rows.length < (field.maxRows ?? 100) &&
+    (!rows.length || hasRowData(rows[rows.length - 1]));
+  const displayed = design
+    ? [rows[0] ?? defaultValues(children)]
+    : placeholder
+      ? [...rows, defaultValues(children)]
+      : rows;
+  const leaveRow = (index: number, event: FocusEvent<HTMLElement>) => {
+    const target = event.relatedTarget;
+    if (
+      !auto ||
+      index >= rows.length ||
+      rows.length <= (field.minRows ?? 0) ||
+      hasRowData(rows[index]) ||
+      !(target instanceof Element) ||
+      event.currentTarget.contains(target) ||
+      target.closest(
+        '[data-radix-popper-content-wrapper], [role="dialog"], [role="listbox"], [role="option"]',
+      )
+    )
+      return;
+    onChange(rows.filter((_, i) => i !== index));
+  };
   const tabular =
     children.length > 0 &&
     children.every(
@@ -49,13 +84,21 @@ export function RepeatField({
     );
   const update = (index: number, next: PreviewValues) =>
     onChange(
-      design ? [next] : rows.map((row, i) => (i === index ? next : row)),
+      design
+        ? [next]
+        : index === rows.length
+          ? hasRowData(next)
+            ? [...rows, next]
+            : rows
+          : rows.map((row, i) => (i === index ? next : row)),
     );
   const remove = (index: number) => (
     <Button
       type="button"
       variant="ghost"
-      disabled={disabled || rows.length <= (field.minRows ?? 0)}
+      disabled={
+        disabled || index >= rows.length || rows.length <= (field.minRows ?? 0)
+      }
       aria-label={t("Xóa dòng {{index}}", { index: index + 1 })}
       title={t("Xóa dòng")}
       onClick={() => onChange(rows.filter((_, i) => i !== index))}
@@ -64,7 +107,7 @@ export function RepeatField({
     </Button>
   );
   return (
-    <div className="fd-repeat-field" data-design={design}>
+    <div ref={root} className="fd-repeat-field" data-design={design}>
       {tabular ? (
         <div
           className="fd-repeat-table-scroll"
@@ -95,7 +138,13 @@ export function RepeatField({
             </thead>
             <tbody>
               {displayed.map((row, index) => (
-                <tr key={index}>
+                <tr
+                  key={index}
+                  data-placeholder={
+                    (index >= rows.length && !design) || undefined
+                  }
+                  onBlur={(event) => leaveRow(index, event)}
+                >
                   <th scope="row">{index + 1}</th>
                   {children.map((child) => (
                     <td key={child.id}>
@@ -112,7 +161,12 @@ export function RepeatField({
         </div>
       ) : (
         displayed.map((row, index) => (
-          <div className="fd-repeat-row" key={index}>
+          <div
+            className="fd-repeat-row"
+            key={index}
+            data-placeholder={(index >= rows.length && !design) || undefined}
+            onBlur={(event) => leaveRow(index, event)}
+          >
             <div className="fd-section-heading">
               <h3>{t("Dòng {{index}}", { index: index + 1 })}</h3>
               {!design && remove(index)}
@@ -126,14 +180,33 @@ export function RepeatField({
           {t("Một dòng minh họa · thêm và xóa dòng trong Xem thử")}
         </p>
       ) : (
-        <Button
-          type="button"
-          variant="ghost"
-          disabled={disabled || rows.length >= (field.maxRows ?? 100)}
-          onClick={() => onChange([...rows, defaultValues(children)])}
-        >
-          {t("Thêm dòng")}
-        </Button>
+        <div className="fd-repeat-footer">
+          <span>
+            {auto
+              ? t("Dòng trống cuối bảng chỉ là gợi ý, không được lưu.")
+              : t("{{count}} dòng", { count: rows.length })}
+          </span>
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={disabled || rows.length >= (field.maxRows ?? 100)}
+            onClick={() => {
+              if (auto) {
+                const entries = root.current?.querySelectorAll<HTMLElement>(
+                  "tbody tr, .fd-repeat-row",
+                );
+                const last = entries?.[entries.length - 1];
+                last
+                  ?.querySelector<HTMLElement>(
+                    'input:not([disabled]):not([type="hidden"]), textarea:not([disabled]), select:not([disabled]), button:not([disabled]), [tabindex="0"]',
+                  )
+                  ?.focus();
+              } else onChange([...rows, defaultValues(children)]);
+            }}
+          >
+            {t("Thêm dòng")}
+          </Button>
+        </div>
       )}
     </div>
   );

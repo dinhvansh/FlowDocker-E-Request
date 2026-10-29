@@ -90,6 +90,7 @@ export interface FormField {
   hideLabel?: boolean;
   minRows?: number;
   maxRows?: number;
+  autoRows?: boolean;
   uniqueBy?: string;
   currency?: string;
   accept?: string;
@@ -263,6 +264,7 @@ const allowedKeys = new Set([
   "columns",
   "minRows",
   "maxRows",
+  "autoRows",
   "uniqueBy",
   "currency",
   "accept",
@@ -320,7 +322,7 @@ function fieldsShape(
           (typeof field[key] !== "number" || !Number.isFinite(field[key]))
         )
           return false;
-      for (const key of ["readOnly", "disabled", "integer"])
+      for (const key of ["readOnly", "disabled", "integer", "autoRows"])
         if (field[key] !== undefined && typeof field[key] !== "boolean")
           return false;
       if (

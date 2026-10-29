@@ -3709,3 +3709,30 @@ a {
     width: 125px;
   }
 }
+
+.fd-repeat-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0 0;
+}
+.fd-repeat-footer > span {
+  color: var(--fd-text-muted);
+  font-size: 12px;
+  min-width: 0;
+}
+.fd-repeat-footer > button {
+  flex-shrink: 0;
+}
+.fd-repeat-field [data-placeholder="true"] {
+  background: var(--fd-surface-raised);
+}
+@media (max-width: 600px) {
+  .fd-repeat-footer {
+    flex-wrap: wrap;
+  }
+  .fd-repeat-footer > button {
+    margin-left: auto;
+  }
+}
