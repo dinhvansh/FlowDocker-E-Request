@@ -1053,6 +1053,11 @@ a {
   font-weight: 600;
   margin-bottom: 15px;
 }
+.fd-required-mark {
+  margin-left: 3px;
+  color: var(--fd-status-error);
+  font-weight: 700;
+}
 .fd-field small {
   color: var(--fd-text-muted);
   font-weight: 400;

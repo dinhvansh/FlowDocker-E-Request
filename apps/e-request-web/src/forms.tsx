@@ -235,7 +235,7 @@ export function FormsPage() {
                 </div>
                 <Button
                   variant="primary"
-                  disabled={!dirty || initial.failed}
+                  disabled={!dirty || initial.failed || issues.length > 0}
                   onClick={save}
                 >
                   <Save data-icon="inline-start" />
