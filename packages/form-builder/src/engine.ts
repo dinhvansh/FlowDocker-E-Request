@@ -477,7 +477,10 @@ export function validatePreview(
           add("Trường {{key}} cần chữ ký hoặc tên xác nhận.");
         continue;
       }
-      if (["multiselect", "checkboxes", "tags"].includes(field.type)) {
+      if (
+        ["multiselect", "checkboxes", "tags"].includes(field.type) ||
+        (field.type === "person" && field.multiple)
+      ) {
         if (
           !Array.isArray(value) ||
           value.some((item) => typeof item !== "string") ||
@@ -529,9 +532,11 @@ export function validatePreview(
         continue;
       }
       if (
-        field.type === "checkbox"
-          ? typeof value !== "boolean"
-          : typeof value !== "string" && typeof value !== "number"
+        field.type === "person"
+          ? typeof value !== "string"
+          : field.type === "checkbox"
+            ? typeof value !== "boolean"
+            : typeof value !== "string" && typeof value !== "number"
       ) {
         add("Giá trị trường {{key}} không đúng kiểu.");
         continue;
@@ -585,7 +590,7 @@ export function validatePreview(
       if (field.type === "time" && !/^([01]\d|2[0-3]):[0-5]\d$/.test(text))
         add("Định dạng trường {{key}} không hợp lệ.");
       if (
-        ["select", "radio"].includes(field.type) &&
+        ["select", "radio", "person"].includes(field.type) &&
         !(
           suppliedOptions[path] ?? field.options.map((option) => option.value)
         ).includes(text)

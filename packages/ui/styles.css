@@ -3219,6 +3219,77 @@ a {
 .fd-toolbox-item > button:last-child:focus-visible .fd-field-type-icon {
   color: var(--fd-color-brand);
 }
+.fd-organization-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.fd-org-tree,
+.fd-org-tree ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fd-org-tree {
+  margin-top: 16px;
+  padding: 0 16px 16px;
+}
+.fd-org-chart > .fd-notice {
+  width: auto;
+}
+.fd-org-chart .fd-page-toolbar > [role="combobox"] {
+  width: min(100%, 280px);
+  flex-shrink: 0;
+}
+.fd-org-tree ul {
+  margin: 8px 0 0 16px;
+  padding-left: 16px;
+  border-left: 1px solid var(--fd-border);
+}
+.fd-org-person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--fd-border);
+  border-radius: 8px;
+  background: var(--fd-surface-default);
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.fd-org-person > div {
+  flex: 1;
+  min-width: 140px;
+  overflow-wrap: anywhere;
+}
+.fd-org-person p {
+  margin: 3px 0;
+}
+.fd-org-person small {
+  display: block;
+  color: var(--fd-text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.fd-org-avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--fd-surface-raised);
+}
+@media (max-width: 600px) {
+  .fd-org-tree ul {
+    margin-left: 5px;
+    padding-left: 8px;
+  }
+}
 .fd-combobox-trigger {
   width: 100%;
   justify-content: space-between;
@@ -3230,6 +3301,23 @@ a {
   height: 15px;
   flex: 0 0 auto;
   color: var(--fd-text-muted);
+}
+.fd-combobox-trigger > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fd-combobox-person-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.fd-combobox-person-text small {
+  color: var(--fd-text-muted);
+  font-size: var(--fd-font-size-small, 12px);
 }
 .fd-combobox-placeholder {
   color: var(--fd-text-muted);

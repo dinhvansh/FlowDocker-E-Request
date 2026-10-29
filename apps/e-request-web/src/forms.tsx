@@ -1,4 +1,12 @@
-import { useEffect, useImperativeHandle, useState, type Ref } from "react";
+import {
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+  type Ref,
+} from "react";
+import type { MasterEntity } from "@flowdocker/app-contracts";
+import { peopleOptions } from "./organization";
 import { useI18n } from "@flowdocker/i18n";
 import {
   ArrowLeft,
@@ -54,7 +62,20 @@ function load() {
 export interface FormsPageHandle {
   openCatalog(): void;
 }
-export function FormsPage({ ref }: { ref?: Ref<FormsPageHandle> }) {
+export function FormsPage({
+  ref,
+  entities = [],
+}: {
+  ref?: Ref<FormsPageHandle>;
+  entities?: MasterEntity[];
+}) {
+  const providers = useMemo(
+    () => ({
+      ...demoProviders,
+      "organization.people": async () => peopleOptions(entities),
+    }),
+    [entities],
+  );
   const { t, locale } = useI18n();
   const [initial] = useState(load);
   const [forms, setForms] = useState(initial.forms);
@@ -312,7 +333,7 @@ export function FormsPage({ ref }: { ref?: Ref<FormsPageHandle> }) {
                   </FieldGroup>
                 </div>
                 <FormDesigner
-                  providers={demoProviders}
+                  providers={providers}
                   inspectorSection={tab === "logic" ? "logic" : "basic"}
                   key={draft.id}
                   definition={draft}
@@ -343,7 +364,7 @@ export function FormsPage({ ref }: { ref?: Ref<FormsPageHandle> }) {
                     <FormPreview
                       key={draft.id}
                       definition={draft}
-                      providers={demoProviders}
+                      providers={providers}
                       values={values}
                       onChange={setValues}
                     />

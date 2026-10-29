@@ -5,6 +5,7 @@ import {
   type FormDefinition,
 } from "@flowdocker/form-builder";
 import { createExpenseRequestTemplate } from "./expense-request-template";
+import { organizationForm } from "./organization";
 export const formDraftStorageKey = "flowdocker.form-drafts.v1";
 export const demoForms: FormDefinition[] = [
   {
@@ -83,6 +84,7 @@ export const demoForms: FormDefinition[] = [
   createShowcaseDefinition(),
   createPaymentDefinition(),
   createExpenseRequestTemplate(),
+  organizationForm,
 ];
 /** Saved edits take precedence; missing built-in examples remain discoverable without storage writes. */
 export function formCatalog(saved: FormDefinition[]): FormDefinition[] {

@@ -3,7 +3,7 @@ import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { ArrowRight, Blocks, Database, LockKeyhole } from "lucide-react";
 import { AppShell, type PageId } from "@flowdocker/app-shell";
-import { MasterBuilder } from "@flowdocker/master-builder";
+import { OrganizationMasterPage } from "./organization-page";
 import { PermissionBuilder } from "@flowdocker/permission-builder";
 import { Badge, Button, DataTable, Notice } from "@flowdocker/ui";
 import type { MasterEntity, Role } from "@flowdocker/app-contracts";
@@ -101,7 +101,7 @@ function App() {
       onThemeChange={changeTheme}
     >
       {page === "master" && (
-        <MasterBuilder
+        <OrganizationMasterPage
           entities={entities}
           onSave={saveEntity}
           loading={loading}
@@ -276,7 +276,7 @@ function App() {
       )}
       {page === "applications" && <ApplicationsPage onOpenModule={navigate} />}
       <div hidden={page !== "forms"}>
-        <FormsPage ref={formsRef} />
+        <FormsPage ref={formsRef} entities={entities} />
       </div>
     </AppShell>
   );

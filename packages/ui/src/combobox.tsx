@@ -13,6 +13,7 @@ export type ComboboxOption = {
   value: string;
   label: string;
   disabled?: boolean;
+  description?: string;
 };
 
 export type ComboboxProps = {
@@ -20,6 +21,7 @@ export type ComboboxProps = {
   value: string;
   options: readonly ComboboxOption[];
   onValueChange(value: string): void;
+  selectedValues?: readonly string[];
   disabled?: boolean;
   placeholder?: string;
   searchPlaceholder?: string;
@@ -35,6 +37,7 @@ export function Combobox({
   value,
   options,
   onValueChange,
+  selectedValues,
   disabled,
   placeholder = "Chọn giá trị",
   searchPlaceholder = "Tìm lựa chọn...",
@@ -55,7 +58,9 @@ export function Combobox({
     const normalized = query.trim().toLocaleLowerCase();
     return normalized
       ? options.filter((option) =>
-          option.label.toLocaleLowerCase().includes(normalized),
+          `${option.label} ${option.description ?? ""}`
+            .toLocaleLowerCase()
+            .includes(normalized),
         )
       : options;
   }, [options, query]);
@@ -79,8 +84,22 @@ export function Combobox({
           aria-expanded={open}
           role="combobox"
         >
-          <span className={!selected ? "fd-combobox-placeholder" : undefined}>
-            {selected?.label ?? t(placeholder)}
+          <span
+            className={
+              !selected && !selectedValues?.length
+                ? "fd-combobox-placeholder"
+                : undefined
+            }
+          >
+            {selectedValues?.length
+              ? selectedValues
+                  .map(
+                    (key) =>
+                      options.find((option) => option.value === key)?.label ??
+                      key,
+                  )
+                  .join(", ")
+              : (selected?.label ?? (value || t(placeholder)))}
           </span>
           <ChevronsUpDown aria-hidden="true" />
         </Button>
@@ -103,24 +122,40 @@ export function Combobox({
             onChange={(event) => setQuery(event.target.value)}
           />
         </label>
-        <div className="fd-combobox-options" role="listbox" aria-label={label}>
+        <div
+          className="fd-combobox-options"
+          role="listbox"
+          aria-label={label}
+          aria-multiselectable={selectedValues ? true : undefined}
+        >
           {filtered.length ? (
             filtered.map((option) => (
               <button
                 type="button"
                 role="option"
-                aria-selected={option.value === value}
+                aria-selected={
+                  selectedValues
+                    ? selectedValues.includes(option.value)
+                    : option.value === value
+                }
                 disabled={option.disabled}
                 className="fd-combobox-option"
                 key={option.value}
                 onClick={() => {
                   onValueChange(option.value);
-                  setOpen(false);
-                  setQuery("");
+                  if (!selectedValues) {
+                    setOpen(false);
+                    setQuery("");
+                  }
                 }}
               >
-                <span>{option.label}</span>
-                {option.value === value && <Check aria-hidden="true" />}
+                <span className="fd-combobox-person-text">
+                  {option.label}
+                  {option.description && <small>{option.description}</small>}
+                </span>
+                {(selectedValues
+                  ? selectedValues.includes(option.value)
+                  : option.value === value) && <Check aria-hidden="true" />}
               </button>
             ))
           ) : (

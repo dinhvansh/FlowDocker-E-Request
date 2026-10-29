@@ -13,6 +13,8 @@ export type { ButtonProps, BadgeProps, Tab, TableColumn } from "./primitives";
 export { Select } from "./select";
 export type { SelectProps, SelectOption } from "./select";
 export { Combobox } from "./combobox";
+export { PeoplePicker } from "./people-picker";
+export type { PeoplePickerProps } from "./people-picker";
 export type { ComboboxProps, ComboboxOption } from "./combobox";
 export { Input } from "./components/ui/input";
 export { CurrencyInput } from "./currency-input";

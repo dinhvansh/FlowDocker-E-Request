@@ -141,8 +141,10 @@ export function Field({
   children: ReactNode;
 }) {
   const id = useId();
-  const required = label.endsWith(" (bắt buộc)");
-  const visibleLabel = required ? label.slice(0, -" (bắt buộc)".length) : label;
+  const required = / \((bắt buộc|required)\)$/.test(label);
+  const visibleLabel = required
+    ? label.replace(/ \((bắt buộc|required)\)$/, "")
+    : label;
   const controlId = isValidElement(children)
     ? ((children.props as { id?: string }).id ?? id)
     : id;

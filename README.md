@@ -158,3 +158,7 @@ Application Builder hỗ trợ danh sách/tìm kiếm ứng dụng, chọn modul
 
 ## Vietnamese / English foundation
 The topbar language picker switches between Vietnamese and English and remembers the selection. All current application screens and the isolated UI examples use the shared private `@flowdocker/i18n` package, including Connections, Flow Studio, Permissions and Profile. New UI must ship in both languages; `npm run i18n:check` is included in lint. User-entered data and technical IDs stay unchanged. See [i18n foundation and coverage](docs/54-BILINGUAL-I18N-FOUNDATION.md).
+
+## People and organization sample
+
+Form Studio now includes a **People picker** field and a **People and organization · sample** form. Master Data → Organization chart shows synthetic reporting relationships and department heads; employee/department catalogs are editable locally. Both views read the same local master records. No Microsoft 365 connection, authenticated current-user default or approval assignment execution is implemented in this slice. See [scope and QA](docs/61-PEOPLE-AND-ORGANIZATION-SAMPLE.md).

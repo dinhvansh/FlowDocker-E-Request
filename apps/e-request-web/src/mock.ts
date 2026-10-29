@@ -4,6 +4,7 @@ import type {
   ResourceAction,
   Role,
 } from "@flowdocker/app-contracts";
+import { withOrganizationSamples } from "./organization";
 
 export const seedEntities: MasterEntity[] = [
   {
@@ -210,13 +211,16 @@ export const seedRoles: Role[] = [
 function makeService<T extends { id: string }>(
   key: string,
   seed: T[],
+  merge: (rows: T[]) => T[] = (rows) => rows,
 ): MockService<T> {
   const read = (): T[] => {
     try {
       const stored = localStorage.getItem(key);
-      return stored ? (JSON.parse(stored) as T[]) : seed;
+      return merge(
+        stored ? (JSON.parse(stored) as T[]) : structuredClone(seed),
+      );
     } catch {
-      return seed;
+      return merge(structuredClone(seed));
     }
   };
   return {
@@ -236,5 +240,6 @@ function makeService<T extends { id: string }>(
 export const entityService = makeService(
   "flowdocker.demo.entities.v1",
   seedEntities,
+  withOrganizationSamples,
 );
 export const roleService = makeService("flowdocker.demo.roles.v1", seedRoles);

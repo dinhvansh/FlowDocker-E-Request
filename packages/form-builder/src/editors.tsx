@@ -612,7 +612,7 @@ export function AdvancedProperties({
       )}
       {(section === "all" || section === "data") && (
         <>
-          {["select", "radio", "multiselect", "checkboxes"].includes(
+          {["select", "radio", "multiselect", "checkboxes", "person"].includes(
             field.type,
           ) && (
             <>

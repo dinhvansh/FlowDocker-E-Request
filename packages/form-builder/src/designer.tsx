@@ -56,6 +56,7 @@ import {
   Type,
   Clock3,
   Box,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -188,6 +189,7 @@ function PaletteItem({
   );
 }
 const fieldTypeIcons: Partial<Record<FormFieldType, LucideIcon>> = {
+  person: Users,
   text: Type,
   textarea: AlignJustify,
   email: Mail,
@@ -772,6 +774,7 @@ export function FormDesigner({
               {
                 label: "Thường dùng",
                 types: [
+                  "person",
                   "text",
                   "textarea",
                   "number",

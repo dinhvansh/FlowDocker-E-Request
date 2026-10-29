@@ -1,5 +1,6 @@
 export type BilingualText = { vi: string; en: string };
 export const formFieldTypes = [
+  "person",
   "text",
   "textarea",
   "email",
@@ -68,6 +69,7 @@ export interface FormField {
   label: BilingualText;
   type: FormFieldType;
   required: boolean;
+  multiple?: boolean;
   options: { value: string; label: BilingualText }[];
   help?: BilingualText;
   placeholder?: BilingualText;
@@ -126,6 +128,7 @@ export const containerTypes: readonly FormFieldType[] = [
   "table",
 ];
 export const choiceTypes: readonly FormFieldType[] = [
+  "person",
   "select",
   "radio",
   "multiselect",
@@ -133,6 +136,7 @@ export const choiceTypes: readonly FormFieldType[] = [
   "survey",
 ];
 export const fieldTypeLabels: Record<FormFieldType, string> = {
+  person: "Chọn người",
   text: "Văn bản ngắn",
   textarea: "Văn bản dài",
   email: "Email",
@@ -249,6 +253,7 @@ const allowedKeys = new Set([
   "placeholder",
   "defaultValue",
   "readOnly",
+  "multiple",
   "disabled",
   "min",
   "max",
@@ -322,7 +327,13 @@ function fieldsShape(
           (typeof field[key] !== "number" || !Number.isFinite(field[key]))
         )
           return false;
-      for (const key of ["readOnly", "disabled", "integer", "autoRows"])
+      for (const key of [
+        "readOnly",
+        "disabled",
+        "integer",
+        "autoRows",
+        "multiple",
+      ])
         if (field[key] !== undefined && typeof field[key] !== "boolean")
           return false;
       if (
@@ -647,12 +658,18 @@ export function createField(
   return {
     id: crypto.randomUUID(),
     key: `${type}_${count}`,
-    label: { vi: fieldTypeLabels[type], en: type },
+    label: {
+      vi: fieldTypeLabels[type],
+      en: type === "person" ? "People picker" : type,
+    },
     type,
     required: false,
     options: choiceTypes.includes(type)
       ? [{ value: "option_1", label: { vi: "Lựa chọn 1", en: "Option 1" } }]
       : [],
+    ...(type === "person"
+      ? { options: [], dataSource: { provider: "organization.people" } }
+      : {}),
     ...(containerTypes.includes(type) ? { children: [] } : {}),
   };
 }

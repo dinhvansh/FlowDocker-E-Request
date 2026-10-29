@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import {
   LanguagePicker,
   DatePicker,
+  PeoplePicker,
   Badge,
   Button,
   DataTable,
@@ -27,6 +28,7 @@ function Examples() {
   const [kind, setKind] = useState("LOCAL_CATALOG");
   const [date, setDate] = useState("");
   const [dateTime, setDateTime] = useState("");
+  const [people, setPeople] = useState<string[]>([]);
   return (
     <div className="fd-app" data-theme={theme}>
       <main
@@ -35,6 +37,26 @@ function Examples() {
         <LanguagePicker />
         <h1>{t("FlowDocker UI · isolated examples")}</h1>
         <p>{t("Dữ liệu tổng hợp, không cần API hay credentials.")}</p>
+        <Field label={t("Chọn người")}>
+          <PeoplePicker
+            label={t("Chọn người")}
+            multiple
+            value={people}
+            onChange={setPeople}
+            options={[
+              {
+                value: "demo-a",
+                label: "An Demo",
+                description: "an@example.test",
+              },
+              {
+                value: "demo-b",
+                label: "Bình Demo",
+                description: "binh@example.test",
+              },
+            ]}
+          />
+        </Field>
         <Button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
           {theme === "light" ? t("Bật giao diện tối") : t("Bật giao diện sáng")}
         </Button>

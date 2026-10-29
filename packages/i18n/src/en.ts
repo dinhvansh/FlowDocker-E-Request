@@ -1,5 +1,24 @@
 import { formMessages } from "./form-messages";
 export const en = {
+  "Chọn người": "People picker",
+  "Cho phép chọn nhiều người": "Allow multiple people",
+  "Tìm tên, email hoặc phòng ban...": "Search name, email or department...",
+  "Không tìm thấy người phù hợp": "No matching people",
+  "Danh mục": "Catalog",
+  "Sơ đồ tổ chức": "Organization chart",
+  "Chưa có phòng ban": "No department",
+  "Quản lý trực tiếp": "Direct manager",
+  "Không tìm thấy người quản lý": "Manager not found",
+  "Chưa có người quản lý": "No manager assigned",
+  "Trưởng phòng": "Department head",
+  "Quan hệ báo cáo trực tiếp và trưởng phòng từ danh mục mẫu.":
+    "Reporting lines and department heads from the sample directory.",
+  "Lọc phòng ban": "Filter by department",
+  "Tất cả phòng ban": "All departments",
+  "Dữ liệu tổ chức giả lập, chỉ lưu trên trình duyệt. Chưa kết nối Microsoft 365.":
+    "Synthetic organization data, stored only in this browser. Microsoft 365 is not connected.",
+  "Quan hệ báo cáo": "Reporting lines",
+  "Không có nhân viên đang hoạt động": "No active employees",
   ...formMessages,
   "Biểu mẫu": "Forms",
   "Thiết kế biểu mẫu": "Form Studio",
@@ -420,7 +439,6 @@ export const en = {
   "Mã nhân viên": "Employee ID",
   "Phòng ban": "Department",
   "Chức danh": "Job title",
-  "Quản lý trực tiếp": "Line manager",
   "Vai trò ứng dụng": "Application role",
   "Thông tin ở đây là dữ liệu mẫu. Khi có đăng nhập, tên và email sẽ lấy từ Entra ID; phòng ban, chức danh và quản lý cần nguồn HR đã được xác nhận. Người dùng không tự sửa các trường này trong bản demo.":
     "This is sample data. Once sign-in is available, names and emails will come from Entra ID; departments, job titles and managers require a verified HR source. Users cannot edit these fields in the demo.",

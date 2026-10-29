@@ -14,6 +14,7 @@ import {
   Button,
   Checkbox,
   Combobox,
+  PeoplePicker,
   Field,
   FieldGroup,
   Input,
@@ -51,6 +52,7 @@ import {
 export interface ChoiceOption {
   value: string;
   label: { vi: string; en: string };
+  description?: { vi: string; en: string };
 }
 export type DataProvider = (context: {
   query: string;
@@ -100,6 +102,7 @@ function useChoices(
     status: "loading" | "ready" | "error" | "missing";
   }>({ options: [], status: "loading", requestKey: "" });
   const dependencyKey = JSON.stringify(dependency);
+  const staticOptions: ChoiceOption[] = field.options;
   const requestKey = `${query}:${dependencyKey ?? ""}:${field.dataSource?.provider ?? ""}`;
   useEffect(() => {
     if (!field.dataSource) return;
@@ -152,7 +155,7 @@ function useChoices(
           ? remote.options
           : []
         : []
-      : field.options,
+      : staticOptions,
     status: field.dataSource
       ? provider
         ? remote.requestKey === requestKey
@@ -786,6 +789,29 @@ function RuntimeField({
         onCheckedChange={(checked) => setValue(checked === true)}
       />
     );
+  else if (field.type === "person")
+    control = (
+      <PeoplePicker
+        id={id}
+        label={label}
+        multiple={field.multiple}
+        value={
+          Array.isArray(value)
+            ? value.filter((item): item is string => typeof item === "string")
+            : text
+              ? [text]
+              : []
+        }
+        disabled={disabled || choice.status !== "ready"}
+        options={choice.options.map((option) => ({
+          value: option.value,
+          label: option.label[locale],
+          description: option.description?.[locale],
+        }))}
+        onChange={(next) => setValue(field.multiple ? next : (next[0] ?? ""))}
+        aria-invalid={!!error}
+      />
+    );
   else if (field.type === "select")
     control = (
       <Combobox
@@ -941,13 +967,15 @@ function RuntimeField({
     <div className="fd-runtime-field">
       {field.dataSource && (
         <>
-          <Field label={t("Tìm lựa chọn cho {{label}}", { label })}>
-            <Input
-              disabled={disabled}
-              value={choice.query}
-              onChange={(event) => choice.setQuery(event.target.value)}
-            />
-          </Field>
+          {field.type !== "person" && (
+            <Field label={t("Tìm lựa chọn cho {{label}}", { label })}>
+              <Input
+                disabled={disabled}
+                value={choice.query}
+                onChange={(event) => choice.setQuery(event.target.value)}
+              />
+            </Field>
+          )}
           {choice.status !== "ready" && (
             <Notice tone={choice.status === "loading" ? "info" : "warning"}>
               {t(

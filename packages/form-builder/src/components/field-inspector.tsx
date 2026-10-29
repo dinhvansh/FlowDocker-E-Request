@@ -322,6 +322,16 @@ export function FieldInspector({
               />
             </Field>
             {required}
+            {field.type === "person" && (
+              <Field label={t("Cho phép chọn nhiều người")}>
+                <Checkbox
+                  checked={!!field.multiple}
+                  onCheckedChange={(next) =>
+                    patch({ multiple: next === true, defaultValue: undefined })
+                  }
+                />
+              </Field>
+            )}
             <Field label={t("Mã trường")}>
               <Input
                 value={field.key}
@@ -352,6 +362,14 @@ export function FieldInspector({
                   }
                   patch({
                     type,
+                    ...(type === "person"
+                      ? {
+                          options: [],
+                          dataSource: field.dataSource ?? {
+                            provider: "organization.people",
+                          },
+                        }
+                      : {}),
                     children: containerTypes.includes(type)
                       ? (field.children ?? [])
                       : undefined,
