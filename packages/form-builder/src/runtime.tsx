@@ -17,6 +17,7 @@ import {
   Field,
   FieldGroup,
   Input,
+  CurrencyInput,
   DatePicker,
   Notice,
   Tabs,
@@ -905,6 +906,16 @@ function RuntimeField({
         placeholder={field.placeholder?.[locale]}
       />
     );
+  else if (field.type === "currency")
+    control = (
+      <CurrencyInput
+        id={id}
+        value={text}
+        onValueChange={setValue}
+        disabled={disabled}
+        placeholder={field.placeholder?.[locale]}
+      />
+    );
   else
     control = (
       <Input
@@ -912,7 +923,7 @@ function RuntimeField({
         type={
           field.type === "phone"
             ? "tel"
-            : ["number", "currency"].includes(field.type)
+            : field.type === "number"
               ? "number"
               : field.type
         }

@@ -15,6 +15,8 @@ export type { SelectProps, SelectOption } from "./select";
 export { Combobox } from "./combobox";
 export type { ComboboxProps, ComboboxOption } from "./combobox";
 export { Input } from "./components/ui/input";
+export { CurrencyInput } from "./currency-input";
+export type { CurrencyInputProps } from "./currency-input";
 export { Textarea } from "./components/ui/textarea";
 export { Checkbox } from "./components/ui/checkbox";
 export { LanguagePicker } from "./language-picker";

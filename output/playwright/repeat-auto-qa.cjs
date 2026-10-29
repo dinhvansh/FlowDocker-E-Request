@@ -12,14 +12,14 @@ async (page) => {
  const table=page.getByRole('table',{name:'Chi tiết chi phí',exact:true});
  const body=table.locator('tbody');
  await table.getByRole('textbox',{name:'Nội dung (bắt buộc)',exact:true}).first().fill('Mẫu kiểm tra');
- await table.getByRole('spinbutton',{name:'Chi phí (bắt buộc)',exact:true}).first().fill('0');
+ await table.getByRole('textbox',{name:'Chi phí (bắt buộc)',exact:true}).first().fill('0');
  const trailing=await body.locator('tr[data-placeholder="true"]').count();
  await page.getByRole('button',{name:'Thêm dòng',exact:true}).click();
  const focusInPlaceholder=await body.locator('tr[data-placeholder="true"]').evaluateAll(rows=>rows.some(row=>row.contains(document.activeElement)));
  await table.scrollIntoViewIfNeeded();
  await page.screenshot({path:'output/playwright/repeat-auto-footer-1440.png'});
  await table.getByRole('textbox',{name:'Nội dung (bắt buộc)',exact:true}).first().fill('');
- await table.getByRole('spinbutton',{name:'Chi phí (bắt buộc)',exact:true}).first().fill('');
+ await table.getByRole('textbox',{name:'Chi phí (bắt buộc)',exact:true}).first().fill('');
  await page.getByRole('textbox',{name:'Diễn giải thanh toán',exact:true}).click();
  const clearedRemoved=await body.locator('tr').count();
  await page.setViewportSize({width:390,height:844});

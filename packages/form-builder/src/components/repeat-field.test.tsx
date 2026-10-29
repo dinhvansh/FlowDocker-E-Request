@@ -72,18 +72,18 @@ it("edits actual repeat-table cells, calculates decimals and retains sibling val
   expect(screen.getByRole("table", { name: "Dòng chi phí" })).toBeTruthy();
   fireEvent.click(screen.getByRole("button", { name: "Thêm dòng" }));
   fireEvent.change(
-    screen.getAllByRole("spinbutton", { name: "Chi phí dòng (bắt buộc)" })[1],
-    { target: { value: "0.20" } },
+    screen.getAllByRole("textbox", { name: "Chi phí dòng (bắt buộc)" })[1],
+    { target: { value: "0,20" } },
   );
   expect(
-    (screen.getByRole("spinbutton", { name: "Tổng cộng" }) as HTMLInputElement)
+    (screen.getByRole("textbox", { name: "Tổng cộng" }) as HTMLInputElement)
       .value,
-  ).toBe("0.50");
+  ).toBe("0,50");
   fireEvent.click(screen.getByRole("button", { name: "Xóa dòng 1" }));
   expect(
-    (screen.getByRole("spinbutton", { name: "Tổng cộng" }) as HTMLInputElement)
+    (screen.getByRole("textbox", { name: "Tổng cộng" }) as HTMLInputElement)
       .value,
-  ).toBe("0.20");
+  ).toBe("0,20");
   expect(JSON.parse(screen.getByTestId("values").textContent!).note).toBe(
     "Keep this note",
   );
@@ -119,7 +119,7 @@ it("keeps seven simple columns in a real table with accessible required headers"
   );
   expect(screen.getByRole("table", { name: "Dòng chi phí" })).toBeTruthy();
   expect(screen.getAllByRole("columnheader")).toHaveLength(9);
-  expect(screen.getAllByRole("spinbutton")).toHaveLength(7);
+  expect(screen.getAllByRole("textbox")).toHaveLength(7);
   expect(screen.getByRole("region", { name: "Dòng chi phí" }).className).toBe(
     "fd-repeat-table-scroll",
   );
@@ -150,7 +150,7 @@ it("keeps automatic entry rows out of data, preserves zero and removes cleared r
   const values = () =>
     JSON.parse(screen.getByTestId("auto-values").textContent!);
   const cells = () =>
-    screen.getAllByRole("spinbutton", { name: "Chi phí dòng (bắt buộc)" });
+    screen.getAllByRole("textbox", { name: "Chi phí dòng (bắt buộc)" });
   expect(cells()).toHaveLength(1);
   expect(values().lines).toEqual([]);
   expect(validatePreview(autoForm, values())).toEqual([]);
@@ -158,7 +158,7 @@ it("keeps automatic entry rows out of data, preserves zero and removes cleared r
   expect(values().lines).toEqual([{ expense: "0" }]);
   expect(cells()).toHaveLength(2);
   expect(validatePreview(autoForm, values())).toEqual([]);
-  fireEvent.change(cells()[1], { target: { value: "0.20" } });
+  fireEvent.change(cells()[1], { target: { value: "0,20" } });
   expect(cells()).toHaveLength(2);
   expect(
     screen.getByRole("button", { name: "Thêm dòng" }).hasAttribute("disabled"),
@@ -203,7 +203,7 @@ it("keeps minimum rows and validates partly filled automatic rows", () => {
     );
   }
   render(<AutoHost />);
-  const cell = screen.getAllByRole("spinbutton", {
+  const cell = screen.getAllByRole("textbox", {
     name: "Chi phí dòng (bắt buộc)",
   })[0];
   fireEvent.blur(cell, {
