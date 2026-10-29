@@ -404,7 +404,7 @@ a {
   --fd-text-primary: #242424;
   --fd-text-muted: #626262;
   --fd-border: #e3e3e3;
-  --fd-focus-ring: #c52b36;
+  --fd-focus-ring: #646464;
   --fd-status-success: #157052;
   --fd-status-warning: #9b650d;
   --fd-status-error: #b43c3c;
@@ -426,7 +426,7 @@ a {
   --fd-text-primary: #f5f5f5;
   --fd-text-muted: #b8b8b8;
   --fd-border: #3d3d3d;
-  --fd-focus-ring: #ff939a;
+  --fd-focus-ring: #b8b8b8;
   --fd-status-success: #80d9ac;
   --fd-status-warning: #f0c579;
   --fd-status-error: #ff9b9b;
@@ -434,6 +434,18 @@ a {
 .fd-app :focus-visible {
   outline: 2px solid var(--fd-focus-ring);
   outline-offset: 2px;
+  /* One focus indicator: avoid stacking shadcn's shadow ring with this outline. */
+  box-shadow: none;
+}
+.fd-app [aria-invalid="true"] {
+  border-color: var(--fd-status-error);
+}
+.fd-app [data-slot="tabs-trigger"]:focus-visible {
+  outline: none;
+  border-color: transparent;
+}
+.fd-app [data-slot="tabs-trigger"]:focus-visible::after {
+  opacity: 1;
 }
 .fd-sidebar {
   width: 248px;
