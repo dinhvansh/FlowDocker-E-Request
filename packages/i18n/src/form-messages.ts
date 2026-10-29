@@ -50,6 +50,9 @@ export const formMessages = {
   "Thả vào bố cục": "Drop into the layout",
   "Kéo vào đây để thêm vào nhóm": "Drag here to add to the group",
   "Trường trên mỗi hàng": "Fields per row",
+  "Hiển thị tiêu đề bố cục": "Show layout title",
+  "Ẩn tiêu đề để bố cục gọn hơn trên canvas":
+    "Hide the title to keep the canvas layout compact",
   "{{count}} trường": "{{count}} fields",
   "Nhân bản trường": "Duplicate field",
   "Thay cấu trúc bằng schema": "Replace with schema",

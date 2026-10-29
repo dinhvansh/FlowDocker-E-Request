@@ -611,7 +611,15 @@ function RuntimeField({
         className="fd-runtime-section"
         data-field-type={field.type}
       >
-        <FieldLegend>{label}</FieldLegend>
+        <FieldLegend
+          className={
+            field.type === "columns" && field.hideLabel !== false
+              ? "sr-only"
+              : undefined
+          }
+        >
+          {label}
+        </FieldLegend>
         {field.help?.[locale] && <p>{field.help[locale]}</p>}
         {field.type === "container" ? (
           <RuntimeFields

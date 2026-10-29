@@ -132,19 +132,34 @@ export function FieldInspector({
           />
         </Field>
         {["columns", "table"].includes(field.type) && (
-          <Field label={t("Trường trên mỗi hàng")}>
-            <Select
-              label={t("Trường trên mỗi hàng")}
-              value={String(field.columns ?? 2)}
-              options={[1, 2, 3].map((number) => ({
-                value: String(number),
-                label: t("{{count}} trường", { count: number }),
-              }))}
-              onValueChange={(value) =>
-                patch({ columns: Number(value) as 1 | 2 | 3 })
-              }
-            />
-          </Field>
+          <>
+            {field.type === "columns" && (
+              <Field
+                label={t("Hiển thị tiêu đề bố cục")}
+                hint={t("Ẩn tiêu đề để bố cục gọn hơn trên canvas")}
+              >
+                <Checkbox
+                  checked={field.hideLabel === false}
+                  onCheckedChange={(value) =>
+                    patch({ hideLabel: value !== true })
+                  }
+                />
+              </Field>
+            )}
+            <Field label={t("Trường trên mỗi hàng")}>
+              <Select
+                label={t("Trường trên mỗi hàng")}
+                value={String(field.columns ?? 2)}
+                options={[1, 2, 3].map((number) => ({
+                  value: String(number),
+                  label: t("{{count}} trường", { count: number }),
+                }))}
+                onValueChange={(value) =>
+                  patch({ columns: Number(value) as 1 | 2 | 3 })
+                }
+              />
+            </Field>
+          </>
         )}
         <div className="fd-inspector-layout-actions">
           <Button

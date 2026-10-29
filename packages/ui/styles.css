@@ -3236,7 +3236,9 @@ a {
 }
 .fd-inspector-layout {
   display: grid;
-  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: 10px;
   margin: 14px 0;
   padding: 12px;
   border: 1px solid var(--fd-border);
@@ -3246,6 +3248,7 @@ a {
 .fd-inspector-layout-heading {
   display: grid;
   gap: 2px;
+  grid-column: 1 / -1;
 }
 .fd-inspector-layout-heading span {
   color: var(--fd-text-muted);
@@ -3255,6 +3258,18 @@ a {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 6px;
+  grid-column: 1 / -1;
+}
+.fd-inspector-layout > [data-slot="field"]:first-of-type {
+  grid-column: 1 / -1;
+}
+.fd-inspector-layout [data-slot="field"] {
+  min-width: 0;
+  margin-bottom: 0;
+}
+.fd-inspector-layout [data-slot="field-label"] {
+  min-height: 2.4em;
+  line-height: 1.2;
 }
 .fd-inspector-layout-actions button {
   min-width: 0;
@@ -3262,6 +3277,14 @@ a {
   font-size: 11px;
 }
 @media (max-width: 600px) {
+  .fd-inspector-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fd-inspector-layout > [data-slot="field"]:first-of-type,
+  .fd-inspector-layout-actions,
+  .fd-inspector-layout-heading {
+    grid-column: 1;
+  }
   .fd-forms-v2 .fd-form-editor > [data-slot="tabs"] > [role="tablist"] {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

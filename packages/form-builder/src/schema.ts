@@ -86,6 +86,8 @@ export interface FormField {
   calculation?: Calculation;
   children?: FormField[];
   columns?: 1 | 2 | 3;
+  /** Hide the visual legend for a columns layout while keeping it accessible. */
+  hideLabel?: boolean;
   minRows?: number;
   maxRows?: number;
   uniqueBy?: string;
