@@ -1,4 +1,5 @@
 export const formMessages = {
+  "Mở mẫu chi phí theo PDF": "Open PDF expense template",
   "Tự động chừa dòng trống": "Keep an empty entry row",
   "Dòng trống gợi ý không tính vào dữ liệu. Dòng bị xóa hết nội dung sẽ bỏ khi rời dòng, trừ số dòng tối thiểu.":
     "The empty entry row is not saved. Cleared rows are removed on leaving, subject to the minimum row count.",

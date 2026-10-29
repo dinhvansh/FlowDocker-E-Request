@@ -32,6 +32,7 @@ import {
   Textarea,
 } from "@flowdocker/ui";
 import { formDraftStorageKey, readFormDrafts } from "./form-drafts";
+import { createExpenseRequestTemplate } from "./expense-request-template";
 
 const demoProviders: Record<string, DataProvider> = {
   "demo.companies": async () => [
@@ -153,6 +154,12 @@ export function FormsPage() {
             onClick={() => request(createPaymentDefinition())}
           >
             {t("Mở mẫu thanh toán")}
+          </Button>
+          <Button
+            disabled={initial.failed}
+            onClick={() => request(createExpenseRequestTemplate())}
+          >
+            {t("Mở mẫu chi phí theo PDF")}
           </Button>
           <Button
             disabled={initial.failed}
