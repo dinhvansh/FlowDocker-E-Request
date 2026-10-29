@@ -662,10 +662,19 @@ describe("FlowDocker Forms interactive contracts", () => {
     }
     render(<Builder />);
     fireEvent.click(screen.getByRole("button", { name: /^Thêm Email$/ }));
-    expect(screen.getByText("email_1")).toBeTruthy();
+    expect(screen.getByRole("textbox", { name: "Mã trường" })).toHaveProperty(
+      "value",
+      "email_1",
+    );
     fireEvent.click(screen.getByRole("button", { name: "Hoàn tác" }));
-    expect(screen.queryByText("email_1")).toBeNull();
+    expect(screen.getByRole("textbox", { name: "Mã trường" })).toHaveProperty(
+      "value",
+      "name",
+    );
     fireEvent.click(screen.getByRole("button", { name: "Làm lại" }));
-    expect(screen.getByText("email_1")).toBeTruthy();
+    expect(screen.getByRole("textbox", { name: "Mã trường" })).toHaveProperty(
+      "value",
+      "email_1",
+    );
   });
 });

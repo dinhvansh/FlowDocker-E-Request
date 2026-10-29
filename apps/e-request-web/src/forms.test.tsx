@@ -24,6 +24,8 @@ describe("Form Studio host journeys", () => {
         <Host />
       </I18nProvider>,
     );
+    fireEvent.click(screen.getByRole("button", { name: "Tùy chọn biểu mẫu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Đổi tên biểu mẫu" }));
     fireEvent.change(
       screen.getByRole("textbox", { name: "Tên biểu mẫu · tiếng Việt" }),
       { target: { value: "Nháp đang sửa" } },
@@ -36,6 +38,7 @@ describe("Form Studio host journeys", () => {
         }) as HTMLInputElement
       ).value,
     ).toBe("Nháp đang sửa");
+    fireEvent.click(screen.getByRole("button", { name: "Form catalog" }));
     fireEvent.click(
       screen.getByRole("button", { name: /IT equipment intake/ }),
     );
@@ -45,13 +48,19 @@ describe("Form Studio host journeys", () => {
     expect(
       JSON.parse(localStorage.getItem(formDraftStorageKey)!)[0].title.vi,
     ).toBe("Nháp đang sửa");
-  });
+    expect(
+      screen.queryByRole("textbox", { name: "Form name · Vietnamese" }),
+    ).toBeNull();
+  }, 15000);
+
   it("retains current edits and reports storage failure without reporting saved", () => {
     render(
       <I18nProvider>
         <FormsPage />
       </I18nProvider>,
     );
+    fireEvent.click(screen.getByRole("button", { name: "Tùy chọn biểu mẫu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Đổi tên biểu mẫu" }));
     fireEvent.change(
       screen.getByRole("textbox", { name: "Tên biểu mẫu · tiếng Việt" }),
       { target: { value: "Còn ở đây" } },

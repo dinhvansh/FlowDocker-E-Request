@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import {
   DndContext,
@@ -12,10 +12,8 @@ import {
 import {
   SortableContext,
   sortableKeyboardCoordinates,
-  useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import {
   ArrowDown,
   ArrowUp,
@@ -27,6 +25,9 @@ import {
   Trash2,
   Undo2,
   Upload,
+  PanelLeft,
+  PanelRight,
+  Settings2,
 } from "lucide-react";
 import {
   Badge,
@@ -67,10 +68,14 @@ import {
   type FormFieldType,
 } from "./schema";
 import { AdvancedProperties, OptionsEditor } from "./editors";
+import type { FormRendererProps } from "./runtime";
+import { FormCanvas } from "./canvas";
 export interface FormDesignerProps {
+  providers?: FormRendererProps["providers"];
   definition: FormDefinition;
   onChange(definition: FormDefinition): void;
   readOnly?: boolean;
+  inspectorSection?: "basic" | "logic";
 }
 function outline(
   fields: FormField[],
@@ -124,13 +129,23 @@ function PaletteItem({
   const { t } = useI18n();
   const drag = useDraggable({ id: `palette:${type}`, disabled });
   return (
-    <div ref={drag.setNodeRef}>
+    <div ref={drag.setNodeRef} className="fd-toolbox-item">
+      <button
+        type="button"
+        className="fd-toolbox-drag"
+        disabled={disabled}
+        {...drag.listeners}
+        {...drag.attributes}
+        aria-label={t("Kéo {{type}} vào canvas", {
+          type: t(fieldTypeLabels[type]),
+        })}
+      >
+        <GripVertical aria-hidden="true" />
+      </button>
       <Button
         type="button"
         disabled={disabled}
         onClick={onAdd}
-        {...drag.listeners}
-        {...drag.attributes}
         aria-label={t("Thêm {{type}}", { type: t(fieldTypeLabels[type]) })}
       >
         <span>
@@ -155,15 +170,9 @@ function OutlineRow({
   disabled: boolean;
 }) {
   const { t, locale } = useI18n();
-  const sortable = useSortable({ id: field.id, disabled });
   return (
     <TableRow
-      ref={sortable.setNodeRef}
       className={selected ? "selected" : ""}
-      style={{
-        transform: CSS.Transform.toString(sortable.transform),
-        transition: sortable.transition,
-      }}
       onClick={onSelect}
       tabIndex={0}
       onKeyDown={(event) => {
@@ -181,9 +190,10 @@ function OutlineRow({
           type="button"
           disabled={disabled}
           className="fd-drag-handle"
-          {...sortable.attributes}
-          {...sortable.listeners}
-          aria-label={t("Di chuyển trường {{key}}", { key: field.key })}
+          onClick={onSelect}
+          aria-label={t("Chọn trường {{label}}", {
+            label: field.label[locale],
+          })}
         >
           <GripVertical aria-hidden="true" size={16} />
         </button>
@@ -207,11 +217,26 @@ export function FormDesigner({
   definition,
   onChange,
   readOnly = false,
+  inspectorSection,
+  providers,
 }: FormDesignerProps) {
   const { t, locale } = useI18n();
   const [selectedId, setSelectedId] = useState("");
   const [query, setQuery] = useState("");
   const [properties, setProperties] = useState("basic");
+  useEffect(() => {
+    if (inspectorSection) setProperties(inspectorSection);
+  }, [inspectorSection]);
+  const [outlineOpen, setOutlineOpen] = useState(false);
+  const [pane, setPane] = useState("canvas");
+  const [toolboxOpen, setToolboxOpen] = useState(true);
+  const [inspectorOpen, setInspectorOpen] = useState(true);
+  const [inspectorWidth, setInspectorWidth] = useState(300);
+  const [device, setDevice] = useState("desktop");
+  const [insertAt, setInsertAt] = useState<{
+    parent: string;
+    index: number;
+  } | null>(null);
   const [past, setPast] = useState<FormDefinition[]>([]);
   const [future, setFuture] = useState<FormDefinition[]>([]);
   const [historyRevision, setHistoryRevision] = useState(0);
@@ -244,18 +269,37 @@ export function FormDesigner({
         ...changes,
       })),
     });
-  const add = (type: FormFieldType, target = destination) => {
+  const add = (
+    type: FormFieldType,
+    target = insertAt?.parent ?? destination,
+    position = insertAt?.index,
+  ) => {
     if (!rows.some((row) => row.field.id === target && isContainer(row.field)))
       target = "";
     const next = createField(type, definition.fields);
     const fields = target
       ? updateFieldTree(definition.fields, target, (item) => ({
           ...item,
-          children: [...(item.children ?? []), next],
+          children: [
+            ...(item.children ?? []).slice(
+              0,
+              position ?? item.children?.length ?? 0,
+            ),
+            next,
+            ...(item.children ?? []).slice(
+              position ?? item.children?.length ?? 0,
+            ),
+          ],
         }))
-      : [...definition.fields, next];
+      : [
+          ...definition.fields.slice(0, position ?? definition.fields.length),
+          next,
+          ...definition.fields.slice(position ?? definition.fields.length),
+        ];
     commit({ ...definition, fields });
     setSelectedId(next.id);
+    setPane("canvas");
+    setInsertAt(null);
   };
   const move = (offset: number) =>
     field &&
@@ -268,6 +312,65 @@ export function FormDesigner({
         fieldIndex + offset,
       ),
     });
+  const moveSelected = (item: FormField, offset: number) => {
+    const row = rows.find((row) => row.field.id === item.id);
+    const list = row?.parent
+      ? (rows.find((entry) => entry.field.id === row.parent)?.field.children ??
+        [])
+      : definition.fields;
+    const index = list.findIndex((entry) => entry.id === item.id);
+    if (index + offset < 0 || index + offset >= list.length) return;
+    commit({
+      ...definition,
+      fields: moveField(
+        definition.fields,
+        item.id,
+        row?.parent ?? "",
+        index + offset,
+      ),
+    });
+  };
+  const cloneSelected = (item: FormField) => {
+    if (rows.length + flattenFields([item]).length > 300) return;
+    const copy = duplicateField(item, definition.fields);
+    const row = rows.find((row) => row.field.id === item.id);
+    const fields = row?.parent
+      ? updateFieldTree(definition.fields, row.parent, (parent) => ({
+          ...parent,
+          children: [...(parent.children ?? []), copy],
+        }))
+      : [...definition.fields, copy];
+    commit({ ...definition, fields });
+    setSelectedId(copy.id);
+  };
+  const deleteSelected = (item: FormField) => {
+    commit({
+      ...definition,
+      fields: updateFieldTree(definition.fields, item.id, () => null),
+    });
+    setSelectedId("");
+  };
+  const insert = (item?: FormField) => {
+    const row = rows.find((row) => row.field.id === item?.id);
+    const parentId = item && isContainer(item) ? item.id : (row?.parent ?? "");
+    const list = parentId
+      ? (rows.find((entry) => entry.field.id === parentId)?.field.children ??
+        [])
+      : definition.fields;
+    const index =
+      item && !isContainer(item)
+        ? list.findIndex((entry) => entry.id === item.id) + 1
+        : list.length;
+    setInsertAt({ parent: parentId, index });
+    setDestination(parentId);
+    setToolboxOpen(true);
+    setPane("toolbox");
+    requestAnimationFrame(() =>
+      document
+        .querySelector<HTMLInputElement>(".fd-form-palette input")
+        ?.focus(),
+    );
+  };
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, {
@@ -280,9 +383,41 @@ export function FormDesigner({
     (item) => item.id !== field?.id && !isContainer(item),
   );
   return (
-    <div className="fd-form-product">
+    <div
+      style={{ "--fd-inspector-width": `${inspectorWidth}px` } as CSSProperties}
+      className="fd-form-product fd-designer-v2"
+      data-pane={pane}
+      data-toolbox={toolboxOpen}
+      data-inspector={inspectorOpen}
+    >
       <div className="fd-form-product-toolbar">
+        <div className="fd-designer-pane-controls">
+          <Button
+            aria-label={t("Thư viện trường")}
+            title={t("Thư viện trường")}
+            aria-expanded={toolboxOpen}
+            onClick={() => {
+              setToolboxOpen(!toolboxOpen);
+              setPane("toolbox");
+            }}
+          >
+            <PanelLeft />
+          </Button>
+          <Button
+            aria-label={t("Thuộc tính trường")}
+            title={t("Thuộc tính trường")}
+            aria-expanded={inspectorOpen}
+            onClick={() => {
+              setInspectorOpen(!inspectorOpen);
+              setPane("properties");
+            }}
+          >
+            <PanelRight />
+          </Button>
+        </div>
         <Button
+          aria-label={t("Hoàn tác")}
+          title={t("Hoàn tác")}
           disabled={readOnly || !past.length}
           onClick={() => {
             setFuture([definition, ...future]);
@@ -292,9 +427,10 @@ export function FormDesigner({
           }}
         >
           <Undo2 data-icon="inline-start" />
-          {t("Hoàn tác")}
         </Button>
         <Button
+          aria-label={t("Làm lại")}
+          title={t("Làm lại")}
           disabled={readOnly || !future.length}
           onClick={() => {
             setPast([...past, definition]);
@@ -304,54 +440,85 @@ export function FormDesigner({
           }}
         >
           <Redo2 data-icon="inline-start" />
-          {t("Làm lại")}
         </Button>
-        <Button
-          onClick={() => {
-            try {
-              const blob = new Blob([exportFormDefinition(definition)], {
-                type: "application/json",
-              });
-              const url = URL.createObjectURL(blob);
-              const anchor = document.createElement("a");
-              anchor.href = url;
-              anchor.download = `${definition.id}.json`;
-              anchor.click();
-              setTimeout(() => URL.revokeObjectURL(url), 1000);
-              setError("");
-            } catch {
-              setError("Cấu trúc biểu mẫu chưa hợp lệ.");
-            }
-          }}
-        >
-          <Download data-icon="inline-start" />
-          {t("Xuất schema JSON")}
-        </Button>
-        <Button
-          disabled={readOnly}
-          onClick={() => {
-            setImportOpen(true);
-            setJson("");
-            setError("");
-          }}
-        >
-          <Upload data-icon="inline-start" />
-          {t("Nhập schema JSON")}
-        </Button>
-        <Select
-          label={t("Kiểu biểu mẫu")}
-          disabled={readOnly}
-          value={definition.display ?? "form"}
-          options={[
-            { value: "form", label: t("Một trang") },
-            { value: "wizard", label: t("Nhiều bước") },
-          ]}
-          onValueChange={(display) =>
-            commit({ ...definition, display: display as "form" | "wizard" })
-          }
-        />
+        <details className="fd-designer-tools">
+          <summary>
+            <Settings2 aria-hidden="true" />
+            {t("Công cụ")}
+          </summary>
+          <div className="fd-designer-tools-content">
+            <Select
+              label={t("Độ rộng canvas")}
+              value={device}
+              options={[
+                { value: "desktop", label: t("Máy tính") },
+                { value: "mobile", label: t("Điện thoại") },
+              ]}
+              onValueChange={setDevice}
+            />{" "}
+            <Button
+              onClick={() => {
+                try {
+                  const blob = new Blob([exportFormDefinition(definition)], {
+                    type: "application/json",
+                  });
+                  const url = URL.createObjectURL(blob);
+                  const anchor = document.createElement("a");
+                  anchor.href = url;
+                  anchor.download = `${definition.id}.json`;
+                  anchor.click();
+                  setTimeout(() => URL.revokeObjectURL(url), 1000);
+                  setError("");
+                } catch {
+                  setError("Cấu trúc biểu mẫu chưa hợp lệ.");
+                }
+              }}
+            >
+              <Download data-icon="inline-start" />
+              {t("Xuất schema JSON")}
+            </Button>
+            <Button
+              disabled={readOnly}
+              onClick={() => {
+                setImportOpen(true);
+                setJson("");
+                setError("");
+              }}
+            >
+              <Upload data-icon="inline-start" />
+              {t("Nhập schema JSON")}
+            </Button>
+            <Select
+              label={t("Kiểu biểu mẫu")}
+              disabled={readOnly}
+              value={definition.display ?? "form"}
+              options={[
+                { value: "form", label: t("Một trang") },
+                { value: "wizard", label: t("Nhiều bước") },
+              ]}
+              onValueChange={(display) =>
+                commit({ ...definition, display: display as "form" | "wizard" })
+              }
+            />
+          </div>
+        </details>
       </div>
       {error && !importOpen && <Notice tone="danger">{t(error)}</Notice>}
+      <div className="fd-designer-mobile-tabs">
+        <Tabs
+          active={pane}
+          onChange={(next) => {
+            setPane(next);
+            if (next === "toolbox") setToolboxOpen(true);
+            if (next === "properties") setInspectorOpen(true);
+          }}
+          tabs={[
+            { id: "toolbox", label: t("Thư viện trường") },
+            { id: "canvas", label: t("Canvas") },
+            { id: "properties", label: t("Thuộc tính trường") },
+          ]}
+        />
+      </div>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -372,11 +539,20 @@ export function FormDesigner({
           if (!over || readOnly) return;
           if (String(active.id).startsWith("palette:")) {
             const target = rows.find((row) => row.field.id === over.id);
-            add(
-              String(active.id).slice(8) as FormFieldType,
+            const parentId =
               target && isContainer(target.field)
                 ? target.field.id
-                : (target?.parent ?? ""),
+                : (target?.parent ?? "");
+            const list = parentId
+              ? (rows.find((row) => row.field.id === parentId)?.field
+                  .children ?? [])
+              : definition.fields;
+            add(
+              String(active.id).slice(8) as FormFieldType,
+              parentId,
+              target && !isContainer(target.field)
+                ? list.findIndex((item) => item.id === target.field.id)
+                : list.length,
             );
             return;
           }
@@ -400,7 +576,16 @@ export function FormDesigner({
       >
         <div className="fd-form-builder-grid">
           <aside className="fd-form-palette" aria-label={t("Thư viện trường")}>
-            <h2>{t("Thư viện trường")}</h2>
+            <div className="fd-section-heading">
+              <h2>{t("Thư viện trường")}</h2>
+              <Badge>{formFieldTypes.length}</Badge>
+            </div>
+            <Button
+              aria-pressed={outlineOpen}
+              onClick={() => setOutlineOpen(!outlineOpen)}
+            >
+              {t("Cây cấu trúc")}
+            </Button>
             <SearchInput
               label={t("Tìm kiểu trường...")}
               value={query}
@@ -421,78 +606,154 @@ export function FormDesigner({
                     label: row.field.label[locale],
                   })),
                 ]}
-                onValueChange={(value) =>
-                  setDestination(value === "__root__" ? "" : value)
-                }
+                onValueChange={(value) => {
+                  setDestination(value === "__root__" ? "" : value);
+                  setInsertAt(null);
+                }}
               />
             </Field>
-            <div className="fd-form-palette-items">
-              {formFieldTypes
-                .filter((type) =>
-                  `${type} ${t(fieldTypeLabels[type])}`
-                    .toLowerCase()
-                    .includes(query.toLowerCase()),
-                )
-                .map((type) => (
-                  <PaletteItem
-                    key={type}
-                    type={type}
-                    disabled={readOnly || rows.length >= 300}
-                    onAdd={() => add(type)}
-                  />
-                ))}
-            </div>
+            {insertAt && (
+              <Notice>
+                {t("Đang chọn trường để chèn tại vị trí {{position}}", {
+                  position: insertAt.index + 1,
+                })}
+              </Notice>
+            )}
+            {[
+              {
+                label: "Thường dùng",
+                types: [
+                  "text",
+                  "textarea",
+                  "number",
+                  "select",
+                  "checkbox",
+                  "date",
+                ],
+              },
+              {
+                label: "Văn bản và liên hệ",
+                types: [
+                  "email",
+                  "url",
+                  "phone",
+                  "password",
+                  "address",
+                  "hidden",
+                ],
+              },
+              {
+                label: "Lựa chọn",
+                types: ["radio", "multiselect", "checkboxes", "tags", "survey"],
+              },
+              {
+                label: "Ngày giờ và tiền",
+                types: ["currency", "datetime", "time", "day"],
+              },
+              {
+                label: "Bố cục và nhóm",
+                types: [
+                  "section",
+                  "columns",
+                  "tabs",
+                  "repeat",
+                  "container",
+                  "table",
+                  "content",
+                  "alert",
+                ],
+              },
+              {
+                label: "Nâng cao",
+                types: ["file", "signature", "keyvalue", "button"],
+              },
+            ].map((group) => {
+              const types = group.types.filter((type) =>
+                `${type} ${t(fieldTypeLabels[type as FormFieldType])}`
+                  .toLowerCase()
+                  .includes(query.toLowerCase()),
+              );
+              return types.length ? (
+                <details key={group.label} open className="fd-toolbox-group">
+                  <summary>{t(group.label)}</summary>
+                  <div className="fd-form-palette-items">
+                    {types.map((type) => (
+                      <PaletteItem
+                        key={type}
+                        type={type as FormFieldType}
+                        disabled={readOnly || rows.length >= 300}
+                        onAdd={() => add(type as FormFieldType)}
+                      />
+                    ))}
+                  </div>
+                </details>
+              ) : null;
+            })}
+            {!formFieldTypes.some((type) =>
+              `${type} ${t(fieldTypeLabels[type])}`
+                .toLowerCase()
+                .includes(query.toLowerCase()),
+            ) && <EmptyState title={t("Không tìm thấy kiểu trường")} />}
           </aside>
           <section
-            className="fd-form-schema"
+            className="fd-form-schema fd-canvas-workspace"
             aria-label={t("Cấu trúc biểu mẫu")}
           >
-            <div className="fd-section-heading">
-              <h2>{t("Cấu trúc biểu mẫu")}</h2>
-              <Button
-                disabled={readOnly || rows.length >= 300}
-                onClick={() => add("text")}
-              >
-                <Plus data-icon="inline-start" />
-                {t("Thêm trường")}
-              </Button>
-            </div>
-            {rows.length ? (
-              <SortableContext
-                items={rows.map((row) => row.field.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <div className="fd-table-scroll">
-                  <Table className="fd-table">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>
-                          <span className="sr-only">{t("Sắp xếp")}</span>
-                        </TableHead>
-                        <TableHead>{t("Nhãn trường")}</TableHead>
-                        <TableHead>{t("Kiểu dữ liệu")}</TableHead>
-                        <TableHead>{t("Bắt buộc")}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {rows.map((row) => (
-                        <OutlineRow
-                          key={row.field.id}
-                          {...row}
-                          selected={field?.id === row.field.id}
-                          onSelect={() => setSelectedId(row.field.id)}
-                          disabled={readOnly}
-                        />
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </SortableContext>
-            ) : (
-              <EmptyState
-                title={t("Chưa có trường. Thêm trường để bắt đầu.")}
-              />
-            )}
+            {outlineOpen &&
+              (rows.length ? (
+                <SortableContext
+                  items={rows.map((row) => row.field.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="fd-table-scroll">
+                    <Table className="fd-table">
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>
+                            <span className="sr-only">{t("Sắp xếp")}</span>
+                          </TableHead>
+                          <TableHead>{t("Nhãn trường")}</TableHead>
+                          <TableHead>{t("Kiểu dữ liệu")}</TableHead>
+                          <TableHead>{t("Bắt buộc")}</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {rows.map((row) => (
+                          <OutlineRow
+                            key={row.field.id}
+                            {...row}
+                            selected={field?.id === row.field.id}
+                            onSelect={() => setSelectedId(row.field.id)}
+                            disabled={readOnly}
+                          />
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </SortableContext>
+              ) : (
+                <EmptyState
+                  title={t("Chưa có trường. Thêm trường để bắt đầu.")}
+                />
+              ))}
+            <SortableContext
+              items={rows.map((row) => row.field.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="fd-canvas-paper" data-device={device}>
+                <FormCanvas
+                  definition={definition}
+                  providers={providers}
+                  selectedId={field?.id}
+                  readOnly={readOnly}
+                  onSelect={setSelectedId}
+                  onInsert={insert}
+                  onMove={moveSelected}
+                  onClone={cloneSelected}
+                  onDelete={deleteSelected}
+                />
+              </div>
+            </SortableContext>
           </section>
           <aside
             className="fd-form-properties"
@@ -500,12 +761,29 @@ export function FormDesigner({
           >
             {field ? (
               <>
-                <h2>{t("Thuộc tính trường")}</h2>
+                <div className="fd-inspector-heading">
+                  <h2>{t("Thuộc tính trường")}</h2>
+                  <input
+                    type="range"
+                    min={260}
+                    max={380}
+                    step={10}
+                    value={inspectorWidth}
+                    aria-label={t("Độ rộng thuộc tính")}
+                    onChange={(event) =>
+                      setInspectorWidth(Number(event.target.value))
+                    }
+                  />
+                </div>
                 <Tabs
                   active={properties}
                   onChange={setProperties}
                   tabs={[
                     { id: "basic", label: t("Cơ bản") },
+                    { id: "validation", label: t("Kiểm tra dữ liệu") },
+                    { id: "logic", label: t("Điều kiện và tính toán") },
+                    { id: "data", label: t("Dữ liệu") },
+                    { id: "appearance", label: t("Hiển thị") },
                     { id: "advanced", label: t("Nâng cao") },
                   ]}
                 />
@@ -556,7 +834,16 @@ export function FormDesigner({
                             value: type,
                             label: t(fieldTypeLabels[type]),
                           }))}
-                          onValueChange={(type) =>
+                          onValueChange={(type) => {
+                            if (
+                              field.children?.length &&
+                              !containerTypes.includes(type as FormFieldType)
+                            ) {
+                              setError(
+                                "Di chuyển hoặc xóa các trường con trước khi đổi sang kiểu đơn.",
+                              );
+                              return;
+                            }
                             patch({
                               type: type as FormFieldType,
                               children: containerTypes.includes(
@@ -564,8 +851,8 @@ export function FormDesigner({
                               )
                                 ? (field.children ?? [])
                                 : undefined,
-                            })
-                          }
+                            });
+                          }}
                         />
                       </Field>
                       <Field label={t("Bắt buộc")}>
@@ -618,6 +905,7 @@ export function FormDesigner({
                     <AdvancedProperties
                       key={field.id}
                       field={field}
+                      section={properties}
                       fields={references}
                       patch={patch}
                     />
@@ -699,10 +987,20 @@ export function FormDesigner({
       {importOpen && (
         <Modal
           title={t("Nhập schema JSON")}
-          onClose={() => setImportOpen(false)}
+          onClose={() => {
+            setImportOpen(false);
+            setError("");
+          }}
           footer={
             <>
-              <Button onClick={() => setImportOpen(false)}>{t("Hủy")}</Button>
+              <Button
+                onClick={() => {
+                  setImportOpen(false);
+                  setError("");
+                }}
+              >
+                {t("Hủy")}
+              </Button>
               <Button
                 variant="primary"
                 onClick={() => {

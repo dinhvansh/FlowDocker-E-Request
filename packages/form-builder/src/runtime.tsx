@@ -5,6 +5,7 @@ import {
   useState,
   type ComponentType,
   type PointerEvent,
+  type ReactNode,
 } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import {
@@ -14,6 +15,7 @@ import {
   Field,
   FieldGroup,
   Input,
+  DatePicker,
   Notice,
   Select,
   Tabs,
@@ -490,6 +492,7 @@ interface RuntimeFieldsProps extends Pick<
   | "renderers"
   | "readOnly"
 > {
+  design?: { wrap(field: FormField, control: ReactNode): ReactNode };
   fields: FormField[];
   data: PreviewValues;
   root: PreviewValues;
@@ -547,7 +550,11 @@ function RuntimeField({
     }
   }, [field.children, field.type, props.revealFieldId]);
   const visible = evaluateRule(field.visibleWhen, context);
-  if (!visible || accessRule?.read === "deny" || field.type === "hidden")
+  if (
+    (!visible && !props.design) ||
+    accessRule?.read === "deny" ||
+    field.type === "hidden"
+  )
     return null;
   if (accessRule?.read === "mask")
     return (
@@ -609,6 +616,16 @@ function RuntimeField({
             prefix={`${path}.`}
             onChange={setValue}
           />
+        ) : field.type === "repeat" && props.design ? (
+          <div className="fd-repeat-row">
+            <RuntimeFields
+              {...nextProps}
+              fields={children}
+              data={Array.isArray(value) && isRecord(value[0]) ? value[0] : {}}
+              prefix={`${path}.0.`}
+              onChange={(next) => setValue([next])}
+            />
+          </div>
         ) : field.type === "repeat" ? (
           <>
             {(Array.isArray(value) ? value.filter(isRecord) : []).map(
@@ -914,6 +931,18 @@ function RuntimeField({
         onChange={(event) => setValue(event.target.value)}
       />
     );
+  else if (field.type === "date" || field.type === "datetime")
+    control = (
+      <DatePicker
+        id={id}
+        label={label}
+        value={text}
+        onValueChange={setValue}
+        withTime={field.type === "datetime"}
+        disabled={disabled}
+        placeholder={field.placeholder?.[locale]}
+      />
+    );
   else
     control = (
       <Input
@@ -921,11 +950,9 @@ function RuntimeField({
         type={
           field.type === "phone"
             ? "tel"
-            : field.type === "datetime"
-              ? "datetime-local"
-              : ["number", "currency"].includes(field.type)
-                ? "number"
-                : field.type
+            : ["number", "currency"].includes(field.type)
+              ? "number"
+              : field.type
         }
         value={text}
         disabled={disabled}
@@ -972,14 +999,18 @@ function RuntimeField({
     </div>
   );
 }
-function RuntimeFields(props: RuntimeFieldsProps) {
+export function RuntimeFields(props: RuntimeFieldsProps) {
   return (
     <>
       {props.fields.map((field) => (
-        <RuntimeField {...props} key={field.id} field={field} />
+        <RuntimeFieldSlot {...props} key={field.id} field={field} />
       ))}
     </>
   );
+}
+function RuntimeFieldSlot(props: RuntimeFieldsProps & { field: FormField }) {
+  const control = <RuntimeField {...props} />;
+  return props.design ? props.design.wrap(props.field, control) : control;
 }
 export function FormRenderer({
   definition,

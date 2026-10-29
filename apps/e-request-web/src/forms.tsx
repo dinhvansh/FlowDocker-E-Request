@@ -1,10 +1,19 @@
 import { useEffect, useState } from "react";
 import { useI18n } from "@flowdocker/i18n";
-import { FilePenLine, Plus, Save } from "lucide-react";
+import {
+  ArrowLeft,
+  MoreHorizontal,
+  FilePenLine,
+  Plus,
+  Save,
+} from "lucide-react";
 import {
   FormDesigner,
   FormPreview,
   createShowcaseDefinition,
+  createPaymentDefinition,
+  type DataProvider,
+  exportFormDefinition,
   validateFormDefinition,
   type FormDefinition,
   type PreviewValues,
@@ -20,9 +29,19 @@ import {
   Notice,
   SearchInput,
   Tabs,
+  Textarea,
 } from "@flowdocker/ui";
 import { formDraftStorageKey, readFormDrafts } from "./form-drafts";
 
+const demoProviders: Record<string, DataProvider> = {
+  "demo.companies": async () => [
+    { value: "demo", label: { vi: "Công ty mẫu", en: "Demo company" } },
+  ],
+  "demo.departments": async ({ dependency }) =>
+    dependency
+      ? [{ value: "demo-it", label: { vi: "CNTT · mẫu", en: "IT · sample" } }]
+      : [],
+};
 function load() {
   try {
     return { forms: readFormDrafts(localStorage), failed: false };
@@ -37,6 +56,12 @@ export function FormsPage() {
   const [draft, setDraft] = useState<FormDefinition | null>(
     initial.forms[0] ?? null,
   );
+  const [catalogOpen, setCatalogOpen] = useState(false);
+  const [previewDevice, setPreviewDevice] = useState("desktop");
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const [titlesOpen, setTitlesOpen] = useState(false);
+  const [jsonError, setJsonError] = useState("");
+  const [jsonText, setJsonText] = useState("");
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState("schema");
   const [values, setValues] = useState<PreviewValues>({});
@@ -62,6 +87,9 @@ export function FormsPage() {
   }, [dirty]);
   const issues = draft ? validateFormDefinition(draft) : [];
   const activate = (next: FormDefinition) => {
+    setCatalogOpen(false);
+    setTitlesOpen(false);
+    setActionsOpen(false);
     setDraft(next);
     setTab("schema");
     setValues({});
@@ -70,7 +98,10 @@ export function FormsPage() {
     setSaveError(false);
   };
   const request = (next: FormDefinition | "create") => {
-    if (next !== "create" && next.id === draft?.id) return;
+    if (next !== "create" && next.id === draft?.id) {
+      setCatalogOpen(false);
+      return;
+    }
     if (dirty) {
       setPending(next);
       return;
@@ -94,6 +125,7 @@ export function FormsPage() {
     try {
       localStorage.setItem(formDraftStorageKey, JSON.stringify(next));
       setForms(next);
+      setTitlesOpen(false);
       setMessage("Đã lưu bản nháp biểu mẫu trên máy này.");
       setSaveError(false);
     } catch {
@@ -102,15 +134,26 @@ export function FormsPage() {
     }
   };
   return (
-    <section className="fd-screen">
-      <div className="fd-page-toolbar">
+    <section className="fd-screen fd-forms-v2 fd-forms-focused">
+      <div className="fd-page-toolbar" hidden={!catalogOpen && !!draft}>
         <div>
           <div className="fd-overline">{t("ỨNG DỤNG / BIỂU MẪU")}</div>
           <h1>{t("Thiết kế biểu mẫu")}</h1>
           <p>{t("Thiết kế trường, kiểm tra và xem thử bản nháp song ngữ")}</p>
         </div>
         <div className="fd-toolbar-actions">
+          {draft && (
+            <Button onClick={() => setCatalogOpen(false)}>
+              {t("Tiếp tục chỉnh sửa")}
+            </Button>
+          )}
           <Badge tone="warning">{t("Chỉ lưu cục bộ")}</Badge>
+          <Button
+            disabled={initial.failed}
+            onClick={() => request(createPaymentDefinition())}
+          >
+            {t("Mở mẫu thanh toán")}
+          </Button>
           <Button
             disabled={initial.failed}
             onClick={() => request(createShowcaseDefinition())}
@@ -134,7 +177,7 @@ export function FormsPage() {
           )}
         </Notice>
       )}
-      <div className="fd-form-workbench">
+      <div className="fd-form-workbench" data-catalog={catalogOpen || !draft}>
         <aside className="fd-form-catalog" aria-label={t("Danh sách biểu mẫu")}>
           <SearchInput
             label={t("Tìm biểu mẫu...")}
@@ -172,46 +215,39 @@ export function FormsPage() {
               .includes(query.toLowerCase()),
           ) && <EmptyState title={t("Không tìm thấy biểu mẫu")} />}
         </aside>
-        <div className="fd-form-editor">
+        <div className="fd-form-editor" hidden={catalogOpen}>
           {draft ? (
             <>
-              <div className="fd-section-heading">
-                <div>
-                  <h2>{draft.title[locale] || t("Biểu mẫu chưa đặt tên")}</h2>
-                  <Badge tone={dirty ? "warning" : "neutral"}>
+              <div className="fd-section-heading fd-form-document-bar">
+                <Button
+                  aria-label={t("Danh sách biểu mẫu")}
+                  title={t("Danh sách biểu mẫu")}
+                  onClick={() => setCatalogOpen(true)}
+                >
+                  <ArrowLeft />
+                </Button>
+                <div className="fd-form-document-name">
+                  <h1>{draft.title[locale] || t("Biểu mẫu chưa đặt tên")}</h1>
+                  <span>
+                    {t("Phiên bản {{version}}", { version: draft.version })} ·{" "}
                     {dirty ? t("Chưa lưu") : t("Bản nháp")}
-                  </Badge>
+                  </span>
                 </div>
-                <div className="fd-toolbar-actions">
-                  <Button
-                    onClick={() => {
-                      setShowIssues(true);
-                      setMessage(
-                        issues.length
-                          ? ""
-                          : "Cấu trúc biểu mẫu hợp lệ trên trình duyệt.",
-                      );
-                    }}
-                  >
-                    {t("Kiểm tra")}
-                  </Button>
-                  <Button
-                    variant="primary"
-                    disabled={!dirty || initial.failed}
-                    onClick={save}
-                  >
-                    <Save data-icon="inline-start" />
-                    {t("Lưu bản nháp")}
-                  </Button>
-                  <Button
-                    disabled
-                    title={t(
-                      "Cần backend và phiên bản bất biến để phát hành biểu mẫu",
-                    )}
-                  >
-                    {t("Phát hành · cần backend")}
-                  </Button>
-                </div>
+                <Button
+                  variant="primary"
+                  disabled={!dirty || initial.failed}
+                  onClick={save}
+                >
+                  <Save data-icon="inline-start" />
+                  {t("Lưu bản nháp")}
+                </Button>
+                <Button
+                  aria-label={t("Tùy chọn biểu mẫu")}
+                  title={t("Tùy chọn biểu mẫu")}
+                  onClick={() => setActionsOpen(true)}
+                >
+                  <MoreHorizontal />
+                </Button>
               </div>
               {message && <Notice tone="success">{t(message)}</Notice>}
               {saveError && (
@@ -234,15 +270,25 @@ export function FormsPage() {
                 active={tab}
                 onChange={(next) => {
                   setTab(next);
-                  setValues({});
+                  if (next === "json") {
+                    try {
+                      setJsonText(exportFormDefinition(draft));
+                      setJsonError("");
+                    } catch {
+                      setJsonError("Cấu trúc biểu mẫu chưa hợp lệ.");
+                      setJsonText(JSON.stringify(draft, null, 2));
+                    }
+                  }
                 }}
                 tabs={[
                   { id: "schema", label: t("Thiết kế trường") },
                   { id: "preview", label: t("Xem thử biểu mẫu") },
+                  { id: "logic", label: t("Điều kiện và tính toán") },
+                  { id: "json", label: t("Schema JSON") },
                 ]}
               />
-              {tab === "schema" ? (
-                <>
+              <div hidden={tab !== "schema" && tab !== "logic"}>
+                <div hidden={!titlesOpen}>
                   <FieldGroup className="fd-form-titles">
                     <Field label={t("Tên biểu mẫu · tiếng Việt")}>
                       <Input
@@ -267,19 +313,54 @@ export function FormsPage() {
                       />
                     </Field>
                   </FieldGroup>
-                  <FormDesigner
-                    key={draft.id}
-                    definition={draft}
-                    onChange={update}
-                  />
-                </>
-              ) : (
-                <FormPreview
+                </div>
+                <FormDesigner
+                  providers={demoProviders}
+                  inspectorSection={tab === "logic" ? "logic" : "basic"}
                   key={draft.id}
                   definition={draft}
-                  values={values}
-                  onChange={setValues}
+                  onChange={update}
                 />
+              </div>
+              {tab === "preview" && (
+                <div className="fd-preview-workspace">
+                  <div className="fd-toolbar-actions">
+                    <Button
+                      aria-pressed={previewDevice === "desktop"}
+                      onClick={() => setPreviewDevice("desktop")}
+                    >
+                      {t("Máy tính")}
+                    </Button>
+                    <Button
+                      aria-pressed={previewDevice === "mobile"}
+                      onClick={() => setPreviewDevice("mobile")}
+                    >
+                      {t("Điện thoại")}
+                    </Button>
+                  </div>
+                  <div className="fd-preview-paper" data-device={previewDevice}>
+                    <FormPreview
+                      key={draft.id}
+                      definition={draft}
+                      providers={demoProviders}
+                      values={values}
+                      onChange={setValues}
+                    />
+                  </div>
+                </div>
+              )}
+              {tab === "json" && (
+                <FieldGroup>
+                  <Notice>
+                    {t(
+                      "Schema FlowDocker · chỉ xem. Dùng Nhập schema JSON trong chế độ thiết kế để thay cấu trúc.",
+                    )}
+                  </Notice>
+                  {jsonError && <Notice tone="danger">{t(jsonError)}</Notice>}
+                  <Field label={t("Nội dung schema JSON")}>
+                    <Textarea rows={24} readOnly value={jsonText} />
+                  </Field>
+                </FieldGroup>
               )}
             </>
           ) : (
@@ -290,6 +371,47 @@ export function FormsPage() {
           )}
         </div>
       </div>
+      {actionsOpen && (
+        <Modal
+          title={t("Tùy chọn biểu mẫu")}
+          onClose={() => setActionsOpen(false)}
+        >
+          <p>{t("Bản nháp chỉ được lưu trên trình duyệt này.")}</p>
+          <div className="fd-form-secondary-actions">
+            {" "}
+            <Button
+              aria-expanded={titlesOpen}
+              onClick={() => {
+                setTitlesOpen(!titlesOpen);
+                setActionsOpen(false);
+              }}
+            >
+              {t("Đổi tên biểu mẫu")}
+            </Button>
+            <Button
+              onClick={() => {
+                setActionsOpen(false);
+                setShowIssues(true);
+                setMessage(
+                  issues.length
+                    ? ""
+                    : "Cấu trúc biểu mẫu hợp lệ trên trình duyệt.",
+                );
+              }}
+            >
+              {t("Kiểm tra")}
+            </Button>
+            <Button
+              disabled
+              title={t(
+                "Cần backend và phiên bản bất biến để phát hành biểu mẫu",
+              )}
+            >
+              {t("Phát hành · cần backend")}
+            </Button>
+          </div>
+        </Modal>
+      )}
       {createOpen && (
         <Modal
           title={t("Tạo biểu mẫu")}
@@ -338,10 +460,18 @@ export function FormsPage() {
       {pending && (
         <Modal
           title={t("Bản nháp chưa lưu")}
-          onClose={() => setPending(null)}
+          onClose={() => {
+            setPending(null);
+            setCatalogOpen(false);
+          }}
           footer={
             <>
-              <Button onClick={() => setPending(null)}>
+              <Button
+                onClick={() => {
+                  setPending(null);
+                  setCatalogOpen(false);
+                }}
+              >
                 {t("Tiếp tục chỉnh sửa")}
               </Button>
               <Button

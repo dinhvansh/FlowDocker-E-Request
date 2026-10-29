@@ -41,7 +41,11 @@ Replace console.log with your host save adapter. Remount the renderer when chang
 
 ## Public host contracts
 
-**FormDesigner**: definition, onChange, optional readOnly. Emits schema only. Host owns storage, version conflicts, publishing, approval and authentication.
+**FormDesigner**: definition, onChange, optional readOnly, providers and inspectorSection (`basic` or `logic`). Emits schema only. Host owns storage, version conflicts, publishing, approval and authentication. The UX V2 designer uses a grouped toolbox, shared runtime field controls on a live canvas, nested selection, insertion points, an optional structural outline and contextual properties. Toolbox/inspector collapse; inspector width can be adjusted on desktop. Mobile switches panes using tabs. Clicking or pressing Enter adds fields; separate handles support drag.
+
+**FormCanvas**: definition, selectedId, readOnly, providers, onSelect, onInsert, onMove, onClone, onDelete. Authoring component used inside FormDesigner; supply dnd-kit DndContext/SortableContext when embedding it separately. It reveals conditional fields for editing and renders one structural sample row for repeat fields. Sample inputs are local component state and never saved into the schema. Use FormPreview to exercise real visibility, row editing, validation and submission filtering. This is an authoring surface, not an authorization boundary.
+
+**createPaymentDefinition**: synthetic payment scenario with conditional advance reason, provider identifiers, expense rows and decimal aggregate. Register `demo.companies` / `demo.departments` using the host's providers map; no live service, upload or ERP integration is implied. `createShowcaseDefinition` remains available.
 
 **FormRenderer**: definition, values, onChange; optional onSubmit, onInvalid, readOnly, access, providers, onUpload, onRemoveFile, renderers. Validation precedes submit. Rejected submission preserves values. Pending uploads block submission. Reset aborts upload controls. Read-only guards raw submit events as well as buttons.
 
