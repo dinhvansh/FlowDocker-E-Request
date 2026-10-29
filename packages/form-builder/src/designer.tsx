@@ -457,6 +457,10 @@ export function FormDesigner({
   );
   const issues = validateFormDefinition(definition);
   const containers = rows.filter((row) => isContainer(row.field));
+  const fieldTree = field ? flattenFields([field]) : [];
+  const availableContainers = containers.filter(
+    (row) => !fieldTree.some((item) => item.id === row.field.id),
+  );
   const references = flattenFields(definition.fields).filter(
     (item) => item.id !== field?.id && !isContainer(item),
   );
@@ -715,13 +719,15 @@ export function FormDesigner({
               <Combobox
                 label={t("Thêm vào nhóm")}
                 value={
-                  containers.some((row) => row.field.id === destination)
+                  availableContainers.some(
+                    (row) => row.field.id === destination,
+                  )
                     ? destination
                     : "__root__"
                 }
                 options={[
-                  { value: "__root__", label: t("Cấp ngoài cùng") },
-                  ...containers.map((row) => ({
+                  { value: "__root__", label: t("Không thuộc nhóm") },
+                  ...availableContainers.map((row) => ({
                     value: row.field.id,
                     label: row.field.label[locale],
                   })),

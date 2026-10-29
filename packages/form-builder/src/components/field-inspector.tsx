@@ -112,7 +112,7 @@ export function FieldInspector({
             searchPlaceholder={t("Tìm nhóm...")}
             emptyLabel={t("Không tìm thấy nhóm")}
             options={[
-              { value: "__root__", label: t("Cấp ngoài cùng") },
+              { value: "__root__", label: t("Không thuộc nhóm") },
               ...containers
                 .filter(
                   (item) =>

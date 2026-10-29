@@ -39,6 +39,7 @@ export const formMessages = {
   "Tìm kiểu trường...": "Search field types...",
   "Thêm vào nhóm": "Add into container",
   "Cấp ngoài cùng": "Root level",
+  "Không thuộc nhóm": "Not inside a group",
   "Sắp xếp": "Reorder",
   "Cơ bản": "Basic",
   "Nâng cao": "Advanced",
