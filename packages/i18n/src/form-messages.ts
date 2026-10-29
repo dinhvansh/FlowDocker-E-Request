@@ -1,4 +1,6 @@
 export const formMessages = {
+  "Mở thanh điều hướng": "Show navigation",
+  "Thu gọn thanh điều hướng": "Hide navigation",
   "Cài đặt bảng dòng lặp": "Repeating table settings",
   "Thêm cột vào bảng": "Add a table column",
   "Chọn cột để sửa nhãn, kiểu dữ liệu và kiểm tra dữ liệu.":

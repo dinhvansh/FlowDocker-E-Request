@@ -1,7 +1,9 @@
 import { useI18n } from "@flowdocker/i18n";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import {
   Blocks,
+  ChevronLeft,
+  ChevronRight,
   FilePenLine,
   Database,
   LayoutGrid,
@@ -67,6 +69,8 @@ export function AppShell({
   const { t, storageWarning } = useI18n();
 
   const [navOpen, setNavOpen] = useState(false);
+  const [navCollapsed, setNavCollapsed] = useState(false);
+  const sidebarId = useId();
   const sidebarRef = useRef<HTMLElement>(null);
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
   const [search, setSearch] = useState("");
@@ -91,7 +95,11 @@ export function AppShell({
     };
   }, [navOpen]);
   return (
-    <div className="fd-app" data-theme={theme}>
+    <div
+      className="fd-app"
+      data-theme={theme}
+      data-nav-collapsed={navCollapsed}
+    >
       {navOpen && (
         <button
           type="button"
@@ -101,6 +109,7 @@ export function AppShell({
         />
       )}
       <aside
+        id={sidebarId}
         ref={sidebarRef}
         className="fd-sidebar"
         data-open={navOpen}
@@ -175,6 +184,29 @@ export function AppShell({
       </aside>
       <div className="fd-main-wrap">
         <header className="fd-topbar">
+          <button
+            type="button"
+            className="fd-desktop-nav-toggle fd-icon-button"
+            aria-label={
+              navCollapsed
+                ? t("Mở thanh điều hướng")
+                : t("Thu gọn thanh điều hướng")
+            }
+            title={
+              navCollapsed
+                ? t("Mở thanh điều hướng")
+                : t("Thu gọn thanh điều hướng")
+            }
+            aria-controls={sidebarId}
+            aria-expanded={!navCollapsed}
+            onClick={() => setNavCollapsed((collapsed) => !collapsed)}
+          >
+            {navCollapsed ? (
+              <ChevronRight aria-hidden="true" />
+            ) : (
+              <ChevronLeft aria-hidden="true" />
+            )}
+          </button>
           <button
             ref={menuTriggerRef}
             className="fd-mobile-menu fd-icon-button"
