@@ -12,6 +12,8 @@ import {
 } from "@flowdocker/ui";
 import { AdvancedProperties, OptionsEditor } from "../editors";
 import type { FormDataSource } from "./data-source-editor";
+import type { FormRendererProps } from "../runtime";
+import type { PreviewValues } from "../schema";
 import {
   choiceTypes,
   containerTypes,
@@ -26,6 +28,8 @@ import {
 export type InspectorSection =
   "basic" | "validation" | "logic" | "data" | "appearance" | "advanced";
 export interface FieldInspectorProps {
+  providers?: FormRendererProps["providers"];
+  sourceDefaults?: PreviewValues;
   dataSources?: readonly FormDataSource[];
   field: FormField;
   section: InspectorSection;
@@ -52,6 +56,8 @@ export interface FieldInspectorProps {
 }
 /** Contextual configuration only; persistence and history are owned by the host designer. */
 export function FieldInspector({
+  providers,
+  sourceDefaults,
   dataSources,
   field,
   section,
@@ -384,6 +390,8 @@ export function FieldInspector({
               />
             </Field>
             <AdvancedProperties
+              providers={providers}
+              sourceDefaults={sourceDefaults}
               field={field}
               fields={references}
               patch={patch}
@@ -394,6 +402,8 @@ export function FieldInspector({
           <FieldGroup>
             {section === "validation" && required}
             <AdvancedProperties
+              providers={providers}
+              sourceDefaults={sourceDefaults}
               dataSources={dataSources}
               key={field.id}
               field={field}

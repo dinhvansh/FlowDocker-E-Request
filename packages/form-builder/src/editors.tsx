@@ -10,6 +10,9 @@ import {
   Textarea,
 } from "@flowdocker/ui";
 import { type FormField, type FormRule, type RuleOperator } from "./schema";
+import type { PreviewValues } from "./schema";
+import type { FormRendererProps } from "./runtime";
+import { PersonDefaultEditor } from "./components/person-default-editor";
 import {
   DataSourceEditor,
   type FormDataSource,
@@ -237,12 +240,16 @@ export function RuleEditor({
   );
 }
 export function AdvancedProperties({
+  providers,
+  sourceDefaults,
   dataSources,
   section = "all",
   field,
   fields,
   patch,
 }: {
+  providers?: FormRendererProps["providers"];
+  sourceDefaults?: PreviewValues;
   dataSources?: readonly FormDataSource[];
   section?: string;
   field: FormField;
@@ -349,7 +356,7 @@ export function AdvancedProperties({
                   label={t("Giá trị mặc định")}
                   value={field.defaultValueSource ?? "fixed"}
                   options={[
-                    { value: "fixed", label: t("Nhập giá trị") },
+                    { value: "fixed", label: t("Chọn người cụ thể") },
                     {
                       value: "currentUser",
                       label: t("Người đang tạo biểu mẫu"),
@@ -376,14 +383,21 @@ export function AdvancedProperties({
               )}
             </>
           )}
-          {field.defaultValueSource !== "currentUser" && (
-            <Field
-              label={t(
-                field.type === "person"
-                  ? "Mã người mặc định"
-                  : "Giá trị mặc định",
-              )}
-            >
+          {field.type === "person" &&
+            field.defaultValueSource !== "currentUser" && (
+              <PersonDefaultEditor
+                field={field}
+                providers={providers}
+                dependency={
+                  field.dataSource?.dependsOn
+                    ? sourceDefaults?.[field.dataSource.dependsOn]
+                    : undefined
+                }
+                patch={patch}
+              />
+            )}
+          {field.type !== "person" && (
+            <Field label={t("Giá trị mặc định")}>
               <Input
                 value={
                   typeof field.defaultValue === "string" ||

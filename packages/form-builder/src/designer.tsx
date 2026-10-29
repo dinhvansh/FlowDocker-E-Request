@@ -104,6 +104,7 @@ import {
 } from "./components/field-inspector";
 import type { FormRendererProps } from "./runtime";
 import { FormCanvas } from "./canvas";
+import { defaultValues } from "./engine";
 import type { FormDataSource } from "./components/data-source-editor";
 export interface FormDesignerProps {
   runtimeContext?: FormRendererProps["runtimeContext"];
@@ -982,6 +983,12 @@ export function FormDesigner({
           >
             {field ? (
               <FieldInspector
+                providers={providers}
+                sourceDefaults={defaultValues(
+                  definition.fields,
+                  undefined,
+                  runtimeContext,
+                )}
                 dataSources={Object.keys(providers ?? {}).map(
                   (id) =>
                     dataSources.find((source) => source.id === id) ?? {

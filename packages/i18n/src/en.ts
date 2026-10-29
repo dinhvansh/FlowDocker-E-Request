@@ -771,4 +771,15 @@ export const en = {
     "Fill the current account when the field has no value. Keep the person already saved on the request.",
   "Chưa xác định được người đang tạo. Ứng dụng cần cung cấp tài khoản hiện tại.":
     "The current creator is unavailable. The application must supply the current account.",
+  "Chọn người cụ thể": "Select specific people",
+  "Người mặc định": "Default person",
+  "Tìm và chọn người từ nguồn dữ liệu của trường. Để trống nếu không cần mặc định.":
+    "Find and select people from this field's data source. Leave empty for no default.",
+  "Người không còn khả dụng": "Person no longer available",
+  "Một số người mặc định không còn trong nguồn. Chọn lại hoặc bỏ mặc định.":
+    "Some default people are no longer in the source. Select again or clear the default.",
+  "Nguồn này phụ thuộc trường {{field}}. Hãy đặt giá trị mặc định cho trường đó để chọn người.":
+    "This source depends on field {{field}}. Set that field's default value to choose people.",
+  "Tải lại danh sách": "Reload list",
+  "Bỏ mặc định": "Clear default",
 } as const;
