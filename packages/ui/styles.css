@@ -2793,6 +2793,10 @@ a {
   max-height: 850px;
   overflow: auto;
 }
+.fd-designer-v2 .fd-form-palette > button + .fd-search {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
 .fd-designer-v2 .fd-form-palette h2,
 .fd-designer-v2 .fd-form-properties h2,
 .fd-canvas-workspace > .fd-section-heading h2 {
