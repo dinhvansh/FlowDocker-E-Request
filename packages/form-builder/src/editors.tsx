@@ -371,16 +371,14 @@ export function AdvancedProperties({
                   }
                 />
               </Field>
-              {field.defaultValueSource === "currentUser" && (
-                <Field label={t("Cho phép đổi người")}>
-                  <Checkbox
-                    checked={!field.readOnly}
-                    onCheckedChange={(checked) =>
-                      patch({ readOnly: checked !== true })
-                    }
-                  />
-                </Field>
-              )}
+              <Field label={t("Cho phép đổi người")}>
+                <Checkbox
+                  checked={!field.readOnly}
+                  onCheckedChange={(checked) =>
+                    patch({ readOnly: checked !== true })
+                  }
+                />
+              </Field>
             </>
           )}
           {field.type === "person" &&
