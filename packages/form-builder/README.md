@@ -47,6 +47,8 @@ Replace console.log with your host save adapter. Remount the renderer when chang
 
 **FieldInspector / FieldInspectorProps / InspectorSection**: exported contextual property panel. Host supplies selected field, references, containers, current category, errors, panel width and typed change/move/clone/delete callbacks. Host owns schema history and persistence; inspector has no network or application routes. FormDesigner is the integrated example; `packages/form-builder/examples` runs without E-Request and includes synthetic payment providers.
 
+The shared UI package also exports `Combobox` / `ComboboxProps` for searchable choice lists. Form runtime select fields and the designer's parent-container picker use it; it preserves the option values and only changes presentation and filtering.
+
 **Repeat presentation**: simple rows of up to six leaf controls render as a real table, with accessible control labels and stacked mobile rows. Complex/nested controls retain the existing stacked layout. Runtime owns row values through the existing engine; min/max guards and row calculations remain unchanged. Internal `RepeatField` and `InlineLabelEditor` are implementation components, not stable public APIs.
 
 **createPaymentDefinition**: synthetic payment scenario with conditional advance reason, provider identifiers, expense rows and decimal aggregate. Register `demo.companies` / `demo.departments` using the host's providers map; no live service, upload or ERP integration is implied. `createShowcaseDefinition` remains available.
