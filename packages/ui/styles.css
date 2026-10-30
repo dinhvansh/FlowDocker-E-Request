@@ -4132,3 +4132,58 @@ a {
 .fd-field > :is([data-slot="field-description"], [data-slot="field-error"]) {
   margin: 0;
 }
+
+/* Shared UI typography also covers FlowDocker dialogs rendered outside .fd-app. */
+:root {
+  --fd-font-section-size: 13px;
+  --fd-font-section-line-height: 20px;
+  --fd-font-dialog-size: 14px;
+  --fd-font-dialog-line-height: 20px;
+  --fd-font-page-size: 18px;
+  --fd-font-page-line-height: 24px;
+  --fd-font-heading-weight: 600;
+}
+:is(.fd-app, .fd-modal)
+  :is(
+    .fd-field,
+    [data-slot="field-label"],
+    [data-slot="field-description"],
+    [data-slot="field-error"],
+    [data-slot="alert-description"],
+    [data-slot="empty-description"],
+    .fd-section-heading p,
+    .fd-page-toolbar p,
+    .fd-notice p,
+    .fd-modal-body p,
+    .fd-modal-body li
+  ),
+.fd-modal {
+  font-family: var(--fd-font-ui);
+  font-size: var(--fd-font-ui-size);
+  font-weight: var(--fd-font-ui-weight);
+  line-height: var(--fd-font-ui-line-height);
+}
+:is(.fd-app, .fd-modal)
+  :is(
+    .fd-section-heading h3,
+    .fd-pane-title > strong,
+    .fd-field-inspector-header h2,
+    [data-slot="empty-title"]
+  ) {
+  font-family: var(--fd-font-ui);
+  font-size: var(--fd-font-section-size);
+  font-weight: var(--fd-font-heading-weight);
+  line-height: var(--fd-font-section-line-height);
+}
+.fd-modal [data-slot="dialog-title"] {
+  font-family: var(--fd-font-ui);
+  font-size: var(--fd-font-dialog-size);
+  font-weight: var(--fd-font-heading-weight);
+  line-height: var(--fd-font-dialog-line-height);
+}
+.fd-app .fd-page-toolbar h1 {
+  font-family: var(--fd-font-ui);
+  font-size: var(--fd-font-page-size);
+  font-weight: var(--fd-font-heading-weight);
+  line-height: var(--fd-font-page-line-height);
+}

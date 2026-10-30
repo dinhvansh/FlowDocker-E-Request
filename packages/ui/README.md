@@ -34,3 +34,6 @@ PeoplePicker: controlled `value: readonly string[]`, `onChange(ids: string[])`, 
 
 
 Form spacing: follow [shared sizing rules](../../docs/82-FORM-SPACING-AND-SIZING-RULES.md). FieldGroup owns a 16px field gap (12px in a desktop inspector); Field has zero outer margin and 6px internal gap. Sections use 24px. Single-line Input/Select/Combobox/DatePicker/PeoplePicker inside Field share 36px height, 32px compact inspector, 44px mobile; textarea min-height is 80px. Tokens are inherited by nested groups, no new props/schema changes. Legacy master fields now use FieldGroup; other existing grid parents keep their own explicit gaps. Typography is unchanged. Specialized repeating tables/document controls retain their local rules. Exact browser measurement evidence is recorded in docs/82.
+
+
+Typography: [mandatory rules](../../docs/83-UI-TYPOGRAPHY-RULES.md). Inter 12/18px regular for routine UI, including portalled FlowDocker modal prose, shared hints/errors/notices/empty descriptions. Section titles 13/20px; dialog titles 14/20px; page toolbar titles 18/24px, all semibold. Use shared --fd-font-* tokens; avoid per-screen font overrides. Authored document content and technical code keep intentional local typography.

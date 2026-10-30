@@ -10,15 +10,16 @@
   gap: 16px;
 }
 .fd-forms-v2[data-view="catalog"] .fd-page-toolbar h1 {
-  font-size: 24px;
-  line-height: 1.35;
+  font-size: var(--fd-font-page-size);
+  line-height: var(--fd-font-page-line-height);
   letter-spacing: -0.5px;
 }
 .fd-forms-v2[data-view="catalog"] .fd-page-toolbar p {
   display: block;
   margin: 6px 0 0;
   color: var(--fd-text-muted);
-  line-height: 1.6;
+  font-size: var(--fd-font-ui-size);
+  line-height: var(--fd-font-ui-line-height);
 }
 .fd-forms-v2[data-view="catalog"] .fd-form-workbench {
   background: transparent;
