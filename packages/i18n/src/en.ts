@@ -830,4 +830,9 @@ export const en = {
   "Mở thiết kế": "Open designer",
   "Thử tên khác hoặc xóa từ khóa tìm kiếm.":
     "Try another name or clear your search.",
+  "Cấu hình đã thiết lập cho {{field}}": "Configured settings for {{field}}",
+  "Mở cấu hình {{group}} cho {{field}}":
+    "Open {{group}} settings for {{field}}",
+  "Điều kiện": "Conditions",
+  "Tính toán": "Calculation",
 } as const;

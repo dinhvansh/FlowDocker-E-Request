@@ -23,6 +23,8 @@ import {
   type PreviewValues,
 } from "./schema";
 import { InlineLabelEditor } from "./components/inline-label-editor";
+import { FieldConfigurationBadges } from "./components/field-configuration-badges";
+import type { ConfigurationSection } from "./field-configuration";
 
 export interface FormCanvasProps {
   runtimeContext?: FormRendererProps["runtimeContext"];
@@ -37,6 +39,7 @@ export interface FormCanvasProps {
   onClone(field: FormField): void;
   onDelete(field: FormField): void;
   onPatch?(id: string, changes: Partial<FormField>): void;
+  onInspect?(id: string, section: ConfigurationSection): void;
 }
 function FieldOverlay({
   field,
@@ -90,10 +93,12 @@ function FieldOverlay({
         }
       }}
       onFocusCapture={(event) => {
-        // Opening a popover selects on click. Selecting on pointer focus can
-        // move its trigger before pointer-up when inline actions appear.
+        // Popovers and configuration links select on click. Pointer focus
+        // must not move their trigger before pointer-up adds inline actions.
         if (
-          (event.target as HTMLElement).closest('[data-slot="popover-trigger"]')
+          (event.target as HTMLElement).closest(
+            '[data-slot="popover-trigger"], .fd-field-configuration-link',
+          )
         )
           return;
         if (
@@ -151,7 +156,6 @@ function FieldOverlay({
         >
           {t(fieldTypeLabels[field.type])}
         </button>
-        {field.visibleWhen && <Badge>{t("Có điều kiện")}</Badge>}
         {selected && (
           <div className="fd-canvas-inline-actions" ref={editActions}>
             {props.onPatch && (
@@ -196,6 +200,14 @@ function FieldOverlay({
           </div>
         )}
       </div>
+      <FieldConfigurationBadges
+        field={field}
+        onNavigate={
+          props.onInspect
+            ? (section) => props.onInspect?.(field.id, section)
+            : undefined
+        }
+      />
       {editing && props.onPatch && (
         <InlineLabelEditor
           key={`${field.id}-${locale}`}

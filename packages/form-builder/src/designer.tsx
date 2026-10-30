@@ -959,6 +959,12 @@ export function FormDesigner({
                   selectedId={field?.id}
                   readOnly={readOnly}
                   onSelect={setSelectedId}
+                  onInspect={(id, section) => {
+                    setSelectedId(id);
+                    setProperties(section);
+                    setInspectorOpen(true);
+                    setPane("properties");
+                  }}
                   onPatch={(id, changes) =>
                     commit({
                       ...definition,

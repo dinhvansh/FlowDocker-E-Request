@@ -157,4 +157,8 @@ export const vi: Record<keyof typeof en, string> = {
   "Mở thiết kế": "Mở thiết kế",
   "Thử tên khác hoặc xóa từ khóa tìm kiếm.":
     "Thử tên khác hoặc xóa từ khóa tìm kiếm.",
+  "Cấu hình đã thiết lập cho {{field}}": "Cấu hình đã thiết lập cho {{field}}",
+  "Mở cấu hình {{group}} cho {{field}}": "Mở cấu hình {{group}} cho {{field}}",
+  "Điều kiện": "Điều kiện",
+  "Tính toán": "Tính toán",
 };

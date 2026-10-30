@@ -11,6 +11,7 @@ import {
   Select,
 } from "@flowdocker/ui";
 import { AdvancedProperties, OptionsEditor } from "../editors";
+import { FieldConfigurationBadges } from "./field-configuration-badges";
 import type { FormDataSource } from "./data-source-editor";
 import type { FormRendererProps } from "../runtime";
 import type { PreviewValues } from "../schema";
@@ -99,6 +100,7 @@ export function FieldInspector({
         <small>
           {t(fieldTypeLabels[field.type])} · {field.key}
         </small>
+        <FieldConfigurationBadges field={field} onNavigate={onSectionChange} />
       </header>
       <Select
         label={t("Nhóm thuộc tính")}

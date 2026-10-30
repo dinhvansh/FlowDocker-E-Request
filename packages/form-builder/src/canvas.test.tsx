@@ -38,6 +38,22 @@ function Host() {
   );
 }
 describe("live authoring canvas", () => {
+  it("opens configured field groups directly from indicators without mutating the schema", () => {
+    render(<Host />);
+    const original = screen.getByTestId("schema").textContent;
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Mở cấu hình Điều kiện cho Lý do tạm ứng",
+      }),
+    );
+    expect(
+      screen.getByRole("combobox", { name: "Nhóm thuộc tính" }).textContent,
+    ).toContain("Điều kiện và tính toán");
+    expect(
+      screen.getAllByRole("combobox", { name: "Giá trị so sánh" }).length,
+    ).toBeGreaterThan(0);
+    expect(screen.getByTestId("schema").textContent).toBe(original);
+  });
   it("reveals conditional controls and nested row fields without changing runtime visibility", () => {
     const { unmount } = render(<Host />);
     expect(screen.getByRole("textbox", { name: "Lý do tạm ứng" })).toBeTruthy();

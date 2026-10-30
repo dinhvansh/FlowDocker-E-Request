@@ -1,5 +1,10 @@
 export * from "./schema";
 export * from "./engine";
+export { fieldConfiguration } from "./field-configuration";
+export type {
+  ConfigurationKind,
+  ConfigurationSection,
+} from "./field-configuration";
 export { createShowcaseDefinition } from "./showcase";
 export { FormDesigner, moveField } from "./designer";
 export type { FormDesignerProps } from "./designer";
