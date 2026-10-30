@@ -1,3 +1,4 @@
+import { saveLocalMasterRecords } from "./master-records";
 import { masterDeleteBlockers, removeLocalMaster } from "./master-deletion";
 import { formCatalog, readFormDrafts } from "./form-drafts";
 import { I18nProvider, useI18n } from "@flowdocker/i18n";
@@ -146,6 +147,10 @@ function App() {
         <OrganizationMasterPage
           entities={entities}
           onSave={saveEntity}
+          onSaveRecords={async (expected, records) => {
+            saveLocalMasterRecords(localStorage, entities, expected, records);
+            setEntities(await entityService.list());
+          }}
           onDelete={deleteEntity}
           getDeleteBlockers={deleteBlockers}
           loading={loading}

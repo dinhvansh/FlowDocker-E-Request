@@ -1,5 +1,47 @@
 import { formMessages } from "./form-messages";
 export const en = {
+  "Để trống": "Leave blank",
+  "Bản ghi đang được tham chiếu. Gỡ tham chiếu trước khi xóa hoặc đổi mã.":
+    "This record is referenced. Remove its references before deleting it or changing its key.",
+  "Dữ liệu đã thay đổi ở tab khác. Tải lại trang trước khi cập nhật.":
+    "Data changed in another tab. Reload before updating.",
+  "Không lưu được thay đổi. Nội dung đang sửa được giữ lại; hãy kiểm tra lưu trữ và thử lại.":
+    "Could not save changes. Your edits are kept; check browser storage and retry.",
+  "Đang lưu...": "Saving...",
+  "Mã bản ghi này được dành riêng cho hệ thống.":
+    "This record key is reserved for the system.",
+  "Trường này là bắt buộc.": "This field is required.",
+  "Nhập một số hợp lệ.": "Enter a valid number.",
+  "Chọn Có hoặc Không.": "Choose Yes or No.",
+  "Giá trị phải là văn bản.": "The value must be text.",
+  "Chọn ngày hợp lệ.": "Choose a valid date.",
+  "Mã bản ghi đã tồn tại.": "This record key already exists.",
+  "Chọn bản ghi có trong danh mục tham chiếu.":
+    "Choose an existing record from the referenced catalog.",
+  "Bản ghi danh mục": "Catalog records",
+  "Dữ liệu minh họa, chỉ lưu trong trình duyệt.":
+    "Demo data, saved in this browser only.",
+  "Thêm bản ghi": "Add record",
+  "Sửa bản ghi": "Edit record",
+  "Xóa bản ghi": "Delete record",
+  "Sửa bản ghi {{name}}": "Edit record {{name}}",
+  "Xóa bản ghi {{name}}": "Delete record {{name}}",
+  "Dữ liệu do nguồn ngoài quản lý, chỉ được xem tại đây.":
+    "Source-managed data is read-only here.",
+  "Ứng dụng chưa bật chỉnh sửa bản ghi.":
+    "This application has not enabled record editing.",
+  "Sửa mã trường không hợp lệ hoặc trùng trước khi nhập bản ghi.":
+    "Fix invalid or duplicate field keys before editing records.",
+  "Đã cập nhật bản ghi trong trình duyệt.": "Records updated in this browser.",
+  "Chưa có bản ghi. Thêm bản ghi đầu tiên để bắt đầu.":
+    "No records yet. Add the first record to get started.",
+  "Xác nhận xóa bản ghi": "Confirm record deletion",
+  "Lưu bản ghi": "Save record",
+  "Xóa bản ghi {{name}} khỏi danh mục {{catalog}}? Thao tác này không thể hoàn tác.":
+    "Delete record {{name}} from {{catalog}}? This cannot be undone.",
+  "Mã định danh của bản ghi đã tạo không thể thay đổi.":
+    "The ID of an existing record cannot be changed.",
+
   "Mã trường là bắt buộc.": "Field key is required.",
   "Chỉ dùng chữ thường, số và dấu gạch dưới; bắt đầu bằng chữ. Không dùng khoảng trắng hoặc dấu tiếng Việt.":
     "Use lowercase letters, numbers and underscores, starting with a letter. Spaces and accented characters are not allowed.",

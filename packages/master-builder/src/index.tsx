@@ -1,3 +1,7 @@
+import { MasterRecords, type SaveMasterRecords } from "./master-records";
+export { assertRecordChange } from "./record-validation";
+export type { MasterRecord } from "./record-validation";
+export type { SaveMasterRecords } from "./master-records";
 import { FieldKeyEditor } from "./field-key-editor";
 import { useI18n } from "@flowdocker/i18n";
 import { useMemo, useState } from "react";
@@ -26,6 +30,7 @@ import {
 export interface MasterBuilderProps {
   entities: MasterEntity[];
   onSave(entity: MasterEntity): Promise<void>;
+  onSaveRecords?: SaveMasterRecords;
   onDelete?(id: string): Promise<void>;
   getDeleteBlockers?(entity: MasterEntity): string[];
   loading?: boolean;
@@ -41,6 +46,7 @@ export function MasterBuilder({
   entities,
   onSave,
   onDelete,
+  onSaveRecords,
   getDeleteBlockers,
   loading,
   error,
@@ -168,7 +174,13 @@ export function MasterBuilder({
       </div>
       {error && <Notice tone="danger">{t(error)}</Notice>}
       {message && <Notice>{t(message)}</Notice>}
-      <div className="fd-workbench fd-master-layout">
+      <div
+        className={
+          tab === "records"
+            ? "fd-workbench fd-master-layout fd-master-records-layout"
+            : "fd-workbench fd-master-layout"
+        }
+      >
         <aside className="fd-pane fd-entity-list">
           <div className="fd-pane-title">
             <strong>{t("Entity Explorer")}</strong>
@@ -371,35 +383,13 @@ export function MasterBuilder({
                   />
                 </div>
               )}
-              {tab === "records" && (
-                <div className="fd-content">
-                  <div className="fd-section-heading">
-                    <div>
-                      <h3>{t("Xem trước bản ghi")}</h3>
-                      <p>{t("Dữ liệu minh họa, không kết nối nguồn thật.")}</p>
-                    </div>
-                  </div>
-                  {entity.records.length ? (
-                    <DataTable
-                      rows={entity.records}
-                      rowKey={(row) => JSON.stringify(row)}
-                      columns={entity.fields.slice(0, 4).map((f) => ({
-                        key: f.key,
-                        heading: f.label.toUpperCase(),
-                        render: (
-                          row: Record<string, string | number | boolean>,
-                        ) => String(row[f.key] ?? "—"),
-                      }))}
-                    />
-                  ) : (
-                    <EmptyState
-                      title={t("Chưa có bản ghi mẫu")}
-                      detail={t(
-                        "Việc tạo và đồng bộ bản ghi cần API ở giai đoạn sau.",
-                      )}
-                    />
-                  )}
-                </div>
+              {tab === "records" && entity && (
+                <MasterRecords
+                  key={entity.id}
+                  entity={entity}
+                  entities={entities}
+                  onSave={onSaveRecords}
+                />
               )}
               {tab === "source" && (
                 <div className="fd-content fd-source-grid">
@@ -480,108 +470,110 @@ export function MasterBuilder({
             <EmptyState title={t("Chọn entity")} />
           )}
         </section>
-        <aside className="fd-pane fd-inspector">
-          <div className="fd-pane-title">
-            <strong>{t("Inspector")}</strong>
-            <span>{t("THUỘC TÍNH")}</span>
-          </div>
-          {tab === "schema" && field && entity ? (
-            <div className="fd-pane-pad fd-inspector-form">
-              <div className="fd-inspector-heading">
-                <span className="fd-field-icon">{t("Aa")}</span>
-                <div>
-                  <strong>{field.label}</strong>
-                  <small>{field.key}</small>
+        {tab !== "records" && (
+          <aside className="fd-pane fd-inspector">
+            <div className="fd-pane-title">
+              <strong>{t("Inspector")}</strong>
+              <span>{t("THUỘC TÍNH")}</span>
+            </div>
+            {tab === "schema" && field && entity ? (
+              <div className="fd-pane-pad fd-inspector-form">
+                <div className="fd-inspector-heading">
+                  <span className="fd-field-icon">{t("Aa")}</span>
+                  <div>
+                    <strong>{field.label}</strong>
+                    <small>{field.key}</small>
+                  </div>
                 </div>
-              </div>
-              <Field label={t("Tên hiển thị")}>
-                <Input
-                  value={field.label}
-                  onChange={(e) => patchField({ label: e.target.value })}
-                />
-              </Field>
-              <FieldKeyEditor
-                key={`${entity.id}:${field.id}`}
-                field={field}
-                fields={entity.fields}
-                onCommit={(key) => patchField({ key })}
-              />
-              <Field label={t("Kiểu dữ liệu")}>
-                <Select
-                  label={t("Kiểu dữ liệu")}
-                  value={field.type}
-                  onValueChange={(value) =>
-                    patchField({ type: value as FieldType })
-                  }
-                  options={[
-                    { value: "text", label: t("Văn bản") },
-                    { value: "number", label: t("Số") },
-                    { value: "date", label: t("Ngày") },
-                    { value: "boolean", label: t("Boolean") },
-                    { value: "reference", label: t("Tham chiếu") },
-                  ]}
-                />
-              </Field>
-              {field.type === "reference" && (
-                <Field label={t("Entity tham chiếu")}>
+                <Field label={t("Tên hiển thị")}>
                   <Input
-                    value={field.referenceEntity ?? ""}
-                    onChange={(e) =>
-                      patchField({ referenceEntity: e.target.value })
-                    }
+                    value={field.label}
+                    onChange={(e) => patchField({ label: e.target.value })}
                   />
                 </Field>
-              )}
-              <Field label={t("Phân loại")}>
-                <Select
-                  label={t("Phân loại")}
-                  value={field.classification}
-                  onValueChange={(value) =>
-                    patchField({
-                      classification: value as MasterField["classification"],
-                    })
-                  }
-                  options={[
-                    { value: "PUBLIC", label: t("Công khai") },
-                    { value: "INTERNAL", label: t("Nội bộ") },
-                    { value: "SENSITIVE", label: t("Nhạy cảm") },
-                  ]}
+                <FieldKeyEditor
+                  key={`${entity.id}:${field.id}`}
+                  field={field}
+                  fields={entity.fields}
+                  onCommit={(key) => patchField({ key })}
                 />
-              </Field>
-              <label className="fd-checkbox">
-                <Checkbox
-                  checked={field.required}
-                  onCheckedChange={(checked) =>
-                    patchField({ required: checked === true })
-                  }
-                />{" "}
-                {t("Bắt buộc")}
-              </label>
-              <div className="fd-inspector-bottom">
-                <Button
-                  variant="danger"
-                  onClick={() => {
-                    save({
-                      ...entity,
-                      fields: entity.fields.filter((f) => f.id !== field.id),
-                    });
-                    setSelectedFieldId("");
-                  }}
-                >
-                  <Trash2 size={15} />
-                  {t("Xóa trường")}
-                </Button>
+                <Field label={t("Kiểu dữ liệu")}>
+                  <Select
+                    label={t("Kiểu dữ liệu")}
+                    value={field.type}
+                    onValueChange={(value) =>
+                      patchField({ type: value as FieldType })
+                    }
+                    options={[
+                      { value: "text", label: t("Văn bản") },
+                      { value: "number", label: t("Số") },
+                      { value: "date", label: t("Ngày") },
+                      { value: "boolean", label: t("Boolean") },
+                      { value: "reference", label: t("Tham chiếu") },
+                    ]}
+                  />
+                </Field>
+                {field.type === "reference" && (
+                  <Field label={t("Entity tham chiếu")}>
+                    <Input
+                      value={field.referenceEntity ?? ""}
+                      onChange={(e) =>
+                        patchField({ referenceEntity: e.target.value })
+                      }
+                    />
+                  </Field>
+                )}
+                <Field label={t("Phân loại")}>
+                  <Select
+                    label={t("Phân loại")}
+                    value={field.classification}
+                    onValueChange={(value) =>
+                      patchField({
+                        classification: value as MasterField["classification"],
+                      })
+                    }
+                    options={[
+                      { value: "PUBLIC", label: t("Công khai") },
+                      { value: "INTERNAL", label: t("Nội bộ") },
+                      { value: "SENSITIVE", label: t("Nhạy cảm") },
+                    ]}
+                  />
+                </Field>
+                <label className="fd-checkbox">
+                  <Checkbox
+                    checked={field.required}
+                    onCheckedChange={(checked) =>
+                      patchField({ required: checked === true })
+                    }
+                  />{" "}
+                  {t("Bắt buộc")}
+                </label>
+                <div className="fd-inspector-bottom">
+                  <Button
+                    variant="danger"
+                    onClick={() => {
+                      save({
+                        ...entity,
+                        fields: entity.fields.filter((f) => f.id !== field.id),
+                      });
+                      setSelectedFieldId("");
+                    }}
+                  >
+                    <Trash2 size={15} />
+                    {t("Xóa trường")}
+                  </Button>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="fd-pane-pad">
-              <EmptyState
-                title={t("Chọn trường để xem thuộc tính")}
-                detail={t("Inspector cập nhật theo trường đang chọn.")}
-              />
-            </div>
-          )}
-        </aside>
+            ) : (
+              <div className="fd-pane-pad">
+                <EmptyState
+                  title={t("Chọn trường để xem thuộc tính")}
+                  detail={t("Inspector cập nhật theo trường đang chọn.")}
+                />
+              </div>
+            )}
+          </aside>
+        )}
       </div>
       {deleteTarget && (
         <Modal

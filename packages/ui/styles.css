@@ -4090,3 +4090,17 @@ a {
 .fd-quick-links a {
   color: inherit;
 }
+
+/* Record maintenance uses the inspector space for the data table. */
+@media (min-width: 701px) {
+  .fd-master-layout.fd-master-records-layout {
+    grid-template-columns: 210px minmax(0, 1fr);
+  }
+}
+
+.fd-record-fields {
+  gap: 16px;
+}
+.fd-record-fields > .fd-field {
+  margin-bottom: 0;
+}
