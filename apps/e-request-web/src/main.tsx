@@ -20,6 +20,13 @@ const FlowStudioPage = lazy(() =>
     default: module.FlowStudioPage,
   })),
 );
+const AntPermissionBuilder = lazy(() =>
+  import("@flowdocker/permission-builder/antd-preview").then((module) => ({
+    default: module.AntPermissionBuilder,
+  })),
+);
+const permissionPreview =
+  new URLSearchParams(location.search).get("permission-ui") === "antd";
 
 function initialPage(): PageId {
   const hash = location.hash.slice(1);
@@ -108,15 +115,31 @@ function App() {
           error={error}
         />
       )}
-      {page === "permissions" && (
-        <PermissionBuilder
-          roles={roles}
-          resources={resources}
-          onSave={saveRole}
-          loading={loading}
-          error={error}
-        />
-      )}
+      {page === "permissions" &&
+        (permissionPreview ? (
+          <Suspense
+            fallback={
+              <section className="fd-screen">{t("Đang tải...")}</section>
+            }
+          >
+            <AntPermissionBuilder
+              roles={roles}
+              resources={resources}
+              onSave={saveRole}
+              loading={loading}
+              error={error}
+              theme={theme}
+            />
+          </Suspense>
+        ) : (
+          <PermissionBuilder
+            roles={roles}
+            resources={resources}
+            onSave={saveRole}
+            loading={loading}
+            error={error}
+          />
+        ))}
       {page === "connections" && (
         <ConnectionsPage onOpenFlows={() => navigate("flows")} />
       )}

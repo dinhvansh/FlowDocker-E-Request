@@ -287,6 +287,8 @@ export const en = {
   "Kết nối": "Connections",
   "Quản trị": "Administration",
   "Phân quyền": "Permissions",
+  "Ant Design · bản thử": "Ant Design · preview",
+  "Xem bản shadcn": "View shadcn version",
   "Quản lý những gì mỗi vai trò được xem và thực hiện.":
     "Manage what each role can see and do.",
   "Bản thử nghiệm · Chỉ lưu trong trình duyệt, chưa áp dụng quyền thật.":
