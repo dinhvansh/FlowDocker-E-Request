@@ -52,15 +52,54 @@ export function AntPermissionBuilder({
   ...props
 }: AntPermissionBuilderProps) {
   const { locale } = useI18n();
+  // Match the existing .fd-app palette; leave Ant's control shapes and spacing intact.
+  const palette =
+    mode === "dark"
+      ? {
+          brand: "#ff737c",
+          soft: "#402528",
+          surface: "#202020",
+          raised: "#272727",
+          text: "#f5f5f5",
+          muted: "#b8b8b8",
+          border: "#3d3d3d",
+        }
+      : {
+          brand: "#b4232d",
+          soft: "#fff0f1",
+          surface: "#ffffff",
+          raised: "#fafafa",
+          text: "#242424",
+          muted: "#626262",
+          border: "#e3e3e3",
+        };
   return (
     <ConfigProvider
       locale={locale === "vi" ? viVN : enUS}
       theme={{
-        algorithm:
-          mode === "dark" ? theme.darkAlgorithm : theme.defaultAlgorithm,
+        algorithm: (seed, map) => ({
+          ...(mode === "dark" ? theme.darkAlgorithm : theme.defaultAlgorithm)(
+            seed,
+            map,
+          ),
+          colorPrimary: palette.brand,
+          colorPrimaryBg: palette.soft,
+          colorPrimaryBorder: palette.brand,
+        }),
         token: {
+          colorPrimary: palette.brand,
+          colorLink: palette.brand,
+          colorInfo: palette.brand,
+          colorInfoBg: palette.soft,
+          colorInfoBorder: palette.border,
+          colorBgLayout: palette.raised,
+          colorBgContainer: palette.surface,
+          colorBgElevated: palette.surface,
+          colorText: palette.text,
+          colorTextSecondary: palette.muted,
+          colorBorder: palette.border,
+          colorBorderSecondary: palette.border,
           fontFamily: "Inter, system-ui, sans-serif",
-          colorTextSecondary: mode === "dark" ? "#b5b5b5" : "#626262",
           colorTextPlaceholder: mode === "dark" ? "#a6a6a6" : "#767676",
           motion: !window.matchMedia("(prefers-reduced-motion: reduce)")
             .matches,
@@ -210,7 +249,15 @@ function AntPermissionView(props: PermissionBuilderProps) {
             >
               {t("Phân quyền")}
             </Typography.Title>
-            <Tag color="blue">{t("Ant Design · bản thử")}</Tag>
+            <Tag
+              style={{
+                color: token.colorPrimary,
+                background: token.colorPrimaryBg,
+                borderColor: token.colorBorder,
+              }}
+            >
+              {t("Ant Design · bản thử")}
+            </Tag>
           </Space>
           <p>
             <Typography.Text type="secondary">
