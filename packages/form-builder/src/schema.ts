@@ -63,6 +63,29 @@ export interface Calculation {
   fields: string[];
   precision?: number;
 }
+export const creatorProfileLabels = {
+  name: "Họ tên người tạo",
+  email: "Email người tạo",
+  employeeCode: "Mã nhân viên người tạo",
+  department: "Phòng ban người tạo",
+  position: "Chức danh người tạo",
+  managerName: "Tên quản lý trực tiếp của người tạo",
+  managerId: "Quản lý trực tiếp của người tạo",
+} as const;
+export type CreatorProfileAttribute = keyof typeof creatorProfileLabels;
+export type DefaultValueSource =
+  "currentUser" | `currentUser.${CreatorProfileAttribute}`;
+export function defaultSourcesForType(
+  type: FormFieldType,
+): DefaultValueSource[] {
+  if (type === "person") return ["currentUser", "currentUser.managerId"];
+  if (type === "email") return ["currentUser.email"];
+  if (["text", "textarea", "hidden"].includes(type))
+    return (Object.keys(creatorProfileLabels) as CreatorProfileAttribute[])
+      .filter((key) => key !== "managerId")
+      .map((key) => `currentUser.${key}` as DefaultValueSource);
+  return [];
+}
 export interface FormField {
   id: string;
   key: string;
@@ -75,7 +98,7 @@ export interface FormField {
   placeholder?: BilingualText;
   defaultValue?: FormValue;
   /** Resolved from host context when no saved value exists; never an identity credential. */
-  defaultValueSource?: "currentUser";
+  defaultValueSource?: DefaultValueSource;
   readOnly?: boolean;
   disabled?: boolean;
   min?: number;
@@ -368,8 +391,9 @@ function fieldsShape(
         return false;
       if (
         field.defaultValueSource !== undefined &&
-        (field.defaultValueSource !== "currentUser" ||
-          field.type !== "person" ||
+        (!defaultSourcesForType(field.type as FormFieldType).includes(
+          field.defaultValueSource as DefaultValueSource,
+        ) ||
           field.defaultValue !== undefined)
       )
         return false;

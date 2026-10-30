@@ -23,3 +23,15 @@ export const demoProfile: UserProfile = {
   manager: "Chưa đồng bộ từ HR",
   role: "Platform Admin (demo)",
 };
+
+/** Synthetic form context; unknown manager is deliberately omitted. */
+export const demoFormRuntimeContext = {
+  currentUserId: demoCurrentPersonId,
+  currentUser: {
+    name: demoProfile.name,
+    email: demoProfile.email,
+    employeeCode: demoProfile.employeeCode,
+    department: demoProfile.department,
+    position: demoProfile.position,
+  },
+};

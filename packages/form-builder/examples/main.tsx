@@ -11,6 +11,16 @@ import {
   type PreviewValues,
 } from "../src";
 import "@flowdocker/ui/styles.css";
+const runtimeContext = {
+  currentUserId: "example-current-person",
+  currentUser: {
+    name: "Example user",
+    email: "example@example.com",
+    employeeCode: "SAMPLE-001",
+    department: "Demo IT",
+    position: "Demo specialist",
+  },
+};
 const initial = createShowcaseDefinition();
 const providers: Record<string, DataProvider> = {
   "organization.people": async () => [
@@ -49,7 +59,7 @@ function Example() {
           {t("Mở mẫu thanh toán")}
         </Button>
         <FormDesigner
-          runtimeContext={{ currentUserId: "example-current-person" }}
+          runtimeContext={runtimeContext}
           key={definition.id}
           providers={providers}
           dataSources={[
@@ -85,7 +95,7 @@ function Example() {
           }}
         />
         <FormPreview
-          runtimeContext={{ currentUserId: "example-current-person" }}
+          runtimeContext={runtimeContext}
           key={JSON.stringify(definition)}
           definition={definition}
           providers={providers}

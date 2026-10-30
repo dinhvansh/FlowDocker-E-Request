@@ -1,5 +1,7 @@
 import Decimal from "decimal.js";
 import {
+  defaultSourcesForType,
+  type CreatorProfileAttribute,
   isContainer,
   isFormDefinition,
   scopeFields,
@@ -166,6 +168,24 @@ export function calculate(
 export interface FormRuntimeContext {
   /** Stable directory ID supplied by the host. Not authentication or server authorization. */
   currentUserId?: string;
+  /** Host-projected creator attributes only. Omit unavailable/unverified values. */
+  currentUser?: Partial<Record<CreatorProfileAttribute, string>>;
+}
+export function resolveDefaultSource(
+  field: FormField,
+  context: FormRuntimeContext = {},
+): FormValue | undefined {
+  const source = field.defaultValueSource;
+  if (!source || !defaultSourcesForType(field.type).includes(source))
+    return undefined;
+  const value =
+    source === "currentUser"
+      ? context.currentUserId
+      : context.currentUser?.[
+          source.slice("currentUser.".length) as CreatorProfileAttribute
+        ];
+  if (typeof value !== "string" || !value.trim()) return undefined;
+  return field.type === "person" && field.multiple ? [value] : value;
 }
 export function defaultValues(
   fields: FormField[],
@@ -191,14 +211,9 @@ export function defaultValues(
         result,
         defaultValues(field.children ?? [], budget, runtimeContext),
       );
-    else if (
-      field.type === "person" &&
-      field.defaultValueSource === "currentUser"
-    ) {
-      if (runtimeContext.currentUserId?.trim())
-        result[field.key] = field.multiple
-          ? [runtimeContext.currentUserId]
-          : runtimeContext.currentUserId;
+    else if (field.defaultValueSource) {
+      const value = resolveDefaultSource(field, runtimeContext);
+      if (value !== undefined) result[field.key] = value;
     } else if (field.defaultValue !== undefined)
       result[field.key] = structuredClone(field.defaultValue);
   }

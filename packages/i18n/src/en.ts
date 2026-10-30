@@ -1,5 +1,20 @@
 import { formMessages } from "./form-messages";
 export const en = {
+  "Họ tên người tạo": "Creator full name",
+  "Email người tạo": "Creator email",
+  "Mã nhân viên người tạo": "Creator employee code",
+  "Phòng ban người tạo": "Creator department",
+  "Chức danh người tạo": "Creator job title",
+  "Tên quản lý trực tiếp của người tạo": "Creator direct manager name",
+  "Quản lý trực tiếp của người tạo": "Creator direct manager",
+  "Nguồn giá trị mặc định": "Default value source",
+  "Tự điền khi trường chưa có giá trị. Giữ nguyên dữ liệu đã lưu hoặc đã xóa.":
+    "Fills only when no value exists. Preserves saved or explicitly cleared values.",
+  "Nhập giá trị cố định": "Enter a fixed value",
+  "Cho phép sửa giá trị": "Allow editing value",
+  "Thông tin người tạo đã chọn chưa có dữ liệu. Ứng dụng cần cung cấp thông tin này.":
+    "The selected creator information is unavailable. The application must supply this attribute.",
+
   "Kéo vào mẫu hoặc bấm để thêm": "Drag into the form or click to add",
   "Chèn sau trường này": "Insert after this field",
   "Thả vào đây để thêm cuối mẫu": "Drop here to append to the form",

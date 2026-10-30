@@ -1,3 +1,4 @@
+import { CreatorDefaultEditor } from "./components/creator-default-editor";
 import { useState } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import {
@@ -340,61 +341,20 @@ export function AdvancedProperties({
       )}
       {(section === "all" || section === "data" || section === "general") && (
         <>
-          {field.type === "person" && (
-            <>
-              <Field
-                label={t("Giá trị mặc định")}
-                hint={
-                  field.defaultValueSource === "currentUser"
-                    ? t(
-                        "Tự điền tài khoản hiện tại khi trường chưa có giá trị. Không thay người đã lưu trong phiếu.",
-                      )
-                    : undefined
-                }
-              >
-                <Select
-                  label={t("Giá trị mặc định")}
-                  value={field.defaultValueSource ?? "fixed"}
-                  options={[
-                    { value: "fixed", label: t("Chọn người cụ thể") },
-                    {
-                      value: "currentUser",
-                      label: t("Người đang tạo biểu mẫu"),
-                    },
-                  ]}
-                  onValueChange={(value) =>
-                    patch({
-                      defaultValueSource:
-                        value === "currentUser" ? "currentUser" : undefined,
-                      defaultValue: undefined,
-                    })
-                  }
-                />
-              </Field>
-              <Field label={t("Cho phép đổi người")}>
-                <Checkbox
-                  checked={!field.readOnly}
-                  onCheckedChange={(checked) =>
-                    patch({ readOnly: checked !== true })
-                  }
-                />
-              </Field>
-            </>
+          <CreatorDefaultEditor field={field} patch={patch} />
+          {field.type === "person" && !field.defaultValueSource && (
+            <PersonDefaultEditor
+              field={field}
+              providers={providers}
+              dependency={
+                field.dataSource?.dependsOn
+                  ? sourceDefaults?.[field.dataSource.dependsOn]
+                  : undefined
+              }
+              patch={patch}
+            />
           )}
-          {field.type === "person" &&
-            field.defaultValueSource !== "currentUser" && (
-              <PersonDefaultEditor
-                field={field}
-                providers={providers}
-                dependency={
-                  field.dataSource?.dependsOn
-                    ? sourceDefaults?.[field.dataSource.dependsOn]
-                    : undefined
-                }
-                patch={patch}
-              />
-            )}
-          {field.type !== "person" && (
+          {field.type !== "person" && !field.defaultValueSource && (
             <Field label={t("Giá trị mặc định")}>
               <Input
                 value={

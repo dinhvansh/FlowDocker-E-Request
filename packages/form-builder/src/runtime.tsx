@@ -30,6 +30,7 @@ import {
   RadioGroupItem,
 } from "@flowdocker/ui";
 import {
+  resolveDefaultSource,
   checkFiles,
   defaultValues,
   evaluateRule,
@@ -897,11 +898,13 @@ function RuntimeField({
     );
   return (
     <div className="fd-runtime-field">
-      {field.defaultValueSource === "currentUser" &&
-        !props.runtimeContext?.currentUserId && (
+      {field.defaultValueSource &&
+        resolveDefaultSource(field, props.runtimeContext) === undefined && (
           <Notice tone="warning">
             {t(
-              "Chưa xác định được người đang tạo. Ứng dụng cần cung cấp tài khoản hiện tại.",
+              field.defaultValueSource === "currentUser"
+                ? "Chưa xác định được người đang tạo. Ứng dụng cần cung cấp tài khoản hiện tại."
+                : "Thông tin người tạo đã chọn chưa có dữ liệu. Ứng dụng cần cung cấp thông tin này.",
             )}
           </Notice>
         )}

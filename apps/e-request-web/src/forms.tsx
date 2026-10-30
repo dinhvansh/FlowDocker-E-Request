@@ -9,7 +9,11 @@ import type { MasterEntity } from "@flowdocker/app-contracts";
 import { peopleOptions } from "./organization";
 import { FormCatalog } from "./form-catalog";
 import { masterFormSources } from "./master-form-sources";
-import { demoCurrentPersonId, demoProfile } from "./demo-profile";
+import {
+  demoCurrentPersonId,
+  demoProfile,
+  demoFormRuntimeContext,
+} from "./demo-profile";
 import { useI18n } from "@flowdocker/i18n";
 import { ArrowLeft, MoreHorizontal, Plus, Save } from "lucide-react";
 import {
@@ -350,7 +354,7 @@ export function FormsPage({
                   </FieldGroup>
                 </div>
                 <FormDesigner
-                  runtimeContext={{ currentUserId: demoCurrentPersonId }}
+                  runtimeContext={demoFormRuntimeContext}
                   dataSources={availableSources}
                   providers={providers}
                   inspectorSection={tab === "logic" ? "logic" : "basic"}
@@ -381,7 +385,7 @@ export function FormsPage({
                     data-orientation={draft.orientation ?? "portrait"}
                   >
                     <FormPreview
-                      runtimeContext={{ currentUserId: demoCurrentPersonId }}
+                      runtimeContext={demoFormRuntimeContext}
                       key={draft.id}
                       definition={draft}
                       providers={providers}

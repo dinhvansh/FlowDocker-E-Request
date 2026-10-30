@@ -1,3 +1,4 @@
+import { defaultSourcesForType } from "../schema";
 import { useI18n } from "@flowdocker/i18n";
 import { ArrowDown, ArrowUp, Copy, Trash2 } from "lucide-react";
 import {
@@ -373,9 +374,12 @@ export function FieldInspector({
                   }
                   patch({
                     type,
-                    ...(type !== "person"
-                      ? { defaultValueSource: undefined }
-                      : {}),
+                    ...(!field.defaultValueSource ||
+                    defaultSourcesForType(type).includes(
+                      field.defaultValueSource,
+                    )
+                      ? {}
+                      : { defaultValueSource: undefined }),
                     ...(type === "person"
                       ? {
                           options: [],
