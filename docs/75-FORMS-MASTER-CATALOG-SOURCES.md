@@ -40,3 +40,11 @@ Portable engine retains provider injection; reusable source editor gains optiona
 - Unit tests cover all-entity registration, renamed stable identity, numeric zero, inactive rows, empty catalogs, bad/sensitive/missing mappings, duplicate/reserved IDs, no mutation, legacy schema support and mapping-change provider refresh.
 
 Frontend local catalog lookup implemented. External connectors/scheduled sync, backend tenant/company/role authorization and production key governance NOT DONE. Generic scalar catalog sources are excluded from person fields; dedicated organization people source remains. Owner visual acceptance pending; no merge.
+
+
+## Owner correction: one search inside dropdown
+
+UX Research: owner screenshot shows a redundant standalone search input above a select that already has searchable popup content. UI/UX Design: select and person fields use only their existing popup search; radio/checkbox lists retain the external provider query because they have no popup search. Design Audit: preserve selected IDs, validation, source mapping, loading/error notices, keyboard and bounded 500-option behavior. Interactive Prototype: verify canvas/runtime popup search and selection in browser. Design to Code: reusable RuntimeField condition only; no schema/API/storage/Temporal/Teams/security/migration change. Existing standalone designer and E-Request share the correction. Search in select filters the loaded bounded provider results, consistent with PeoplePicker; full remote catalog pagination/search remains future work.
+
+
+Correction QA (base 61449cf): typecheck, lint/i18n, focused source tests (7/2 files) and build:forms PASS. Browser `forms-single-dropdown-qa.cjs` PASS: no external select search textbox, popup query Alpha excludes Beta, selecting Alpha works, Master mapping/refresh unchanged; VI/EN/light/dark and 1440/1366/390 screenshots captured. `forms-single-dropdown-search.png` visually inspected. No public API/schema change.

@@ -907,7 +907,7 @@ function RuntimeField({
         )}
       {field.dataSource && (
         <>
-          {field.type !== "person" && (
+          {!["person", "select"].includes(field.type) && (
             <Field label={t("Tìm lựa chọn cho {{label}}", { label })}>
               <Input
                 disabled={disabled}
