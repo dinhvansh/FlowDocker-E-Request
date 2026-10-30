@@ -162,3 +162,7 @@ The topbar language picker switches between Vietnamese and English and remembers
 ## People and organization sample
 
 Form Studio now includes a **People picker** field and a **People and organization · sample** form. Master Data → Organization chart shows synthetic reporting relationships and department heads; employee/department catalogs are editable locally. Both views read the same local master records. No Microsoft 365 connection, authenticated current-user default or approval assignment execution is implemented in this slice. See [scope and QA](docs/61-PEOPLE-AND-ORGANIZATION-SAMPLE.md).
+
+### Permission field simulation
+
+The standard shadcn Permission Builder now uses host-registered field catalogs and previews READ/MASK/DENY effects on synthetic data. Resource/scope denial overrides field rules; EXPORT additionally requires READ. This remains a browser-only simulation, not authorization enforcement. See [implementation and evidence](docs/72-PERMISSION-FIELD-SIMULATION.md) and [package API](packages/permission-builder/README.md).

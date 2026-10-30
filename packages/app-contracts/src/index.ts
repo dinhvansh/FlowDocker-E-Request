@@ -34,6 +34,14 @@ export interface ResourceAction {
   resource: string;
   label: string;
   actions: Action[];
+  /** Host-registered fields; sample values must be synthetic, never real records. */
+  fields?: PermissionField[];
+}
+export interface PermissionField {
+  /** Stable policy key, retained across presentation label changes. */
+  key: string;
+  label: string;
+  sampleValue: string | number | boolean;
 }
 export interface Role {
   id: string;
@@ -85,6 +93,50 @@ export function evaluateAccess(
     effect: reasons.length ? "DENY" : "ALLOW",
     reasons: reasons.length ? reasons : ["Đạt các điều kiện của mô phỏng"],
     simulated: true,
+  };
+}
+/** Browser-only explanation over synthetic fixtures. This is not an API guard. */
+export function simulateFieldProjection(
+  role: Role,
+  resource: ResourceAction,
+  action: "READ" | "EXPORT",
+  fixture: AccessFixture,
+): {
+  decision: AccessDecision;
+  fields: {
+    key: string;
+    effect: "READ" | "MASK" | "DENY";
+    value?: string | number | boolean;
+  }[];
+} {
+  const decision = evaluateAccess(role, resource.resource, action, fixture);
+  if (!resource.actions.includes(action)) {
+    decision.effect = "DENY";
+    decision.reasons = ["Hành động không có trong danh mục tài nguyên"];
+  } else if (
+    decision.effect === "ALLOW" &&
+    (!resource.actions.includes("READ") ||
+      evaluateAccess(role, resource.resource, "READ", fixture).effect !==
+        "ALLOW")
+  ) {
+    decision.effect = "DENY";
+    decision.reasons = ["Cần quyền xem để đọc hoặc xuất dữ liệu trường"];
+  }
+  const canRead = decision.effect === "ALLOW";
+  return {
+    decision,
+    fields: (resource.fields ?? []).map((field) => {
+      const rule = role.fieldRules[field.key];
+      const effect =
+        canRead && (rule === "READ" || rule === "MASK") ? rule : "DENY";
+      return effect === "DENY"
+        ? { key: field.key, effect }
+        : {
+            key: field.key,
+            effect,
+            value: effect === "MASK" ? "••••" : field.sampleValue,
+          };
+    }),
   };
 }
 export function validateEntity(entity: MasterEntity): string[] {

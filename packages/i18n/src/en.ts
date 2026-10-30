@@ -802,4 +802,27 @@ export const en = {
     "This source depends on field {{field}}. Set that field's default value to choose people.",
   "Tải lại danh sách": "Reload list",
   "Bỏ mặc định": "Clear default",
+  "Chọn trường được xem, che giá trị hoặc ẩn. Chưa có quy tắc sẽ mặc định ẩn; quyền thao tác và phạm vi vẫn phải thỏa mãn.":
+    "Choose which fields to show, mask or hide. Fields without a rule are hidden; action and scope requirements still apply.",
+  "Tài nguyên chứa trường": "Resource fields",
+  "Tài nguyên chưa khai báo trường": "No fields registered for these resources",
+  "Dùng Mô phỏng truy cập để xem dữ liệu mẫu sau khi áp dụng quy tắc.":
+    "Use Simulate access to preview synthetic data after applying these rules.",
+  "Dữ liệu mẫu sau phân quyền": "Synthetic data after permissions",
+  "Chỉ minh họa bằng dữ liệu tổng hợp. Trường bị ẩn không có giá trị trong kết quả.":
+    "Synthetic examples only. Hidden fields have no value in the result.",
+  "Quyền hiệu lực": "Effective access",
+  "Giá trị trả về": "Returned value",
+  "Không trả về": "Not returned",
+  "Chỉ xem dữ liệu trường khi mô phỏng Xem hoặc Xuất trên tài nguyên đã khai báo trường.":
+    "Field data is shown only when simulating View or Export on a resource with registered fields.",
+  "Hành động không có trong danh mục tài nguyên":
+    "Action is not registered for this resource",
+  "Cần quyền xem để đọc hoặc xuất dữ liệu trường":
+    "View permission is required to read or export field data",
+  "Tên nhà cung cấp": "Vendor name",
+  "Tài khoản ngân hàng": "Bank account",
+  "Mã đề nghị": "Request number",
+  "Số tiền": "Amount",
+  Trường: "Field",
 } as const;

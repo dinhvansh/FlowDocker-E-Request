@@ -155,10 +155,34 @@ export const resources: ResourceAction[] = [
     label: "Asset Category",
     actions: ["READ", "CREATE", "UPDATE", "ARCHIVE", "EXPORT"],
   },
-  { resource: "master.vendor", label: "Vendor", actions: ["READ", "EXPORT"] },
+  {
+    resource: "master.vendor",
+    label: "Vendor",
+    actions: ["READ", "EXPORT"],
+    fields: [
+      {
+        key: "vendor.name",
+        label: "Tên nhà cung cấp",
+        sampleValue: "SYNTHETIC VENDOR",
+      },
+      {
+        key: "vendor.bank_account",
+        label: "Tài khoản ngân hàng",
+        sampleValue: "SYNTHETIC-ACCOUNT-001",
+      },
+    ],
+  },
   {
     resource: "request.payment",
     label: "Payment Request",
+    fields: [
+      {
+        key: "request.code",
+        label: "Mã đề nghị",
+        sampleValue: "DEMO-2026-00001",
+      },
+      { key: "request.amount", label: "Số tiền", sampleValue: 1500000 },
+    ],
     actions: ["READ", "CREATE", "UPDATE", "APPROVE", "EXPORT"],
   },
   {

@@ -1,8 +1,9 @@
 import { useI18n } from "@flowdocker/i18n";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Plus, Shield, FlaskConical, Check, LockKeyhole } from "lucide-react";
 import {
   evaluateAccess,
+  simulateFieldProjection,
   type Action,
   type Scope,
 } from "@flowdocker/app-contracts";
@@ -75,6 +76,23 @@ export function PermissionBuilder({
     create: createDraft,
   } = usePermissionModel({ roles, resources, onSave, loading, error });
   const simulationTrigger = useRef<HTMLButtonElement>(null);
+  const [fieldResourceId, setFieldResourceId] = useState("");
+  const fieldResources = resources.filter(
+    (resource) => resource.fields?.length,
+  );
+  const fieldResource =
+    fieldResources.find((resource) => resource.resource === fieldResourceId) ??
+    fieldResources[0];
+  const simulatedResource = resources.find(
+    (resource) => resource.resource === testResource,
+  );
+  const projection =
+    decision &&
+    role &&
+    simulatedResource &&
+    (testAction === "READ" || testAction === "EXPORT")
+      ? simulateFieldProjection(role, simulatedResource, testAction, fixture)
+      : null;
   const createTrigger = useRef<HTMLButtonElement>(null);
   const closeSimulation = () => {
     setSimulationOpen(false);
@@ -293,27 +311,40 @@ export function PermissionBuilder({
                   <h3>{t("Chính sách theo trường")}</h3>
                   <p>
                     {t(
-                      "Trường nhạy cảm phải được chiếu/mask tại API. Cấu hình dưới đây chỉ là ví dụ ở UI.",
+                      "Chọn trường được xem, che giá trị hoặc ẩn. Chưa có quy tắc sẽ mặc định ẩn; quyền thao tác và phạm vi vẫn phải thỏa mãn.",
                     )}
                   </p>
-                  {[
-                    "vendor.bank_account",
-                    "request.amount",
-                    "employee.personal_id",
-                  ].map((f) => (
-                    <div className="fd-field-rule" key={f}>
+                  {fieldResource ? (
+                    <Field label={t("Tài nguyên chứa trường")}>
+                      <Select
+                        label={t("Tài nguyên chứa trường")}
+                        value={fieldResource.resource}
+                        onValueChange={setFieldResourceId}
+                        options={fieldResources.map((resource) => ({
+                          value: resource.resource,
+                          label: t(resource.label),
+                        }))}
+                      />
+                    </Field>
+                  ) : (
+                    <EmptyState title={t("Tài nguyên chưa khai báo trường")} />
+                  )}
+                  {fieldResource?.fields?.map((field) => (
+                    <div className="fd-field-rule" key={field.key}>
                       <div>
-                        <strong>{f}</strong>
-                        <small>{t("Dữ liệu nhạy cảm mẫu")}</small>
+                        <strong title={field.key}>{t(field.label)}</strong>
+                        <small>{field.key}</small>
                       </div>
                       <Select
-                        label={t("Quyền với {{field}}", { field: f })}
-                        value={role.fieldRules[f] ?? "DENY"}
+                        label={t("Quyền với {{field}}", {
+                          field: t(field.label),
+                        })}
+                        value={role.fieldRules[field.key] ?? "DENY"}
                         onValueChange={(value) =>
                           patch({
                             fieldRules: {
                               ...role.fieldRules,
-                              [f]: value as "READ" | "MASK" | "DENY",
+                              [field.key]: value as "READ" | "MASK" | "DENY",
                             },
                           })
                         }
@@ -325,6 +356,11 @@ export function PermissionBuilder({
                       />
                     </div>
                   ))}
+                  <p className="fd-permissions-legend">
+                    {t(
+                      "Dùng Mô phỏng truy cập để xem dữ liệu mẫu sau khi áp dụng quy tắc.",
+                    )}
+                  </p>
                 </div>
               )}
               {tab === "versions" && (
@@ -430,7 +466,15 @@ export function PermissionBuilder({
               onClick={() =>
                 role &&
                 setDecision(
-                  evaluateAccess(role, testResource, testAction, fixture),
+                  simulatedResource &&
+                    (testAction === "READ" || testAction === "EXPORT")
+                    ? simulateFieldProjection(
+                        role,
+                        simulatedResource,
+                        testAction,
+                        fixture,
+                      ).decision
+                    : evaluateAccess(role, testResource, testAction, fixture),
                 )
               }
             >
@@ -454,6 +498,63 @@ export function PermissionBuilder({
                   {t("Chưa kiểm tra quyền truy cập thực tế trên API.")}
                 </small>
               </div>
+            )}
+            {projection && simulatedResource?.fields?.length ? (
+              <section
+                className="fd-permissions-projection"
+                aria-label={t("Dữ liệu mẫu sau phân quyền")}
+              >
+                <h3>{t("Dữ liệu mẫu sau phân quyền")}</h3>
+                <p className="fd-muted">
+                  {t(
+                    "Chỉ minh họa bằng dữ liệu tổng hợp. Trường bị ẩn không có giá trị trong kết quả.",
+                  )}
+                </p>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead scope="col">{t("Trường")}</TableHead>
+                      <TableHead scope="col">{t("Quyền hiệu lực")}</TableHead>
+                      <TableHead scope="col">{t("Giá trị trả về")}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {projection.fields.map((field) => (
+                      <TableRow key={field.key}>
+                        <TableHead scope="row">
+                          {t(
+                            simulatedResource.fields!.find(
+                              (item) => item.key === field.key,
+                            )!.label,
+                          )}
+                        </TableHead>
+                        <TableCell>
+                          {t(
+                            field.effect === "READ"
+                              ? "Cho xem"
+                              : field.effect === "MASK"
+                                ? "Che giá trị"
+                                : "Từ chối",
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {field.effect === "DENY"
+                            ? t("Không trả về")
+                            : String(field.value)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </section>
+            ) : (
+              decision && (
+                <p className="fd-muted">
+                  {t(
+                    "Chỉ xem dữ liệu trường khi mô phỏng Xem hoặc Xuất trên tài nguyên đã khai báo trường.",
+                  )}
+                </p>
+              )
             )}
           </div>
         </Modal>

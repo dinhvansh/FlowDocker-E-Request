@@ -129,4 +129,27 @@ export const vi: Record<keyof typeof en, string> = {
   Xong: "Xong",
   Giờ: "Giờ",
   Phút: "Phút",
+  "Chọn trường được xem, che giá trị hoặc ẩn. Chưa có quy tắc sẽ mặc định ẩn; quyền thao tác và phạm vi vẫn phải thỏa mãn.":
+    "Chọn trường được xem, che giá trị hoặc ẩn. Chưa có quy tắc sẽ mặc định ẩn; quyền thao tác và phạm vi vẫn phải thỏa mãn.",
+  "Tài nguyên chứa trường": "Tài nguyên chứa trường",
+  "Tài nguyên chưa khai báo trường": "Tài nguyên chưa khai báo trường",
+  "Dùng Mô phỏng truy cập để xem dữ liệu mẫu sau khi áp dụng quy tắc.":
+    "Dùng Mô phỏng truy cập để xem dữ liệu mẫu sau khi áp dụng quy tắc.",
+  "Dữ liệu mẫu sau phân quyền": "Dữ liệu mẫu sau phân quyền",
+  "Chỉ minh họa bằng dữ liệu tổng hợp. Trường bị ẩn không có giá trị trong kết quả.":
+    "Chỉ minh họa bằng dữ liệu tổng hợp. Trường bị ẩn không có giá trị trong kết quả.",
+  "Quyền hiệu lực": "Quyền hiệu lực",
+  "Giá trị trả về": "Giá trị trả về",
+  "Không trả về": "Không trả về",
+  "Chỉ xem dữ liệu trường khi mô phỏng Xem hoặc Xuất trên tài nguyên đã khai báo trường.":
+    "Chỉ xem dữ liệu trường khi mô phỏng Xem hoặc Xuất trên tài nguyên đã khai báo trường.",
+  "Hành động không có trong danh mục tài nguyên":
+    "Hành động không có trong danh mục tài nguyên",
+  "Cần quyền xem để đọc hoặc xuất dữ liệu trường":
+    "Cần quyền xem để đọc hoặc xuất dữ liệu trường",
+  "Tên nhà cung cấp": "Tên nhà cung cấp",
+  "Tài khoản ngân hàng": "Tài khoản ngân hàng",
+  "Mã đề nghị": "Mã đề nghị",
+  "Số tiền": "Số tiền",
+  Trường: "Trường",
 };
