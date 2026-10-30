@@ -12,6 +12,7 @@ import {
   DataTable,
   EmptyState,
   Field,
+  FieldGroup,
   Input,
   Checkbox,
   Modal,
@@ -400,45 +401,49 @@ export function MasterBuilder({
                         "Entity lấy từ nguồn ngoài chỉ được xem trong bản prototype.",
                       )}
                     </p>
-                    <Field label={t("Loại entity")}>
-                      <Select
-                        label={t("Loại entity")}
-                        value={entity.kind}
-                        onValueChange={(value) =>
-                          patch({ kind: value as MasterEntity["kind"] })
-                        }
-                        options={Object.entries(kinds).map(
-                          ([value, label]) => ({ value, label: t(label) }),
-                        )}
-                      />
-                    </Field>
-                    <Field label={t("Nguồn dữ liệu")}>
-                      <Input
-                        value={entity.sourceOwner}
-                        onChange={(e) => patch({ sourceOwner: e.target.value })}
-                      />
-                    </Field>
-                    <Field label={t("Business owner")}>
-                      <Input
-                        value={entity.businessOwner}
-                        onChange={(e) =>
-                          patch({ businessOwner: e.target.value })
-                        }
-                      />
-                    </Field>
-                    <Field label={t("Phạm vi")}>
-                      <Select
-                        label={t("Phạm vi")}
-                        value={entity.scope}
-                        onValueChange={(value) =>
-                          patch({ scope: value as MasterEntity["scope"] })
-                        }
-                        options={[
-                          { value: "TENANT", label: t("Tenant") },
-                          { value: "COMPANY", label: t("Công ty") },
-                        ]}
-                      />
-                    </Field>
+                    <FieldGroup>
+                      <Field label={t("Loại entity")}>
+                        <Select
+                          label={t("Loại entity")}
+                          value={entity.kind}
+                          onValueChange={(value) =>
+                            patch({ kind: value as MasterEntity["kind"] })
+                          }
+                          options={Object.entries(kinds).map(
+                            ([value, label]) => ({ value, label: t(label) }),
+                          )}
+                        />
+                      </Field>
+                      <Field label={t("Nguồn dữ liệu")}>
+                        <Input
+                          value={entity.sourceOwner}
+                          onChange={(e) =>
+                            patch({ sourceOwner: e.target.value })
+                          }
+                        />
+                      </Field>
+                      <Field label={t("Business owner")}>
+                        <Input
+                          value={entity.businessOwner}
+                          onChange={(e) =>
+                            patch({ businessOwner: e.target.value })
+                          }
+                        />
+                      </Field>
+                      <Field label={t("Phạm vi")}>
+                        <Select
+                          label={t("Phạm vi")}
+                          value={entity.scope}
+                          onValueChange={(value) =>
+                            patch({ scope: value as MasterEntity["scope"] })
+                          }
+                          options={[
+                            { value: "TENANT", label: t("Tenant") },
+                            { value: "COMPANY", label: t("Công ty") },
+                          ]}
+                        />
+                      </Field>
+                    </FieldGroup>
                   </div>
                   <Notice tone="warning">
                     {t(
@@ -477,7 +482,7 @@ export function MasterBuilder({
               <span>{t("THUỘC TÍNH")}</span>
             </div>
             {tab === "schema" && field && entity ? (
-              <div className="fd-pane-pad fd-inspector-form">
+              <FieldGroup className="fd-pane-pad fd-inspector-form">
                 <div className="fd-inspector-heading">
                   <span className="fd-field-icon">{t("Aa")}</span>
                   <div>
@@ -563,7 +568,7 @@ export function MasterBuilder({
                     {t("Xóa trường")}
                   </Button>
                 </div>
-              </div>
+              </FieldGroup>
             ) : (
               <div className="fd-pane-pad">
                 <EmptyState
@@ -640,7 +645,7 @@ export function MasterBuilder({
             </>
           }
         >
-          <div className="fd-form-stack">
+          <FieldGroup>
             <Field label={t("Tên entity")}>
               <Input
                 autoFocus
@@ -682,7 +687,7 @@ export function MasterBuilder({
                 }))}
               />
             </Field>
-          </div>
+          </FieldGroup>
         </Modal>
       )}
     </section>

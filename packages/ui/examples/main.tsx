@@ -10,6 +10,7 @@ import {
   DataTable,
   EmptyState,
   Field,
+  FieldGroup,
   Input,
   Modal,
   Notice,
@@ -86,7 +87,7 @@ function Examples() {
           }}
         >
           {tab === "default" ? (
-            <>
+            <FieldGroup>
               <Field label={t("Ngày")}>
                 <DatePicker
                   label={t("Ngày")}
@@ -134,7 +135,7 @@ function Examples() {
                   { key: "name", heading: t("TÊN"), render: (r) => r.name },
                 ]}
               />
-            </>
+            </FieldGroup>
           ) : tab === "empty" ? (
             <EmptyState
               title={t("Chưa có dữ liệu")}

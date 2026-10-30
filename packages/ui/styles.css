@@ -125,7 +125,7 @@
 }
 .fd-runtime-columns {
   display: grid;
-  gap: 16px;
+  gap: var(--fd-field-gap);
 }
 .fd-runtime-columns-1 {
   grid-template-columns: minmax(0, 1fr);
@@ -1073,10 +1073,11 @@ a {
 .fd-field {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: var(--fd-field-content-gap);
+  min-width: 0;
   font-size: 14px;
   font-weight: 600;
-  margin-bottom: 15px;
+  margin: 0;
 }
 .fd-required-mark {
   margin-left: 3px;
@@ -2109,7 +2110,7 @@ a {
 }
 .fd-password-form {
   display: grid;
-  gap: 15px;
+  gap: var(--fd-field-gap);
 }
 .fd-profile-preferences p {
   color: var(--fd-text-muted);
@@ -2309,7 +2310,7 @@ a {
 }
 .fd-app-form {
   display: grid;
-  gap: 16px;
+  gap: var(--fd-field-gap);
 }
 .fd-app-form fieldset {
   border: 1px solid var(--fd-border);
@@ -2458,9 +2459,7 @@ a {
   margin: 8px 0 4px;
   overflow-wrap: anywhere;
 }
-.fd-form-properties [data-slot="field-group"] {
-  gap: 16px;
-}
+
 .fd-field-inspector-actions {
   display: flex;
   gap: 4px;
@@ -3149,13 +3148,7 @@ a {
 .fd-designer-v2 .fd-form-properties .fd-form-property-fieldset {
   padding-top: 12px;
 }
-.fd-designer-v2 .fd-form-properties [data-slot="field-group"] {
-  gap: 9px;
-}
-.fd-designer-v2 .fd-form-properties .fd-field {
-  gap: 4px;
-  margin-bottom: 0;
-}
+
 .fd-designer-v2
   .fd-form-properties
   .fd-form-property-fieldset
@@ -4098,9 +4091,44 @@ a {
   }
 }
 
-.fd-record-fields {
-  gap: 16px;
+/* Shared form density. Parent groups own spacing; fields never add outer margins. */
+:root {
+  --fd-space-1: 4px;
+  --fd-space-1-5: 6px;
+  --fd-space-3: 12px;
+  --fd-space-4: 16px;
+  --fd-space-6: 24px;
+  --fd-field-content-gap: var(--fd-space-1-5);
+  --fd-field-gap: var(--fd-space-4);
+  --fd-section-gap: var(--fd-space-6);
+  --fd-control-height: 36px;
+  --fd-textarea-min-height: 80px;
 }
-.fd-record-fields > .fd-field {
-  margin-bottom: 0;
+.fd-field
+  > :is(
+    [data-slot="input"],
+    [data-slot="select-trigger"],
+    .fd-combobox-trigger,
+    .fd-date-trigger
+  ) {
+  height: var(--fd-control-height);
+  min-height: var(--fd-control-height);
+}
+.fd-field > [data-slot="textarea"] {
+  min-height: var(--fd-textarea-min-height);
+}
+@media (min-width: 701px) {
+  :is(.fd-form-properties, .fd-inspector-form) {
+    --fd-field-gap: var(--fd-space-3);
+    --fd-control-height: 32px;
+  }
+}
+@media (max-width: 700px) {
+  :root {
+    --fd-control-height: 44px;
+  }
+}
+
+.fd-field > :is([data-slot="field-description"], [data-slot="field-error"]) {
+  margin: 0;
 }

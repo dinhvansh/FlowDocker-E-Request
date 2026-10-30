@@ -250,7 +250,7 @@ export function MasterRecords({
               void save();
             }}
           >
-            <FieldGroup className="fd-record-fields">
+            <FieldGroup>
               {edit.mode === "delete" ? (
                 <p>
                   {t(

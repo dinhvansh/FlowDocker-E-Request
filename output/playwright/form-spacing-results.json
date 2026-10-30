@@ -1,0 +1,164 @@
+{
+  "result": "PASS",
+  "compact": [
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": null,
+      "labelGap": 6,
+      "height": 32
+    },
+    {
+      "detailGaps": [
+        6
+      ],
+      "margin": "0px",
+      "gap": 12,
+      "labelGap": 6,
+      "height": 32
+    },
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": 12,
+      "labelGap": 6,
+      "height": 32
+    },
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": 12,
+      "labelGap": 6,
+      "height": 32
+    }
+  ],
+  "compactError": [
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": null,
+      "labelGap": 6,
+      "height": 32
+    },
+    {
+      "detailGaps": [
+        6,
+        6
+      ],
+      "margin": "0px",
+      "gap": 12,
+      "labelGap": 6,
+      "height": 32
+    },
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": 12,
+      "labelGap": 6,
+      "height": 32
+    },
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": 12,
+      "labelGap": 6,
+      "height": 32
+    }
+  ],
+  "standard": [
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": null,
+      "labelGap": 6,
+      "height": 36
+    },
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": 16,
+      "labelGap": 6,
+      "height": 36
+    },
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": 16,
+      "labelGap": 6,
+      "height": 36
+    },
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": 16,
+      "labelGap": 6,
+      "height": 36
+    }
+  ],
+  "mobile": [
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": null,
+      "labelGap": 6,
+      "height": 44
+    },
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": 16,
+      "labelGap": 6,
+      "height": 44
+    },
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": 16,
+      "labelGap": 6,
+      "height": 44
+    },
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": 16,
+      "labelGap": 6,
+      "height": 44
+    }
+  ],
+  "formInspector": [
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": null,
+      "labelGap": 6,
+      "height": 32
+    },
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": 12,
+      "labelGap": 6,
+      "height": 32
+    },
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": 12,
+      "labelGap": null
+    },
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": 12,
+      "labelGap": 6,
+      "height": 32
+    },
+    {
+      "detailGaps": [],
+      "margin": "0px",
+      "gap": 12,
+      "labelGap": 6,
+      "height": 32
+    }
+  ]
+}
