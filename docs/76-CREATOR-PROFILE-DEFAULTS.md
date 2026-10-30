@@ -34,3 +34,10 @@ Reusable schema/engine/editor remain host-independent. E-Request supplies synthe
 
 ### Usage
 Select a Text field → Basic or Data → Default value source → Creator full name / employee code / department / job title / manager name. Email fields offer Creator email; Person fields offer Current form creator / Creator direct manager. Use Allow editing value (or Allow changing person) to control UI editing. Missing profile attributes remain empty with notice and normal required validation. Backend connectors, authentication, server-enforced locked values and immutable request revision storage remain NOT DONE. Owner visual acceptance pending; no merge.
+
+
+## Follow-up: wizard validation context (base a56b37c)
+Research/audit: code review found Next step calls validatePreview without runtimeContext, while rendering and final submission supply it. Required creator defaults can therefore appear filled yet block navigation. Design: use identical context for step and final validation. Prototype/code impact: runtime call argument only; no schema/API/storage/auth migration. Regression verifies available context advances, unavailable context blocks; preserve required validation. This is a corrective follow-up to the five-stage feature above.
+
+
+Follow-up QA: `npx vitest run packages/form-builder/src/creator-profile.test.tsx packages/form-builder/src/product.test.tsx --maxWorkers=2` PASS (25 tests / 2 files), including positive wizard advance and missing-context blocking. Typecheck, lint/i18n, format:check, build and build:forms PASS (existing app chunk-size warning). Browser `output/playwright/forms-creator-wizard-qa.cjs` PASS: filled required creator advances to second step. Full suite previously passed 116 tests at a56b37c; follow-up uses focused regression. No test timeout/validation relaxed.

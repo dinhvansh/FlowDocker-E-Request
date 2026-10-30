@@ -26,6 +26,40 @@ import { FormRenderer } from "./runtime";
 import { CreatorDefaultEditor } from "./components/creator-default-editor";
 
 afterEach(cleanup);
+
+it("uses creator context for wizard step validation and blocks missing required attributes", () => {
+  const definition: FormDefinition = {
+    ...form([
+      { ...fields[0], required: true, readOnly: true },
+      {
+        ...createField("text", []),
+        key: "note",
+        label: { vi: "Ghi chú", en: "Note" },
+      },
+    ]),
+    display: "wizard",
+  };
+  const renderWizard = (available: boolean) =>
+    render(
+      <I18nProvider initialLocale="en">
+        <FormRenderer
+          definition={definition}
+          values={{}}
+          onChange={() => {}}
+          runtimeContext={available ? context : undefined}
+        />
+      </I18nProvider>,
+    );
+  renderWizard(true);
+  fireEvent.click(screen.getByRole("button", { name: "Next step" }));
+  expect(screen.getByRole("textbox", { name: "Note" })).toBeTruthy();
+  expect(screen.queryByRole("textbox", { name: "name (required)" })).toBeNull();
+  cleanup();
+  renderWizard(false);
+  fireEvent.click(screen.getByRole("button", { name: "Next step" }));
+  expect(screen.getByRole("textbox", { name: "name (required)" })).toBeTruthy();
+  expect(screen.queryByRole("textbox", { name: "Note" })).toBeNull();
+});
 const context = {
   currentUserId: "demo-person",
   currentUser: {

@@ -1182,6 +1182,7 @@ export function FormRenderer({
                       values,
                       access,
                       optionValues,
+                      props.runtimeContext,
                     ).filter(
                       (issue) =>
                         !issue.fieldId || currentIds.has(issue.fieldId),
