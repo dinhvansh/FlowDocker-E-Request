@@ -825,4 +825,9 @@ export const en = {
   "Mã đề nghị": "Request number",
   "Số tiền": "Amount",
   Trường: "Field",
+  "{{visible}} trên {{total}} biểu mẫu": "{{visible}} of {{total}} forms",
+  "Đang chỉnh sửa": "Currently editing",
+  "Mở thiết kế": "Open designer",
+  "Thử tên khác hoặc xóa từ khóa tìm kiếm.":
+    "Try another name or clear your search.",
 } as const;

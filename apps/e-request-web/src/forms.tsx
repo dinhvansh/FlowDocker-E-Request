@@ -7,15 +7,10 @@ import {
 } from "react";
 import type { MasterEntity } from "@flowdocker/app-contracts";
 import { peopleOptions } from "./organization";
+import { FormCatalog } from "./form-catalog";
 import { demoCurrentPersonId, demoProfile } from "./demo-profile";
 import { useI18n } from "@flowdocker/i18n";
-import {
-  ArrowLeft,
-  MoreHorizontal,
-  FilePenLine,
-  Plus,
-  Save,
-} from "lucide-react";
+import { ArrowLeft, MoreHorizontal, Plus, Save } from "lucide-react";
 import {
   FormDesigner,
   FormPreview,
@@ -35,7 +30,6 @@ import {
   Input,
   Modal,
   Notice,
-  SearchInput,
   Tabs,
   Textarea,
 } from "@flowdocker/ui";
@@ -207,7 +201,10 @@ export function FormsPage({
     }
   };
   return (
-    <section className="fd-screen fd-forms-v2 fd-forms-focused">
+    <section
+      className="fd-screen fd-forms-v2 fd-forms-focused"
+      data-view={catalogOpen || !draft ? "catalog" : "designer"}
+    >
       <div className="fd-page-toolbar" hidden={!catalogOpen && !!draft}>
         <div>
           <div className="fd-overline">{t("ỨNG DỤNG / BIỂU MẪU")}</div>
@@ -239,43 +236,13 @@ export function FormsPage({
         </Notice>
       )}
       <div className="fd-form-workbench" data-catalog={catalogOpen || !draft}>
-        <aside className="fd-form-catalog" aria-label={t("Danh sách biểu mẫu")}>
-          <SearchInput
-            label={t("Tìm biểu mẫu...")}
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-          {catalog
-            .filter((form) =>
-              `${form.title.vi} ${form.title.en}`
-                .toLowerCase()
-                .includes(query.toLowerCase()),
-            )
-            .map((form) => (
-              <button
-                key={form.id}
-                className="fd-form-catalog-item"
-                aria-pressed={draft?.id === form.id}
-                onClick={() => request(form)}
-              >
-                <FilePenLine aria-hidden="true" size={18} />
-                <span>
-                  <strong>{form.title[locale]}</strong>
-                  <small>
-                    {t("{{count}} trường · nháp v{{version}}", {
-                      count: form.fields.length,
-                      version: form.version,
-                    })}
-                  </small>
-                </span>
-              </button>
-            ))}
-          {!catalog.some((form) =>
-            `${form.title.vi} ${form.title.en}`
-              .toLowerCase()
-              .includes(query.toLowerCase()),
-          ) && <EmptyState title={t("Không tìm thấy biểu mẫu")} />}
-        </aside>
+        <FormCatalog
+          forms={catalog}
+          activeId={draft?.id}
+          query={query}
+          onQueryChange={setQuery}
+          onOpen={request}
+        />
         <div className="fd-form-editor" hidden={catalogOpen}>
           {draft ? (
             <>

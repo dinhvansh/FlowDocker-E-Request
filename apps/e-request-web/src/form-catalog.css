@@ -1,0 +1,277 @@
+/* Host catalog presentation. Deliberately scoped away from the form designer. */
+.fd-forms-v2[data-view="catalog"] {
+  background: var(--fd-surface-canvas);
+}
+.fd-forms-v2[data-view="catalog"] > .fd-page-toolbar {
+  padding: 28px 28px 24px;
+  border: 0;
+  background: transparent;
+  align-items: center;
+  gap: 16px;
+}
+.fd-forms-v2[data-view="catalog"] .fd-page-toolbar h1 {
+  font-size: 24px;
+  line-height: 1.35;
+  letter-spacing: -0.5px;
+}
+.fd-forms-v2[data-view="catalog"] .fd-page-toolbar p {
+  display: block;
+  margin: 6px 0 0;
+  color: var(--fd-text-muted);
+  line-height: 1.6;
+}
+.fd-forms-v2[data-view="catalog"] .fd-form-workbench {
+  background: transparent;
+}
+.fd-forms-v2.fd-forms-focused[data-view="catalog"]
+  .fd-form-workbench[data-catalog="true"]
+  > .fd-form-catalog {
+  display: block;
+  padding: 0 28px 32px;
+  border: 0;
+}
+.fd-form-catalog-tools {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.fd-form-catalog-tools > .fd-search {
+  width: min(100%, 380px);
+}
+.fd-form-catalog-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--fd-text-muted);
+  margin: 0;
+  font-size: 13px;
+}
+.fd-form-catalog-count svg {
+  width: 15px;
+  height: 15px;
+}
+.fd-form-catalog-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 20px;
+  animation: fd-catalog-enter 280ms ease-out both;
+}
+.fd-form-catalog-grid > li {
+  min-width: 0;
+}
+.fd-form-template {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 1px solid var(--fd-border);
+  border-radius: 12px;
+  background: var(--fd-surface-default);
+  color: var(--fd-text-primary);
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease;
+}
+.fd-form-template-preview {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 174px;
+  padding: 22px 26px 0;
+  overflow: hidden;
+  border-radius: 11px 11px 0 0;
+  background: var(--fd-surface-raised);
+  border-bottom: 1px solid var(--fd-border);
+}
+.fd-form-template-paper {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  height: 185px;
+  padding: 16px;
+  border: 1px solid var(--fd-border);
+  border-radius: 7px 7px 0 0;
+  background: var(--fd-surface-default);
+  transform: rotate(-2deg);
+  transform-origin: bottom center;
+  transition: transform 220ms ease;
+}
+.fd-form-template-paper-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--fd-text-primary);
+  min-width: 0;
+  padding-bottom: 4px;
+}
+.fd-form-template-paper-heading svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  color: var(--fd-color-brand);
+}
+.fd-form-template-paper-heading > span,
+.fd-form-template-line > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.fd-form-template-line {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--fd-text-muted);
+}
+.fd-form-template-input {
+  display: flex;
+  height: 15px;
+  border: 1px solid var(--fd-border);
+  border-radius: 3px;
+}
+.fd-form-template-input[data-kind="checkbox"] {
+  width: 15px;
+}
+.fd-form-template-input > i {
+  display: none;
+}
+.fd-form-template-input:is(
+    [data-kind="repeat"],
+    [data-kind="table"],
+    [data-kind="columns"]
+  )
+  > i {
+  display: block;
+  flex: 1;
+  border-right: 1px solid var(--fd-border);
+}
+.fd-form-template-input > i:last-child {
+  border: 0;
+}
+.fd-form-template-status {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+.fd-form-template-details {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 18px;
+  overflow-wrap: anywhere;
+}
+.fd-app .fd-form-template-details > strong {
+  line-height: 1.6;
+  color: var(--fd-text-primary);
+}
+.fd-form-template-meta {
+  color: var(--fd-text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.fd-form-template-open {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+  gap: 12px;
+  padding-top: 12px;
+  margin-top: auto;
+  color: var(--fd-color-brand);
+  font-size: 13px;
+}
+.fd-form-template-open svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 180ms ease;
+}
+.fd-form-template[data-active="true"] {
+  border-color: var(--fd-color-brand);
+}
+.fd-form-template:focus-visible {
+  outline: 2px solid var(--fd-focus-ring);
+  outline-offset: 4px;
+}
+.fd-form-template-blank {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 6px;
+}
+.fd-form-template-blank > span {
+  display: block;
+  height: 15px;
+  border: 1px dashed var(--fd-border);
+  border-radius: 3px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .fd-form-template:hover {
+    transform: translateY(-3px);
+    border-color: var(--fd-color-brand);
+  }
+  .fd-form-template:hover .fd-form-template-paper {
+    transform: rotate(0deg) translateY(-2px);
+  }
+  .fd-form-template:hover .fd-form-template-open svg {
+    transform: translate(2px, -2px);
+  }
+}
+.fd-form-template:active {
+  transform: translateY(0);
+}
+@keyframes fd-catalog-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 700px) {
+  .fd-forms-v2[data-view="catalog"] > .fd-page-toolbar {
+    padding: 20px 16px;
+    align-items: flex-start;
+  }
+  .fd-forms-v2.fd-forms-focused[data-view="catalog"]
+    .fd-form-workbench[data-catalog="true"]
+    > .fd-form-catalog {
+    padding: 0 16px 24px;
+  }
+  .fd-form-catalog-tools > .fd-search {
+    width: 100%;
+  }
+  .fd-form-catalog-grid {
+    gap: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fd-form-catalog-grid {
+    animation: none;
+  }
+  .fd-form-template,
+  .fd-form-template-paper,
+  .fd-form-template-open svg {
+    transition: none;
+    transform: none;
+  }
+  .fd-form-template:hover,
+  .fd-form-template:hover .fd-form-template-paper,
+  .fd-form-template:hover .fd-form-template-open svg {
+    transform: none;
+  }
+}

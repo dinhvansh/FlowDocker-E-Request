@@ -166,3 +166,7 @@ Form Studio now includes a **People picker** field and a **People and organizati
 ### Permission field simulation
 
 The standard shadcn Permission Builder now uses host-registered field catalogs and previews READ/MASK/DENY effects on synthetic data. Resource/scope denial overrides field rules; EXPORT additionally requires READ. This remains a browser-only simulation, not authorization enforcement. See [implementation and evidence](docs/72-PERMISSION-FIELD-SIMULATION.md) and [package API](packages/permission-builder/README.md).
+
+### Form catalog refresh
+
+Form Studio's catalog uses responsive document tiles, illustrative field miniatures, bilingual search/result counts, and subtle entrance/hover feedback with reduced-motion support. Designer and local-draft journeys remain unchanged. See [catalog UX and browser evidence](docs/73-FORMS-CATALOG-UI-MOTION.md).

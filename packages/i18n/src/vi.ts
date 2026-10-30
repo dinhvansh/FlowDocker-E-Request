@@ -152,4 +152,9 @@ export const vi: Record<keyof typeof en, string> = {
   "Mã đề nghị": "Mã đề nghị",
   "Số tiền": "Số tiền",
   Trường: "Trường",
+  "{{visible}} trên {{total}} biểu mẫu": "{{visible}} trên {{total}} biểu mẫu",
+  "Đang chỉnh sửa": "Đang chỉnh sửa",
+  "Mở thiết kế": "Mở thiết kế",
+  "Thử tên khác hoặc xóa từ khóa tìm kiếm.":
+    "Thử tên khác hoặc xóa từ khóa tìm kiếm.",
 };
