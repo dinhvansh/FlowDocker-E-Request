@@ -25,6 +25,8 @@ import {
 export interface MasterBuilderProps {
   entities: MasterEntity[];
   onSave(entity: MasterEntity): Promise<void>;
+  onDelete?(id: string): Promise<void>;
+  getDeleteBlockers?(entity: MasterEntity): string[];
   loading?: boolean;
   error?: string;
 }
@@ -37,6 +39,8 @@ const kinds = {
 export function MasterBuilder({
   entities,
   onSave,
+  onDelete,
+  getDeleteBlockers,
   loading,
   error,
 }: MasterBuilderProps) {
@@ -47,6 +51,29 @@ export function MasterBuilder({
   const [tab, setTab] = useState("schema");
   const [query, setQuery] = useState("");
   const [modal, setModal] = useState(false);
+  const [deleteId, setDeleteId] = useState<string>();
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(false);
+  const deleteTarget = entities.find((entity) => entity.id === deleteId);
+  const deleteIssues = deleteTarget
+    ? (getDeleteBlockers?.(deleteTarget) ?? [])
+    : [];
+  const remove = async () => {
+    if (!deleteTarget || !onDelete || deleting || deleteIssues.length) return;
+    setDeleting(true);
+    setDeleteError(false);
+    try {
+      await onDelete(deleteTarget.id);
+      setDeleteId(undefined);
+      setSelectedId("");
+      setSelectedFieldId("");
+      setMessage("Đã xóa entity khỏi dữ liệu cục bộ.");
+    } catch {
+      setDeleteError(true);
+    } finally {
+      setDeleting(false);
+    }
+  };
   const [newName, setNewName] = useState("");
   const [newKey, setNewKey] = useState("");
   const [newKind, setNewKind] = useState<MasterEntity["kind"]>("LOCAL_CATALOG");
@@ -214,6 +241,18 @@ export function MasterBuilder({
                   </div>
                 </div>
                 <div className="fd-toolbar-actions">
+                  {onDelete && (
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setDeleteId(entity.id);
+                        setDeleteError(false);
+                      }}
+                    >
+                      <Trash2 size={16} />
+                      {t("Xóa entity")}
+                    </Button>
+                  )}
                   <Button
                     onClick={() => {
                       setErrors(validateEntity(entity));
@@ -543,6 +582,54 @@ export function MasterBuilder({
           )}
         </aside>
       </div>
+      {deleteTarget && (
+        <Modal
+          title={t("Xóa entity")}
+          onClose={() => {
+            if (!deleting) setDeleteId(undefined);
+          }}
+          footer={
+            <>
+              <Button
+                disabled={deleting}
+                onClick={() => setDeleteId(undefined)}
+              >
+                {t("Hủy")}
+              </Button>
+              <Button
+                variant="danger"
+                disabled={deleting || deleteIssues.length > 0}
+                onClick={remove}
+              >
+                {t(deleting ? "Đang xóa..." : "Xác nhận xóa entity")}
+              </Button>
+            </>
+          }
+        >
+          <p>
+            {t(
+              "Xóa danh mục {{name}} ({{key}}) và {{count}} bản ghi khỏi trình duyệt? Thao tác này không thể hoàn tác.",
+              {
+                name: deleteTarget.name,
+                key: deleteTarget.key,
+                count: deleteTarget.records.length,
+              },
+            )}
+          </p>
+          {deleteIssues.map((issue) => (
+            <Notice key={issue} tone="warning">
+              {issue}
+            </Notice>
+          ))}
+          {deleteError && (
+            <Notice tone="danger">
+              {t(
+                "Không xóa được entity. Dữ liệu có thể đang được sử dụng hoặc trình duyệt không cho phép lưu. Hãy kiểm tra và thử lại.",
+              )}
+            </Notice>
+          )}
+        </Modal>
+      )}
       {modal && (
         <Modal
           title={t("Tạo entity mới")}

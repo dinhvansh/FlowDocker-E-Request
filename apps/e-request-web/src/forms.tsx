@@ -91,6 +91,7 @@ function load() {
 }
 export interface FormsPageHandle {
   openCatalog(): void;
+  getDefinitions(): FormDefinition[];
 }
 export function FormsPage({
   ref,
@@ -131,8 +132,17 @@ export function FormsPage({
   const [catalogOpen, setCatalogOpen] = useState(true);
   useImperativeHandle(
     ref,
-    () => ({ openCatalog: () => setCatalogOpen(true) }),
-    [],
+    () => ({
+      openCatalog: () => setCatalogOpen(true),
+      getDefinitions: () =>
+        draft
+          ? [
+              draft,
+              ...formCatalog(forms).filter((form) => form.id !== draft.id),
+            ]
+          : formCatalog(forms),
+    }),
+    [draft, forms],
   );
   const [previewDevice, setPreviewDevice] = useState("desktop");
   const [actionsOpen, setActionsOpen] = useState(false);

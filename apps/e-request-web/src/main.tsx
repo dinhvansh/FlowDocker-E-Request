@@ -1,3 +1,5 @@
+import { masterDeleteBlockers, removeLocalMaster } from "./master-deletion";
+import { formCatalog, readFormDrafts } from "./form-drafts";
 import { I18nProvider, useI18n } from "@flowdocker/i18n";
 import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
@@ -91,6 +93,39 @@ function App() {
     await entityService.save(value);
     setEntities(await entityService.list());
   };
+  const deleteBlockers = (entity: MasterEntity) => {
+    try {
+      return masterDeleteBlockers(entity, entities, roles, [
+        ...formCatalog(readFormDrafts(localStorage)),
+        ...(formsRef.current?.getDefinitions() ?? []),
+      ]).map((issue) => t(issue));
+    } catch {
+      return [t("Không đọc được dữ liệu phụ thuộc. Chưa thể xóa entity.")];
+    }
+  };
+  const deleteEntity = async (id: string) => {
+    const rawRoles = localStorage.getItem("flowdocker.demo.roles.v1");
+    const currentRoles: Role[] =
+      rawRoles === null ? roles : JSON.parse(rawRoles);
+    if (
+      !Array.isArray(currentRoles) ||
+      !currentRoles.every(
+        (role) => role && role.grants && typeof role.grants === "object",
+      )
+    )
+      throw new Error("Invalid role storage");
+    const savedForms = formCatalog(readFormDrafts(localStorage));
+    const liveForms = formsRef.current?.getDefinitions() ?? [];
+    removeLocalMaster(localStorage, entities, id, (current) => {
+      const entity = current.find((item) => item.id === id)!;
+      const issues = masterDeleteBlockers(entity, current, currentRoles, [
+        ...savedForms,
+        ...liveForms,
+      ]);
+      if (issues.length) throw new Error(issues.join(" "));
+    });
+    setEntities(await entityService.list());
+  };
   const saveRole = async (value: Role) => {
     await roleService.save(value);
     setRoles(await roleService.list());
@@ -111,6 +146,8 @@ function App() {
         <OrganizationMasterPage
           entities={entities}
           onSave={saveEntity}
+          onDelete={deleteEntity}
+          getDeleteBlockers={deleteBlockers}
           loading={loading}
           error={error}
         />

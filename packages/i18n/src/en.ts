@@ -1,5 +1,26 @@
 import { formMessages } from "./form-messages";
 export const en = {
+  "Xóa entity": "Delete entity",
+  "Xác nhận xóa entity": "Confirm entity deletion",
+  "Đang xóa...": "Deleting...",
+  "Đã xóa entity khỏi dữ liệu cục bộ.": "Entity deleted from local data.",
+  "Xóa danh mục {{name}} ({{key}}) và {{count}} bản ghi khỏi trình duyệt? Thao tác này không thể hoàn tác.":
+    "Delete catalog {{name}} ({{key}}) and {{count}} records from this browser? This cannot be undone.",
+  "Không xóa được entity. Dữ liệu có thể đang được sử dụng hoặc trình duyệt không cho phép lưu. Hãy kiểm tra và thử lại.":
+    "Could not delete the entity. It may be in use or browser storage may be unavailable. Check and try again.",
+  "Danh mục tổ chức mẫu được hệ thống sử dụng, không thể xóa.":
+    "The sample organization catalog is used by the system and cannot be deleted.",
+  "Chỉ có thể xóa danh mục nội bộ ở trạng thái bản nháp.":
+    "Only local catalogs in draft status can be deleted.",
+  "Danh mục đang được trường tham chiếu của danh mục khác sử dụng.":
+    "Another catalog has a field referencing this catalog.",
+  "Danh mục đang được cấu hình trong vai trò phân quyền.":
+    "This catalog is configured in a permission role.",
+  "Danh mục đang được biểu mẫu sử dụng. Đổi nguồn dữ liệu của trường trước khi xóa.":
+    "A form uses this catalog. Change the field data source before deleting it.",
+  "Không đọc được dữ liệu phụ thuộc. Chưa thể xóa entity.":
+    "Cannot read dependencies. Entity deletion is unavailable.",
+
   "Họ tên người tạo": "Creator full name",
   "Email người tạo": "Creator email",
   "Mã nhân viên người tạo": "Creator employee code",
