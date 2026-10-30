@@ -43,3 +43,9 @@ Screenshots visually reviewed at desktop, owner width and mobile dark:
 - [390 EN/dark](../output/playwright/forms-catalog-390-en-dark.png)
 
 DONE: catalog presentation/motion and the verified local journeys above. Owner acceptance, CI and production integration remain NOT DONE. No new engine/backend/security functionality is claimed.
+
+## Owner adjustment: four columns (base `7517dd9`)
+
+Owner finds the tiles too large and requests four per row. UX/design/audit adjustment: four equal columns at desktop widths >=1024px, two on tablet, one below 700px; reduce miniature height and card padding/gaps while keeping full titles and keyboard/motion behavior. Impact before code: CSS presentation only, plus existing browser assertion; no schema/API/Temporal/Teams/storage/security/migration changes. Reusable component impact: same host catalog and shared controls, no public contract change. Browser evidence to follow.
+
+Adjustment verification: existing browser journey rerun PASS with four columns asserted at 1070px, refreshed screenshots at 1440/1366/1070/390, VI/EN/light/dark, hover/reduced-motion and no horizontal overflow. Owner-width screenshot visually reviewed. Build and diff checks PASS; existing chunk-size warning remains. No unit rerun for CSS-only sizing changes.

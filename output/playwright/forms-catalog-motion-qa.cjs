@@ -49,7 +49,7 @@ async (page) => {
     await capture(1366,768,'vi-light');
     await capture(1070,884,'vi-light');
     const columns=await page.locator('.fd-form-catalog-grid').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length);
-    if(columns!==2) throw Error(`Expected 2 columns at owner width, got ${columns}`);
+    if(columns!==4) throw Error(`Expected 4 columns at owner width, got ${columns}`);
     await page.setViewportSize({width:1440,height:900});
     await page.emulateMedia({reducedMotion:'no-preference'});
     await card.hover();
