@@ -1392,7 +1392,7 @@ a {
   grid-template-columns: 1fr 1fr;
   gap: 11px;
 }
-.fd-quick-links button {
+.fd-quick-links a {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1403,10 +1403,10 @@ a {
   padding: 13px;
   color: var(--fd-text-primary);
 }
-.fd-quick-links button:hover {
+.fd-quick-links a:hover {
   border-color: var(--fd-color-brand);
 }
-.fd-quick-links button > span:nth-child(2) {
+.fd-quick-links a > span:nth-child(2) {
   flex: 1;
 }
 .fd-quick-links strong,
@@ -4078,4 +4078,15 @@ a {
   .fd-repeat-footer > button {
     margin-left: auto;
   }
+}
+
+/* Navigation destinations retain native browser link actions. */
+.fd-nav-link,
+.fd-profile-link,
+.fd-quick-links a {
+  text-decoration: none;
+}
+.fd-profile-link,
+.fd-quick-links a {
+  color: inherit;
 }

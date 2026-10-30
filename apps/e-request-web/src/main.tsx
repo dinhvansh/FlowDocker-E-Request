@@ -190,7 +190,7 @@ function App() {
                 </div>
               </div>
               <div className="fd-quick-links">
-                <button onClick={() => navigate("master")}>
+                <a href="#master">
                   <span className="fd-quick-icon">
                     <Database size={19} />
                   </span>
@@ -201,8 +201,8 @@ function App() {
                     </small>
                   </span>
                   <ArrowRight size={17} />
-                </button>
-                <button onClick={() => navigate("permissions")}>
+                </a>
+                <a href="#permissions">
                   <span className="fd-quick-icon purple">
                     <LockKeyhole size={19} />
                   </span>
@@ -213,7 +213,7 @@ function App() {
                     </small>
                   </span>
                   <ArrowRight size={17} />
-                </button>
+                </a>
               </div>
               <div className="fd-section-heading">
                 <div>

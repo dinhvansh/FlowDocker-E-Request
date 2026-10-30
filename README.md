@@ -170,3 +170,7 @@ The standard shadcn Permission Builder now uses host-registered field catalogs a
 ### Form catalog refresh
 
 Form Studio's catalog uses responsive document tiles, illustrative field miniatures, bilingual search/result counts, and subtle entrance/hover feedback with reduced-motion support. Designer and local-draft journeys remain unchanged. See [catalog UX and browser evidence](docs/73-FORMS-CATALOG-UI-MOTION.md).
+
+
+### Navigation links
+Sidebar destinations, profile and workspace quick links use native anchors: right-click open in new tab, Ctrl/Meta-click and middle-click keep the current page. AppShell accepts optional `getPageHref(PageId)` for host routing (default `#page`); ordinary activation still uses `onPageChange`. Action buttons and local inspector tabs retain their existing behavior. See [navigation evidence](docs/78-NATIVE-NAVIGATION-LINKS.md).
