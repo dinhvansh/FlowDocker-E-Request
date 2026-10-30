@@ -287,6 +287,22 @@ export const en = {
   "Kết nối": "Connections",
   "Quản trị": "Administration",
   "Phân quyền": "Permissions",
+  "Quản lý những gì mỗi vai trò được xem và thực hiện.":
+    "Manage what each role can see and do.",
+  "Bản thử nghiệm · Chỉ lưu trong trình duyệt, chưa áp dụng quyền thật.":
+    "Prototype · Saved in this browser. Live permissions are not enforced.",
+  "Cấu hình vai trò": "Role settings",
+  "Mô phỏng truy cập": "Simulate access",
+  "Thay đổi tự lưu dưới dạng bản nháp trong trình duyệt.":
+    "Changes auto-save as a draft in this browser.",
+  "Các quyền bên dưới áp dụng trong phạm vi này.":
+    "The permissions below apply within this scope.",
+  "{{count}} quyền đã chọn": "{{count}} permissions selected",
+  "Không áp dụng": "Not applicable",
+  "Chưa chọn = từ chối · Dấu gạch ngang = không áp dụng.":
+    "Unchecked = denied · Dash = not applicable.",
+  "Vuốt ngang bảng để xem đủ các hành động.":
+    "Scroll the table horizontally to see all actions.",
   "Chọn giá trị": "Select a value",
   "Chưa có dữ liệu": "No data yet",
   Đóng: "Close",

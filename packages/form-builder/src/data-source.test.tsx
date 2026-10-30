@@ -41,12 +41,8 @@ it("limits people sources while preserving an incompatible saved source until ex
   fireEvent.keyDown(screen.getByRole("combobox", { name: "Data source" }), {
     key: "ArrowDown",
   });
-  expect(
-    screen.queryByRole("option", { name: "Departments" }),
-  ).toBeNull();
-  expect(
-    screen.queryByRole("option", { name: "Companies" }),
-  ).toBeNull();
+  expect(screen.queryByRole("option", { name: "Departments" })).toBeNull();
+  expect(screen.queryByRole("option", { name: "Companies" })).toBeNull();
   fireEvent.click(screen.getByRole("option", { name: "Example people" }));
   expect(patch).toHaveBeenCalledWith({
     dataSource: { provider: "example.people" },

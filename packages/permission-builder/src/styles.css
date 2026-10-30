@@ -1,0 +1,300 @@
+.fd-permissions-v2 {
+  padding: 28px;
+  gap: 0;
+  background: var(--fd-surface-raised);
+}
+.fd-permissions-heading,
+.fd-permissions-role-heading,
+.fd-permissions-title-line,
+.fd-permissions-scope,
+.fd-permissions-matrix-heading,
+.fd-permissions-list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.fd-permissions-heading {
+  margin-bottom: 16px;
+}
+.fd-permissions-heading h1 {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.6px;
+  margin: 0;
+}
+.fd-permissions-heading p,
+.fd-permissions-role-heading p,
+.fd-permissions-scope p {
+  color: var(--fd-text-muted);
+  margin: 6px 0 0;
+  line-height: 1.6;
+  font-size: 13px;
+}
+.fd-permissions-local-note {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--fd-text-muted);
+  font-size: 12px;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+.fd-permissions-local-note svg {
+  flex-shrink: 0;
+}
+.fd-permissions-workspace {
+  display: grid;
+  grid-template-columns: 216px minmax(0, 1fr);
+  min-height: 590px;
+  background: var(--fd-surface-default);
+  border: 1px solid var(--fd-border);
+  border-radius: 12px;
+}
+.fd-permissions-roles {
+  padding: 20px 12px;
+  border-right: 1px solid var(--fd-border);
+  min-width: 0;
+}
+.fd-permissions-list-heading {
+  padding: 0 8px 16px;
+  font-size: 13px;
+}
+.fd-permissions-list-heading span {
+  color: var(--fd-text-muted);
+  font-size: 12px;
+}
+.fd-permissions-search {
+  margin-bottom: 12px;
+}
+.fd-permissions-role-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.fd-permissions-role {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-radius: 6px;
+  padding: 12px 10px;
+  color: var(--fd-text-muted);
+  background: transparent;
+  cursor: pointer;
+}
+.fd-permissions-role[aria-pressed="true"] {
+  background: var(--fd-surface-canvas);
+  color: var(--fd-text-primary);
+}
+.fd-permissions-role:hover {
+  background: var(--fd-surface-raised);
+}
+.fd-permissions-role svg {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.fd-permissions-role span {
+  min-width: 0;
+}
+.fd-permissions-role strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.fd-permissions-role small {
+  display: block;
+  color: var(--fd-text-muted);
+  font-size: 12px;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+.fd-permissions-role:focus-visible,
+.fd-permissions-matrix:focus-visible {
+  outline: 2px solid var(--fd-focus-ring);
+  outline-offset: 2px;
+}
+.fd-permissions-editor {
+  min-width: 0;
+  padding: 24px;
+}
+.fd-permissions-role-heading {
+  align-items: flex-start;
+}
+.fd-permissions-title-line {
+  justify-content: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.fd-permissions-title-line h2 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.fd-permissions-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 20px;
+  color: var(--fd-text-muted);
+  font-size: 12px;
+  margin: 16px 0;
+}
+.fd-permissions-status svg {
+  flex-shrink: 0;
+}
+.fd-permissions-content {
+  padding-top: 24px;
+}
+.fd-permissions-content h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+}
+.fd-permissions-scope {
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--fd-border);
+}
+.fd-permissions-scope > [data-slot="select-trigger"] {
+  width: 210px;
+  flex-shrink: 0;
+}
+.fd-permissions-matrix-heading {
+  margin: 24px 0 12px;
+}
+.fd-permissions-matrix-heading span {
+  font-size: 12px;
+  color: var(--fd-text-muted);
+}
+.fd-permissions-matrix {
+  min-width: 0;
+  border: 1px solid var(--fd-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.fd-permissions-matrix table {
+  min-width: 580px;
+}
+.fd-permissions-matrix thead {
+  background: var(--fd-surface-raised);
+}
+.fd-permissions-matrix th {
+  padding: 12px 16px;
+  font-weight: 500;
+  font-size: 13px;
+}
+.fd-permissions-matrix td {
+  padding: 4px;
+}
+.fd-permissions-matrix th:not(:first-child),
+.fd-permissions-matrix td {
+  text-align: center;
+  width: 10%;
+}
+.fd-permissions-matrix th:first-child {
+  text-align: left;
+  width: 40%;
+}
+.fd-permissions-check-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.fd-permissions-legend,
+.fd-permissions-mobile-hint {
+  font-size: 12px;
+  color: var(--fd-text-muted);
+  line-height: 1.6;
+  margin: 12px 0 0;
+}
+.fd-permissions-mobile-hint {
+  display: none;
+}
+.fd-permissions-fixtures {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+}
+.fd-permissions-fixtures label {
+  min-height: 36px;
+  margin: 0;
+}
+.fd-permissions-simulation [data-slot="field-group"] {
+  gap: 16px;
+}
+.fd-permissions-simulation .fd-fixture-heading {
+  margin-top: 24px;
+}
+@media (max-width: 1100px) {
+  .fd-permissions-v2 {
+    padding: 20px;
+  }
+  .fd-permissions-workspace {
+    grid-template-columns: 190px minmax(0, 1fr);
+  }
+  .fd-permissions-editor {
+    padding: 20px;
+  }
+}
+@media (max-width: 700px) {
+  .fd-permissions-v2 {
+    padding: 20px 12px;
+  }
+  .fd-permissions-heading {
+    align-items: flex-start;
+  }
+  .fd-permissions-heading h1 {
+    font-size: 21px;
+  }
+  .fd-permissions-heading p {
+    max-width: 210px;
+  }
+  .fd-permissions-workspace {
+    display: block;
+    min-height: 0;
+  }
+  .fd-permissions-roles {
+    padding: 16px;
+    border-right: 0;
+    border-bottom: 1px solid var(--fd-border);
+  }
+  .fd-permissions-role-list {
+    max-height: 190px;
+    overflow-y: auto;
+  }
+  .fd-permissions-list-heading {
+    padding-left: 0;
+  }
+  .fd-permissions-editor {
+    padding: 20px 16px;
+  }
+  .fd-permissions-role-heading {
+    flex-direction: column;
+  }
+  .fd-permissions-scope {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .fd-permissions-scope > [data-slot="select-trigger"] {
+    width: 100%;
+  }
+  .fd-permissions-mobile-hint {
+    display: block;
+  }
+  .fd-permissions-fixtures {
+    grid-template-columns: 1fr;
+  }
+}
