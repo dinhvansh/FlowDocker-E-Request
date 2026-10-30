@@ -1,5 +1,15 @@
 import { formMessages } from "./form-messages";
 export const en = {
+  "Mã trường là bắt buộc.": "Field key is required.",
+  "Chỉ dùng chữ thường, số và dấu gạch dưới; bắt đầu bằng chữ. Không dùng khoảng trắng hoặc dấu tiếng Việt.":
+    "Use lowercase letters, numbers and underscores, starting with a letter. Spaces and accented characters are not allowed.",
+  "Mã trường đã tồn tại trong danh mục.":
+    "This field key already exists in the catalog.",
+  "Không lưu được mã trường. Kiểm tra kết nối lưu trữ và thử lại.":
+    "Could not save the field key. Check storage access and try again.",
+  "Ví dụ: currency_name. Mã hợp lệ được lưu khi rời ô hoặc nhấn Enter; Escape để hủy sửa.":
+    "Example: currency_name. Valid keys save on blur or Enter; Escape cancels the edit.",
+
   "Xóa entity": "Delete entity",
   "Xác nhận xóa entity": "Confirm entity deletion",
   "Đang xóa...": "Deleting...",

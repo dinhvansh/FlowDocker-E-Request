@@ -1,3 +1,4 @@
+import { FieldKeyEditor } from "./field-key-editor";
 import { useI18n } from "@flowdocker/i18n";
 import { useMemo, useState } from "react";
 import { Database, Plus, ShieldCheck, Trash2 } from "lucide-react";
@@ -101,7 +102,7 @@ export function MasterBuilder({
     entity && save({ ...entity, ...patchValue });
   const patchField = (patchValue: Partial<MasterField>) => {
     if (!entity || !field) return;
-    save({
+    return save({
       ...entity,
       fields: entity.fields.map((f) =>
         f.id === field.id ? { ...f, ...patchValue } : f,
@@ -499,12 +500,12 @@ export function MasterBuilder({
                   onChange={(e) => patchField({ label: e.target.value })}
                 />
               </Field>
-              <Field label={t("Mã trường")}>
-                <Input
-                  value={field.key}
-                  onChange={(e) => patchField({ key: e.target.value })}
-                />
-              </Field>
+              <FieldKeyEditor
+                key={`${entity.id}:${field.id}`}
+                field={field}
+                fields={entity.fields}
+                onCommit={(key) => patchField({ key })}
+              />
               <Field label={t("Kiểu dữ liệu")}>
                 <Select
                   label={t("Kiểu dữ liệu")}

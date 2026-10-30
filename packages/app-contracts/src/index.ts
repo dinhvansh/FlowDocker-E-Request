@@ -139,16 +139,30 @@ export function simulateFieldProjection(
     }),
   };
 }
+export const isTechnicalKey = (key: string): boolean =>
+  /^[a-z][a-z0-9_]*$/.test(key);
+export function masterFieldKeyError(
+  key: string,
+  fields: readonly MasterField[],
+  currentId: string,
+): string | undefined {
+  if (!key) return "Mã trường là bắt buộc.";
+  if (!isTechnicalKey(key))
+    return "Chỉ dùng chữ thường, số và dấu gạch dưới; bắt đầu bằng chữ. Không dùng khoảng trắng hoặc dấu tiếng Việt.";
+  if (fields.some((field) => field.id !== currentId && field.key === key))
+    return "Mã trường đã tồn tại trong danh mục.";
+  return undefined;
+}
 export function validateEntity(entity: MasterEntity): string[] {
   const errors: string[] = [];
-  if (!/^[a-z][a-z0-9_]*$/.test(entity.key))
+  if (!isTechnicalKey(entity.key))
     errors.push("Mã entity chỉ dùng chữ thường, số và dấu gạch dưới.");
   if (!entity.name.trim()) errors.push("Tên entity là bắt buộc.");
   if (!entity.businessOwner.trim()) errors.push("Cần chỉ định business owner.");
   if (entity.fields.length === 0) errors.push("Cần ít nhất một trường.");
   const keys = new Set<string>();
   for (const field of entity.fields) {
-    if (!/^[a-z][a-z0-9_]*$/.test(field.key))
+    if (!isTechnicalKey(field.key))
       errors.push(`Mã trường ${field.label || "(chưa đặt tên)"} không hợp lệ.`);
     if (keys.has(field.key)) errors.push(`Mã trường ${field.key} bị trùng.`);
     keys.add(field.key);
