@@ -90,5 +90,3 @@ async (page) => {
     await page.reload();
   }
 }
-
-
