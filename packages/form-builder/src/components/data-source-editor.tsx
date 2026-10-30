@@ -9,6 +9,11 @@ export interface FormDataSource {
   kind?: "person" | "record";
   label: BilingualText;
   description: BilingualText;
+  mapping?: {
+    fields: readonly { key: string; label: BilingualText }[];
+    defaultValueField?: string;
+    defaultLabelField?: string;
+  };
 }
 
 export function DataSourceEditor({
@@ -42,39 +47,111 @@ export function DataSourceEditor({
       : (selected?.description[locale] ??
         t("Tự nhập các lựa chọn bên dưới; không lấy dữ liệu từ nguồn khác."));
   return (
-    <Field label={t("Nguồn dữ liệu")} hint={description}>
-      <Select
-        label={t("Nguồn dữ liệu")}
-        value={provider ? `source:${provider}` : "manual"}
-        options={[
-          { value: "manual", label: t("Danh sách nhập tay") },
-          ...compatibleSources.map((source) => ({
-            value: `source:${source.id}`,
-            label: source.label[locale],
-          })),
-          ...(unavailable
-            ? [
-                {
-                  value: `source:${provider}`,
-                  label: t("Nguồn không khả dụng: {{source}}", {
-                    source: provider,
-                  }),
-                  disabled: true,
-                },
-              ]
-            : []),
-        ]}
-        onValueChange={(value) => {
-          if (value === "manual") patch({ dataSource: undefined });
-          else {
-            const source = compatibleSources.find(
-              (item) => `source:${item.id}` === value,
-            );
-            if (source && source.id !== provider)
-              patch({ dataSource: { provider: source.id } });
-          }
-        }}
-      />
-    </Field>
+    <>
+      <Field label={t("Nguồn dữ liệu")} hint={description}>
+        <Select
+          label={t("Nguồn dữ liệu")}
+          value={provider ? `source:${provider}` : "manual"}
+          options={[
+            ...compatibleSources.map((source) => ({
+              value: `source:${source.id}`,
+              label: source.label[locale],
+              disabled: source.mapping && !source.mapping.fields.length,
+            })),
+            { value: "manual", label: t("Danh sách nhập tay") },
+            ...(unavailable
+              ? [
+                  {
+                    value: `source:${provider}`,
+                    label: t("Nguồn không khả dụng: {{source}}", {
+                      source: provider,
+                    }),
+                    disabled: true,
+                  },
+                ]
+              : []),
+          ]}
+          onValueChange={(value) => {
+            if (value === "manual") patch({ dataSource: undefined });
+            else {
+              const source = compatibleSources.find(
+                (item) => `source:${item.id}` === value,
+              );
+              if (source && source.id !== provider)
+                patch({
+                  dataSource: {
+                    provider: source.id,
+                    ...(source.mapping
+                      ? {
+                          valueField: source.mapping.defaultValueField,
+                          labelField: source.mapping.defaultLabelField,
+                        }
+                      : {}),
+                  },
+                });
+            }
+          }}
+        />
+      </Field>
+      {selected?.mapping &&
+        (["valueField", "labelField"] as const).map((key) => {
+          const value = field.dataSource?.[key];
+          const missing =
+            !!value &&
+            !selected.mapping!.fields.some((column) => column.key === value);
+          const label =
+            key === "valueField" ? t("Cột mã lưu") : t("Cột tên hiển thị");
+          return (
+            <Field
+              key={key}
+              label={label}
+              hint={
+                missing
+                  ? t(
+                      "Cột đã lưu không còn khả dụng. Chọn lại cột từ danh mục.",
+                    )
+                  : key === "valueField"
+                    ? t(
+                        "Chọn ID hoặc mã duy nhất và ổn định. Biểu mẫu chỉ lưu mã này, không lưu tên hiển thị.",
+                      )
+                    : undefined
+              }
+            >
+              <Select
+                label={label}
+                value={value ?? "__none__"}
+                onValueChange={(next) =>
+                  patch({
+                    dataSource: {
+                      ...field.dataSource!,
+                      [key]: next === "__none__" ? undefined : next,
+                    },
+                  })
+                }
+                options={[
+                  { value: "__none__", label: t("Chọn cột dữ liệu") },
+                  ...selected.mapping!.fields.map((column) => ({
+                    value: column.key,
+                    label: t("{{label}} ({{key}})", {
+                      label: column.label[locale],
+                      key: column.key,
+                    }),
+                  })),
+                  ...(missing
+                    ? [
+                        {
+                          value: value!,
+                          label: t("Cột không khả dụng: {{column}}", {
+                            column: value!,
+                          }),
+                        },
+                      ]
+                    : []),
+                ]}
+              />
+            </Field>
+          );
+        })}
+    </>
   );
 }

@@ -58,6 +58,8 @@ export interface ChoiceOption {
 }
 export type DataProvider = (context: {
   query: string;
+  valueField?: string;
+  labelField?: string;
   dependency: FormValue | undefined;
   signal: AbortSignal;
 }) => Promise<ChoiceOption[]>;

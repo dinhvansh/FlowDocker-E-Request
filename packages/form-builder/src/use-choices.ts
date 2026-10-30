@@ -15,7 +15,12 @@ export function useChoices(
   }>({ options: [], status: "loading", requestKey: "" });
   const dependencyKey = JSON.stringify(dependency);
   const staticOptions: ChoiceOption[] = field.options;
-  const requestKey = `${query}:${dependencyKey ?? ""}:${field.dataSource?.provider ?? ""}:${reloadKey}`;
+  const requestKey = JSON.stringify([
+    query,
+    dependencyKey,
+    field.dataSource,
+    reloadKey,
+  ]);
   useEffect(() => {
     if (!field.dataSource) return;
     if (!provider) return;
@@ -24,6 +29,8 @@ export function useChoices(
       setRemote({ options: [], status: "loading", requestKey });
       provider({
         query,
+        valueField: field.dataSource?.valueField,
+        labelField: field.dataSource?.labelField,
         dependency:
           dependencyKey === undefined
             ? undefined

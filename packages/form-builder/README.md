@@ -118,3 +118,12 @@ Fixed person defaults now use the shared searchable PeoplePicker in both Basic a
 The canvas and inspector derive compact Data / Conditions / Calculation / Validation / Advanced hints from the current field, including nested fields. Clicking a hint in FormDesigner selects the field and opens the matching inspector group (including mobile). Hints indicate configured presence, not schema validity, and are never rendered in FormRenderer/FormPreview. Required alone keeps its existing star.
 
 `fieldConfiguration(field): ConfigurationKind[]` is exported for host presentation. `ConfigurationKind` and `ConfigurationSection` are public types. `FormCanvasProps.onInspect?(fieldId, section)` is optional; without it standalone canvases show noninteractive hints. Inspector consumers reuse existing onSectionChange. Schema/storage and execution contracts are unchanged. Examples consume the same designer/canvas package path. See docs/74 for actual tests and screenshots; no backend/security or platform-ready completion is implied.
+
+
+## Master catalog column mapping
+
+`FormDataSource.mapping?` describes eligible `{key, label: {vi,en}}` columns and optional `defaultValueField` / `defaultLabelField`. The source editor displays stored-key and display-name selectors for these sources. Hosts own the catalog list, column classification and stable key quality; no records are embedded in metadata.
+
+`FormField.dataSource` adds optional `valueField` and `labelField` strings. `DataProvider` context receives these optional keys alongside query/dependency/signal. `useChoices` aborts stale requests and reloads when mapping changes. Legacy definitions/providers remain valid. Older strict consumers must upgrade before importing definitions with mappings; schema versions remain unchanged. Missing saved columns remain visible for repair rather than being silently replaced.
+
+E-Request's `masterFormSources` adapter registers its browser-local synthetic MasterEntity catalogs and projects only selected PUBLIC/INTERNAL scalar columns. It rejects missing/duplicate/reserved IDs, excludes inactive rows, and never guesses row-index identity. Standalone hosts supply their own mapping metadata/providers; no E-Request catalog dependency enters the reusable package. External sync, authorization and production key governance remain backend responsibilities. See docs/75 for verification.

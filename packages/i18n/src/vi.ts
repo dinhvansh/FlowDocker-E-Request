@@ -161,4 +161,13 @@ export const vi: Record<keyof typeof en, string> = {
   "Mở cấu hình {{group}} cho {{field}}": "Mở cấu hình {{group}} cho {{field}}",
   "Điều kiện": "Điều kiện",
   "Tính toán": "Tính toán",
+  "Cột mã lưu": "Cột mã lưu",
+  "Cột tên hiển thị": "Cột tên hiển thị",
+  "Cột đã lưu không còn khả dụng. Chọn lại cột từ danh mục.":
+    "Cột đã lưu không còn khả dụng. Chọn lại cột từ danh mục.",
+  "Chọn ID hoặc mã duy nhất và ổn định. Biểu mẫu chỉ lưu mã này, không lưu tên hiển thị.":
+    "Chọn ID hoặc mã duy nhất và ổn định. Biểu mẫu chỉ lưu mã này, không lưu tên hiển thị.",
+  "Chọn cột dữ liệu": "Chọn cột dữ liệu",
+  "{{label}} ({{key}})": "{{label}} ({{key}})",
+  "Cột không khả dụng: {{column}}": "Cột không khả dụng: {{column}}",
 };

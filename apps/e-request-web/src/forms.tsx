@@ -8,6 +8,7 @@ import {
 import type { MasterEntity } from "@flowdocker/app-contracts";
 import { peopleOptions } from "./organization";
 import { FormCatalog } from "./form-catalog";
+import { masterFormSources } from "./master-form-sources";
 import { demoCurrentPersonId, demoProfile } from "./demo-profile";
 import { useI18n } from "@flowdocker/i18n";
 import { ArrowLeft, MoreHorizontal, Plus, Save } from "lucide-react";
@@ -94,9 +95,15 @@ export function FormsPage({
   ref?: Ref<FormsPageHandle>;
   entities?: MasterEntity[];
 }) {
+  const masters = useMemo(() => masterFormSources(entities), [entities]);
+  const availableSources = useMemo(
+    () => [...masters.sources, ...formDataSources],
+    [masters],
+  );
   const providers = useMemo(
     () => ({
       ...demoProviders,
+      ...masters.providers,
       "organization.people": async () => [
         ...peopleOptions(entities).filter(
           (person) => person.value !== demoCurrentPersonId,
@@ -111,7 +118,7 @@ export function FormsPage({
         },
       ],
     }),
-    [entities],
+    [entities, masters],
   );
   const { t, locale } = useI18n();
   const [initial] = useState(load);
@@ -344,7 +351,7 @@ export function FormsPage({
                 </div>
                 <FormDesigner
                   runtimeContext={{ currentUserId: demoCurrentPersonId }}
-                  dataSources={formDataSources}
+                  dataSources={availableSources}
                   providers={providers}
                   inspectorSection={tab === "logic" ? "logic" : "basic"}
                   key={draft.id}

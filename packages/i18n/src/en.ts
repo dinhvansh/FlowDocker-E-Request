@@ -835,4 +835,13 @@ export const en = {
     "Open {{group}} settings for {{field}}",
   "Điều kiện": "Conditions",
   "Tính toán": "Calculation",
+  "Cột mã lưu": "Stored key column",
+  "Cột tên hiển thị": "Display name column",
+  "Cột đã lưu không còn khả dụng. Chọn lại cột từ danh mục.":
+    "The saved column is no longer available. Select another catalog column.",
+  "Chọn ID hoặc mã duy nhất và ổn định. Biểu mẫu chỉ lưu mã này, không lưu tên hiển thị.":
+    "Choose a unique, stable ID or code. The form stores this key, not the display name.",
+  "Chọn cột dữ liệu": "Choose a data column",
+  "{{label}} ({{key}})": "{{label}} ({{key}})",
+  "Cột không khả dụng: {{column}}": "Unavailable column: {{column}}",
 } as const;

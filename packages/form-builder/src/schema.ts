@@ -100,7 +100,12 @@ export interface FormField {
   accept?: string;
   maxFileSize?: number;
   maxFiles?: number;
-  dataSource?: { provider: string; dependsOn?: string };
+  dataSource?: {
+    provider: string;
+    dependsOn?: string;
+    valueField?: string;
+    labelField?: string;
+  };
   customRenderer?: string;
   buttonAction?: "submit" | "reset";
   tone?: "info" | "warning" | "danger" | "success";
@@ -386,7 +391,13 @@ function fieldsShape(
         (!isObject(field.dataSource) ||
           typeof field.dataSource.provider !== "string" ||
           (field.dataSource.dependsOn !== undefined &&
-            typeof field.dataSource.dependsOn !== "string"))
+            typeof field.dataSource.dependsOn !== "string") ||
+          (field.dataSource.valueField !== undefined &&
+            (typeof field.dataSource.valueField !== "string" ||
+              !field.dataSource.valueField.trim())) ||
+          (field.dataSource.labelField !== undefined &&
+            (typeof field.dataSource.labelField !== "string" ||
+              !field.dataSource.labelField.trim())))
       )
         return false;
       if (
