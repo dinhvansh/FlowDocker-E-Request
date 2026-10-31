@@ -307,4 +307,17 @@ export const formMessages = {
     "The form could not be submitted. Your values are still here; please retry.",
   "Đang xử lý...": "Processing...",
   "Gửi biểu mẫu": "Submit form",
+  "Định dạng mã": "Format code",
+  "Mã hợp lệ đồng bộ ngay. Ctrl+Space để gợi ý; Esc rồi Tab để rời editor.":
+    "Valid code syncs instantly. Ctrl+Space for suggestions; Esc then Tab to leave the editor.",
+  "Mã chưa hợp lệ; hãy sửa mã để tiếp tục thiết kế và lưu.":
+    "Code is invalid. Fix it to continue designing and saving.",
+  "Đã đồng bộ với canvas": "Synced with canvas",
+  "Dòng {{line}} · {{message}}": "Line {{line}} · {{message}}",
+  "Lỗi JSON: {{reason}}": "JSON error: {{reason}}",
+  "Thuộc tính trùng: {{key}}": "Duplicate property: {{key}}",
+  "Thuộc tính không hỗ trợ: {{key}}": "Unsupported property: {{key}}",
+  "Không thể đổi ID của biểu mẫu đang mở.":
+    "The open form ID cannot be changed.",
+  "Đang mở trình soạn mã...": "Opening code editor...",
 } as const;

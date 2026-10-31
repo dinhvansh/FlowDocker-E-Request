@@ -1,4 +1,6 @@
 import {
+  lazy,
+  Suspense,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -22,7 +24,6 @@ import {
   type DataProvider,
   type FormDataSource,
   exportFormDefinition,
-  importFormDefinition,
   validateFormDefinition,
   type FormDefinition,
   type PreviewValues,
@@ -44,6 +45,11 @@ import {
   formDraftStorageKey,
   readFormDrafts,
 } from "./form-drafts";
+
+const FormCodeStudio = lazy(
+  () => import("@flowdocker/form-builder/code-studio"),
+);
+import { analyzeFormCode } from "@flowdocker/form-builder/code-model";
 
 const demoProviders: Record<string, DataProvider> = {
   "demo.companies": async () => [
@@ -166,7 +172,10 @@ export function FormsPage({
   );
   const catalog = initial.failed ? forms : formCatalog(forms);
   const saved = catalog.find((form) => form.id === draft?.id);
-  const dirty = !!draft && JSON.stringify(draft) !== JSON.stringify(saved);
+  const codeInvalid =
+    !!draft && codeDirty && !analyzeFormCode(codeText, draft.id).definition;
+  const dirty =
+    !!draft && (JSON.stringify(draft) !== JSON.stringify(saved) || codeInvalid);
   useEffect(() => {
     if (!dirty) return;
     const protectDraft = (event: BeforeUnloadEvent) => {
@@ -213,7 +222,7 @@ export function FormsPage({
     setSaveError(false);
   };
   const save = () => {
-    if (!draft) return;
+    if (!draft || codeInvalid) return;
     setShowIssues(true);
     if (issues.length) return;
     const next = forms.some((form) => form.id === draft.id)
@@ -293,7 +302,9 @@ export function FormsPage({
                 </div>
                 <Button
                   variant="primary"
-                  disabled={!dirty || initial.failed || issues.length > 0}
+                  disabled={
+                    !dirty || initial.failed || issues.length > 0 || codeInvalid
+                  }
                   onClick={save}
                 >
                   <Save data-icon="inline-start" />
@@ -350,42 +361,80 @@ export function FormsPage({
                   { id: "json", label: t("Schema JSON") },
                 ]}
               />
-              <div hidden={tab !== "schema" && tab !== "logic"}>
-                <div hidden={!titlesOpen}>
-                  <FieldGroup className="fd-form-titles">
-                    <Field label={t("Tên biểu mẫu · tiếng Việt")}>
-                      <Input
-                        value={draft.title.vi}
-                        onChange={(event) =>
-                          update({
-                            ...draft,
-                            title: { ...draft.title, vi: event.target.value },
-                          })
-                        }
+              <div
+                className="fd-hybrid-workspace"
+                data-code={tab === "code"}
+                hidden={!["schema", "logic", "code"].includes(tab)}
+              >
+                <div hidden={tab !== "code"} className="fd-code-pane">
+                  {!!codeText && (
+                    <Suspense
+                      fallback={
+                        <Notice>{t("Đang mở trình soạn mã...")}</Notice>
+                      }
+                    >
+                      <FormCodeStudio
+                        value={codeText}
+                        formId={draft.id}
+                        onChange={(raw) => {
+                          setCodeText(raw);
+                          setCodeDirty(true);
+                          const result = analyzeFormCode(raw, draft.id);
+                          if (result.definition) update(result.definition);
+                        }}
                       />
-                    </Field>
-                    <Field label={t("Tên biểu mẫu · tiếng Anh")}>
-                      <Input
-                        value={draft.title.en}
-                        onChange={(event) =>
-                          update({
-                            ...draft,
-                            title: { ...draft.title, en: event.target.value },
-                          })
-                        }
-                      />
-                    </Field>
-                  </FieldGroup>
+                    </Suspense>
+                  )}
                 </div>
-                <FormDesigner
-                  runtimeContext={demoFormRuntimeContext}
-                  dataSources={availableSources}
-                  providers={providers}
-                  inspectorSection={tab === "logic" ? "logic" : "basic"}
-                  key={draft.id}
-                  definition={draft}
-                  onChange={update}
-                />
+                <div className="fd-hybrid-designer">
+                  {codeInvalid && (
+                    <Notice tone="warning">
+                      {t(
+                        "Mã chưa hợp lệ; hãy sửa mã để tiếp tục thiết kế và lưu.",
+                      )}
+                    </Notice>
+                  )}
+                  <div hidden={!titlesOpen}>
+                    <FieldGroup className="fd-form-titles">
+                      <Field label={t("Tên biểu mẫu · tiếng Việt")}>
+                        <Input
+                          value={draft.title.vi}
+                          onChange={(event) =>
+                            update({
+                              ...draft,
+                              title: { ...draft.title, vi: event.target.value },
+                            })
+                          }
+                        />
+                      </Field>
+                      <Field label={t("Tên biểu mẫu · tiếng Anh")}>
+                        <Input
+                          value={draft.title.en}
+                          onChange={(event) =>
+                            update({
+                              ...draft,
+                              title: { ...draft.title, en: event.target.value },
+                            })
+                          }
+                        />
+                      </Field>
+                    </FieldGroup>
+                  </div>
+                  <FormDesigner
+                    runtimeContext={demoFormRuntimeContext}
+                    dataSources={availableSources}
+                    providers={providers}
+                    inspectorSection={tab === "logic" ? "logic" : "basic"}
+                    key={draft.id}
+                    definition={draft}
+                    readOnly={codeInvalid}
+                    onChange={(next) => {
+                      update(next);
+                      setCodeText(JSON.stringify(next, null, 2));
+                      setCodeDirty(false);
+                    }}
+                  />
+                </div>
               </div>
               {tab === "preview" && (
                 <div className="fd-preview-workspace">
@@ -430,55 +479,6 @@ export function FormsPage({
                   <Field label={t("Nội dung schema JSON")}>
                     <Textarea rows={24} readOnly value={jsonText} />
                   </Field>
-                </FieldGroup>
-              )}
-              {tab === "code" && (
-                <FieldGroup className="fd-code-studio">
-                  <Notice>
-                    {t(
-                      "Kéo thả và code đồng bộ hai chiều. Mã hợp lệ cập nhật ngay; khi mã lỗi, canvas giữ bản hợp lệ gần nhất.",
-                    )}
-                  </Notice>
-                  {jsonError && <Notice tone="danger">{t(jsonError)}</Notice>}
-                  <Field label={t("Schema biểu mẫu · Code Studio")}>
-                    <Textarea
-                      className="fd-code-editor"
-                      aria-label={t("Schema biểu mẫu · Code Studio")}
-                      rows={28}
-                      spellCheck={false}
-                      value={codeText}
-                      onChange={(event) => {
-                        setCodeText(event.target.value);
-                        setCodeDirty(true);
-                        try {
-                          const imported = importFormDefinition(
-                            event.target.value,
-                          );
-                          if (imported.id !== draft.id)
-                            throw new Error("identity");
-                          update(imported);
-                          setJsonError("");
-                        } catch {
-                          setJsonError(
-                            "Schema không hợp lệ hoặc có thuộc tính không được hỗ trợ.",
-                          );
-                        }
-                      }}
-                    />
-                  </Field>
-                  <FormDesigner
-                    runtimeContext={demoFormRuntimeContext}
-                    dataSources={availableSources}
-                    providers={providers}
-                    key={draft.id}
-                    definition={draft}
-                    onChange={(next) => {
-                      update(next);
-                      setCodeText(JSON.stringify(next, null, 2));
-                      setCodeDirty(false);
-                      setJsonError("");
-                    }}
-                  />
                 </FieldGroup>
               )}
             </>

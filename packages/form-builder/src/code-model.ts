@@ -1,0 +1,303 @@
+import {
+  findNodeAtLocation,
+  findNodeAtOffset,
+  getLocation,
+  getNodeValue,
+  parseTree,
+  printParseErrorCode,
+  type Node,
+  type ParseError,
+} from "jsonc-parser";
+import {
+  formFieldTypes,
+  isFormDefinition,
+  validateFormDefinition,
+  type FormDefinition,
+} from "./schema";
+
+export interface CodeProblem {
+  from: number;
+  to: number;
+  message: string;
+  params?: Record<string, string | number>;
+}
+export interface CodeAnalysis {
+  definition?: FormDefinition;
+  problems: CodeProblem[];
+}
+export const codeProperties = {
+  form: [
+    "id",
+    "title",
+    "version",
+    "status",
+    "fields",
+    "schemaVersion",
+    "display",
+    "orientation",
+    "currency",
+  ],
+  field: [
+    "id",
+    "key",
+    "label",
+    "type",
+    "required",
+    "options",
+    "help",
+    "placeholder",
+    "defaultValue",
+    "defaultValueSource",
+    "numbering",
+    "readOnly",
+    "disabled",
+    "multiple",
+    "min",
+    "max",
+    "minLength",
+    "maxLength",
+    "integer",
+    "compare",
+    "visibleWhen",
+    "requiredWhen",
+    "disabledWhen",
+    "calculation",
+    "aggregation",
+    "children",
+    "columns",
+    "hideLabel",
+    "minRows",
+    "maxRows",
+    "autoRows",
+    "uniqueBy",
+    "currency",
+    "accept",
+    "maxFileSize",
+    "maxFiles",
+    "dataSource",
+    "customRenderer",
+    "buttonAction",
+    "tone",
+  ],
+  text: ["vi", "en"],
+  calculation: ["operator", "fields", "expression", "precision"],
+  rule: ["mode", "conditions"],
+  condition: ["field", "operator", "value"],
+  compare: ["field", "operator"],
+  dataSource: ["provider", "dependsOn", "valueField", "labelField"],
+  numbering: ["segments", "sequenceDigits", "scope"],
+  segment: ["kind", "value"],
+  option: ["value", "label"],
+} as const;
+
+function objectKeys(path: (string | number)[]): readonly string[] {
+  const last = path.at(-1);
+  const parent = path.at(-2);
+  if (!path.length) return codeProperties.form;
+  if (typeof last === "number") {
+    if (parent === "fields" || parent === "children")
+      return codeProperties.field;
+    if (parent === "conditions") return codeProperties.condition;
+    if (parent === "segments") return codeProperties.segment;
+    if (parent === "options") return codeProperties.option;
+  }
+  if (["title", "label", "help", "placeholder"].includes(String(last)))
+    return codeProperties.text;
+  if (["visibleWhen", "requiredWhen", "disabledWhen"].includes(String(last)))
+    return codeProperties.rule;
+  return codeProperties[last as keyof typeof codeProperties] ?? [];
+}
+export function codeCompletions(text: string, offset: number) {
+  const location = getLocation(text, offset);
+  const path = location.path;
+  const property = path.at(-1);
+  if (location.isAtPropertyKey) return objectKeys(path.slice(0, -1));
+  switch (property) {
+    case "type":
+      return formFieldTypes;
+    case "status":
+      return ["DRAFT"];
+    case "orientation":
+      return ["portrait", "landscape"];
+    case "display":
+      return ["form", "wizard"];
+    case "aggregation":
+      return ["none", "sum", "average", "min", "max", "count"];
+    case "defaultValueSource":
+      return [
+        "currentUser",
+        "currentUser.name",
+        "currentUser.email",
+        "currentUser.employeeCode",
+        "currentUser.department",
+        "currentUser.position",
+        "currentUser.managerName",
+        "currentUser.managerId",
+      ];
+    case "mode":
+      return ["all", "any"];
+    case "operator":
+      return path.at(-2) === "calculation"
+        ? [
+            "add",
+            "subtract",
+            "multiply",
+            "divide",
+            "sum",
+            "average",
+            "count",
+            "min",
+            "max",
+          ]
+        : [
+            "eq",
+            "ne",
+            "gt",
+            "gte",
+            "lt",
+            "lte",
+            "empty",
+            "notEmpty",
+            "contains",
+          ];
+    case "scope":
+      return ["app", "year"];
+    case "kind":
+      return [
+        "literal",
+        "sequence",
+        "year",
+        "month",
+        "day",
+        "creator",
+        "employeeCode",
+        "department",
+        "position",
+        "managerId",
+        "managerName",
+        "typeCode",
+      ];
+    case "tone":
+      return ["info", "warning", "danger", "success"];
+    case "buttonAction":
+      return ["submit", "reset"];
+    default:
+      return [];
+  }
+}
+export function fieldCodeRanges(text: string) {
+  const ranges = new Map<string, { from: number; to: number }>();
+  const tree = parseTree(text);
+  const visit = (node: Node | undefined) => {
+    for (const child of node?.children ?? []) {
+      const id = findNodeAtLocation(child, ["id"]);
+      if (id?.type === "string")
+        ranges.set(String(id.value), {
+          from: child.offset,
+          to: child.offset + child.length,
+        });
+      visit(findNodeAtLocation(child, ["children"]));
+    }
+  };
+  visit(tree && findNodeAtLocation(tree, ["fields"]));
+  return ranges;
+}
+export function codeFieldAt(text: string, offset: number): string | undefined {
+  return [...fieldCodeRanges(text)]
+    .filter(([, r]) => offset >= r.from && offset <= r.to)
+    .sort((a, b) => a[1].to - a[1].from - (b[1].to - b[1].from))[0]?.[0];
+}
+export function analyzeFormCode(text: string, formId: string): CodeAnalysis {
+  if (text.length > 1000000)
+    return { problems: [{ from: 0, to: 1, message: "Schema vượt quá 1 MB." }] };
+  const errors: ParseError[] = [];
+  const tree = parseTree(text, errors, {
+    disallowComments: true,
+    allowTrailingComma: false,
+  });
+  if (errors.length)
+    return {
+      problems: errors.map((e) => ({
+        from: e.offset,
+        to: e.offset + Math.max(1, e.length),
+        message: "Lỗi JSON: {{reason}}",
+        params: { reason: printParseErrorCode(e.error) },
+      })),
+    };
+  if (!tree)
+    return {
+      problems: [{ from: 0, to: 0, message: "Cấu trúc biểu mẫu chưa hợp lệ." }],
+    };
+  const problems: CodeProblem[] = [];
+  const check = (node: Node, path: (string | number)[]) => {
+    if (node.type === "object") {
+      const keys = new Set<string>();
+      for (const prop of node.children ?? []) {
+        const key = prop.children![0];
+        if (keys.has(key.value))
+          problems.push({
+            from: key.offset,
+            to: key.offset + key.length,
+            message: "Thuộc tính trùng: {{key}}",
+            params: { key: String(key.value) },
+          });
+        keys.add(key.value);
+        const allowed = objectKeys(path);
+        if (allowed.length && !allowed.includes(String(key.value)))
+          problems.push({
+            from: key.offset,
+            to: key.offset + key.length,
+            message: "Thuộc tính không hỗ trợ: {{key}}",
+            params: { key: String(key.value) },
+          });
+        check(prop.children![1], [...path, String(key.value)]);
+      }
+    } else if (node.type === "array")
+      node.children?.forEach((child, index) => check(child, [...path, index]));
+  };
+  check(tree, []);
+  if (problems.length) return { problems };
+  const value: unknown = getNodeValue(tree);
+  if (!isFormDefinition(value))
+    return {
+      problems: [
+        {
+          from: 0,
+          to: Math.min(1, text.length),
+          message: "Schema không hợp lệ hoặc có thuộc tính không được hỗ trợ.",
+        },
+      ],
+    };
+  if (value.id !== formId) {
+    const id = findNodeAtLocation(tree, ["id"])!;
+    return {
+      problems: [
+        {
+          from: id.offset,
+          to: id.offset + id.length,
+          message: "Không thể đổi ID của biểu mẫu đang mở.",
+        },
+      ],
+    };
+  }
+  const ranges = fieldCodeRanges(text);
+  for (const issue of validateFormDefinition(value)) {
+    const range = issue.fieldId ? ranges.get(issue.fieldId) : undefined;
+    problems.push({
+      from: range?.from ?? 0,
+      to: range?.to ?? 1,
+      message: issue.message,
+      params: issue.params,
+    });
+  }
+  return {
+    definition: problems.length ? undefined : { ...value, schemaVersion: 2 },
+    problems,
+  };
+}
+
+/** Resolve the JSON node around the cursor for integrations without executing source. */
+export function codeNodeAt(text: string, offset: number) {
+  const tree = parseTree(text);
+  return tree ? findNodeAtOffset(tree, offset, true) : undefined;
+}

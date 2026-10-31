@@ -1,3 +1,4 @@
+import { EditorView } from "@codemirror/view";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   act,
@@ -5,6 +6,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
 } from "@testing-library/react";
 import { createRef } from "react";
 import { I18nProvider, useI18n } from "@flowdocker/i18n";
@@ -165,7 +167,7 @@ describe("Form Studio host journeys", () => {
   });
 });
 
-it("syncs code edits to canvas and retains the last valid form on invalid JSON", () => {
+it("syncs code edits to canvas and retains the last valid form on invalid JSON", async () => {
   render(
     <I18nProvider>
       <FormsPage />
@@ -178,20 +180,27 @@ it("syncs code edits to canvas and retains the last valid form on invalid JSON",
     button: 0,
     ctrlKey: false,
   });
-  const editor = screen.getByRole("textbox", {
+  const editor = await screen.findByRole("textbox", {
     name: "Schema biểu mẫu · Code Studio",
-  }) as HTMLTextAreaElement;
-  const schema = JSON.parse(editor.value);
+  });
+  const view = EditorView.findFromDOM(editor.closest(".cm-editor")!)!;
+  const edit = (value: string) =>
+    act(() =>
+      view.dispatch({
+        changes: { from: 0, to: view.state.doc.length, insert: value },
+      }),
+    );
+  const schema = JSON.parse(view.state.doc.toString());
   schema.title.vi = "Code sync test";
-  fireEvent.change(editor, { target: { value: JSON.stringify(schema) } });
+  edit(JSON.stringify(schema));
   expect(
     screen.getByRole("heading", { name: "Code sync test", level: 1 }),
   ).toBeTruthy();
-  fireEvent.change(editor, { target: { value: "{" } });
+  edit("{");
   expect(
     screen.getByRole("heading", { name: "Code sync test", level: 1 }),
   ).toBeTruthy();
-  expect(editor.value).toBe("{");
+  expect(view.state.doc.toString()).toBe("{");
   fireEvent.mouseDown(screen.getByRole("tab", { name: "Thiết kế trường" }), {
     button: 0,
     ctrlKey: false,
@@ -200,5 +209,5 @@ it("syncs code edits to canvas and retains the last valid form on invalid JSON",
     button: 0,
     ctrlKey: false,
   });
-  expect(editor.value).toBe("{");
+  await waitFor(() => expect(view.state.doc.toString()).toBe("{"));
 });

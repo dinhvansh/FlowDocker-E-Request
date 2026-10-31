@@ -59,3 +59,6 @@ For V1, **exclude ONLYOFFICE and signing**. Select Form.io JS Core + Synergy Cod
 ## Optional Ant Design permissions preview (2026-10-30)
 
 `@flowdocker/permission-builder/antd-preview` links `antd` 6.6.8 and `@ant-design/icons` 6.3.4, both MIT per installed package metadata and LICENSE files. Preserved upstream license texts are in `packages/permission-builder/legal/`. Versions and transitive dependencies are in package-lock.json. This opt-in UI comparison does not replace the main shadcn/Radix toolkit. Runtime package installation reported zero audit vulnerabilities; this is not a complete release/legal approval or SBOM assessment.
+
+## Optional Form Code Studio — 2026-10-31
+Direct dependencies pinned: codemirror 6.0.2; @codemirror/lang-json 6.0.2; @codemirror/lint 6.9.7; @codemirror/autocomplete 6.20.4; @codemirror/view 6.43.15; @codemirror/state 6.7.6; @codemirror/language 6.13.1; @lezer/highlight 1.2.3; jsonc-parser 3.3.1. Installed package manifests identify MIT; preserve their LICENSE files and transitive notices in distributions. These remain upstream software, not FlowDocker-owned code. Standard standalone forms export remains independent of this optional editor subpath at this stage.
