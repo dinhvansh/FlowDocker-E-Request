@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { CreatorDefaultEditor } from "./components/creator-default-editor";
+import { useMemo, useState } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import {
   Button,
@@ -9,7 +10,66 @@ import {
   Select,
   Textarea,
 } from "@flowdocker/ui";
+import { X } from "lucide-react";
 import { type FormField, type FormRule, type RuleOperator } from "./schema";
+import type { PreviewValues } from "./schema";
+import type { FormRendererProps } from "./runtime";
+import { PersonDefaultEditor } from "./components/person-default-editor";
+import { calculate } from "./engine";
+import {
+  DataSourceEditor,
+  type FormDataSource,
+} from "./components/data-source-editor";
+function ConditionValue({
+  condition,
+  fields,
+  onChange,
+}: {
+  condition: FormRule["conditions"][number];
+  fields: FormField[];
+  onChange(value: string | number | boolean): void;
+}) {
+  const { t, locale } = useI18n();
+  const source = fields.find((field) => field.key === condition.field);
+  if (source?.type === "checkbox")
+    return (
+      <Select
+        label={t("Giá trị so sánh")}
+        value={String(condition.value ?? false)}
+        options={[
+          { value: "true", label: t("Có") },
+          { value: "false", label: t("Không") },
+        ]}
+        onValueChange={(value) => onChange(value === "true")}
+      />
+    );
+  if (source?.options.length)
+    return (
+      <Select
+        label={t("Giá trị so sánh")}
+        value={String(condition.value ?? "")}
+        options={source.options.map((option) => ({
+          value: option.value,
+          label: option.label[locale],
+        }))}
+        onValueChange={onChange}
+      />
+    );
+  const numeric = ["number", "currency"].includes(source?.type ?? "");
+  return (
+    <Input
+      type={numeric ? "number" : "text"}
+      value={String(condition.value ?? "")}
+      onChange={(event) =>
+        onChange(
+          numeric && event.target.value.trim()
+            ? Number(event.target.value)
+            : event.target.value,
+        )
+      }
+    />
+  );
+}
 export function OptionsEditor({
   field,
   onChange,
@@ -129,21 +189,10 @@ export function RuleEditor({
               </Field>
               {!["empty", "notEmpty"].includes(condition.operator) && (
                 <Field label={t("Giá trị so sánh")}>
-                  <Input
-                    value={String(condition.value ?? "")}
-                    onChange={(event) => {
-                      const source = fields.find(
-                        (field) => field.key === condition.field,
-                      );
-                      const raw = event.target.value;
-                      const value =
-                        source?.type === "checkbox"
-                          ? raw === "true"
-                          : ["number", "currency"].includes(
-                                source?.type ?? "",
-                              ) && raw.trim()
-                            ? Number(raw)
-                            : raw;
+                  <ConditionValue
+                    condition={condition}
+                    fields={fields}
+                    onChange={(value) => {
                       onChange({
                         ...rule,
                         conditions: rule.conditions.map((item, position) =>
@@ -194,15 +243,46 @@ export function RuleEditor({
   );
 }
 export function AdvancedProperties({
+  providers,
+  sourceDefaults,
+  dataSources,
+  section = "all",
   field,
   fields,
   patch,
 }: {
+  providers?: FormRendererProps["providers"];
+  sourceDefaults?: PreviewValues;
+  dataSources?: readonly FormDataSource[];
+  section?: string;
   field: FormField;
   fields: FormField[];
   patch(value: Partial<FormField>): void;
 }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const [formulaResult, setFormulaResult] = useState<string | null>(null);
+  const calculationFields = useMemo(
+    () => fields.filter((item) => ["number", "currency"].includes(item.type)),
+    [fields],
+  );
+  const calculationPreview = field.calculation
+    ? (() => {
+        const labels = field.calculation.fields.map(
+          (key) =>
+            fields.find((item) => item.key === key)?.label[locale] ?? key,
+        );
+        const symbols: Record<string, string> = {
+          add: " + ",
+          subtract: " − ",
+          multiply: " × ",
+          divide: " ÷ ",
+        };
+        const symbol = symbols[field.calculation.operator];
+        return symbol
+          ? labels.join(symbol)
+          : `${t(`calc.${field.calculation.operator}`)}(${labels.join(", ")})`;
+      })()
+    : "";
   const numberInput = (
     key:
       | "min"
@@ -232,380 +312,567 @@ export function AdvancedProperties({
   );
   return (
     <FieldGroup>
-      <Field label={t("Gợi ý tiếng Việt")}>
-        <Textarea
-          value={field.help?.vi ?? ""}
-          onChange={(event) =>
-            patch({
-              help: { vi: event.target.value, en: field.help?.en ?? "" },
-            })
-          }
-        />
-      </Field>
-      <Field label={t("Gợi ý tiếng Anh")}>
-        <Textarea
-          value={field.help?.en ?? ""}
-          onChange={(event) =>
-            patch({
-              help: { en: event.target.value, vi: field.help?.vi ?? "" },
-            })
-          }
-        />
-      </Field>
-      <Field label={t("Placeholder tiếng Việt")}>
-        <Input
-          value={field.placeholder?.vi ?? ""}
-          onChange={(event) =>
-            patch({
-              placeholder: {
-                vi: event.target.value,
-                en: field.placeholder?.en ?? "",
-              },
-            })
-          }
-        />
-      </Field>
-      <Field label={t("Placeholder tiếng Anh")}>
-        <Input
-          value={field.placeholder?.en ?? ""}
-          onChange={(event) =>
-            patch({
-              placeholder: {
-                en: event.target.value,
-                vi: field.placeholder?.vi ?? "",
-              },
-            })
-          }
-        />
-      </Field>
-      <Field label={t("Giá trị mặc định")}>
-        <Input
-          value={
-            typeof field.defaultValue === "string" ||
-            typeof field.defaultValue === "number" ||
-            typeof field.defaultValue === "boolean"
-              ? String(field.defaultValue)
-              : ""
-          }
-          onChange={(event) =>
-            patch({
-              defaultValue:
-                field.type === "checkbox"
-                  ? event.target.value === "true"
-                  : event.target.value,
-            })
-          }
-        />
-      </Field>
-      {field.type === "button" && (
-        <Field label={t("Hành động nút")}>
-          <Select
-            label={t("Hành động nút")}
-            value={field.buttonAction ?? "submit"}
-            options={[
-              { value: "submit", label: t("Gửi biểu mẫu") },
-              { value: "reset", label: t("Xóa dữ liệu thử") },
-            ]}
-            onValueChange={(value) =>
-              patch({ buttonAction: value as "submit" | "reset" })
-            }
-          />
-        </Field>
-      )}
-      {field.type === "alert" && (
-        <Field label={t("Mức thông báo")}>
-          <Select
-            label={t("Mức thông báo")}
-            value={field.tone ?? "info"}
-            options={[
-              { value: "info", label: t("Thông tin") },
-              { value: "warning", label: t("Cảnh báo") },
-              { value: "danger", label: t("Lỗi") },
-              { value: "success", label: t("Thành công") },
-            ]}
-            onValueChange={(value) =>
-              patch({ tone: value as FormField["tone"] })
-            }
-          />
-        </Field>
-      )}
-      <Field label={t("Chỉ đọc")}>
-        <Checkbox
-          checked={!!field.readOnly}
-          onCheckedChange={(checked) => patch({ readOnly: checked === true })}
-        />
-      </Field>
-      <Field label={t("Vô hiệu hóa")}>
-        <Checkbox
-          checked={!!field.disabled}
-          onCheckedChange={(checked) => patch({ disabled: checked === true })}
-        />
-      </Field>
-      {["number", "currency"].includes(field.type) && (
+      {(section === "all" ||
+        section === "appearance" ||
+        section === "general") && (
         <>
-          {numberInput("min", "Giá trị nhỏ nhất")}
-          {numberInput("max", "Giá trị lớn nhất")}
-          <Field label={t("Chỉ số nguyên")}>
-            <Checkbox
-              checked={!!field.integer}
-              onCheckedChange={(checked) =>
-                patch({ integer: checked === true })
-              }
-            />
-          </Field>
-        </>
-      )}
-      {![
-        "section",
-        "columns",
-        "tabs",
-        "repeat",
-        "checkbox",
-        "file",
-        "signature",
-      ].includes(field.type) && (
-        <>
-          {numberInput("minLength", "Độ dài tối thiểu")}
-          {numberInput("maxLength", "Độ dài tối đa")}
-        </>
-      )}
-      {field.type === "currency" && (
-        <Field label={t("Mã tiền tệ ISO")}>
-          <Input
-            value={field.currency ?? "VND"}
-            onChange={(event) => patch({ currency: event.target.value })}
-          />
-        </Field>
-      )}
-      {["columns", "table"].includes(field.type) && (
-        <Field label={t("Số cột")}>
-          <Select
-            label={t("Số cột")}
-            value={String(field.columns ?? 2)}
-            options={[1, 2, 3].map((number) => ({
-              value: String(number),
-              label: String(number),
-            }))}
-            onValueChange={(value) =>
-              patch({ columns: Number(value) as 1 | 2 | 3 })
-            }
-          />
-        </Field>
-      )}
-      {field.type === "repeat" && (
-        <>
-          {numberInput("minRows", "Số dòng tối thiểu")}
-          {numberInput("maxRows", "Số dòng tối đa")}
-          <Field label={t("Mã trường duy nhất trong mỗi dòng")}>
-            <Input
-              value={field.uniqueBy ?? ""}
+          <Field label={t("Gợi ý tiếng Việt")}>
+            <Textarea
+              value={field.help?.vi ?? ""}
               onChange={(event) =>
-                patch({ uniqueBy: event.target.value || undefined })
-              }
-            />
-          </Field>
-        </>
-      )}
-      {field.type === "file" && (
-        <>
-          <Field
-            label={t("Định dạng tệp cho phép")}
-            hint={t("Ví dụ: .pdf,image/*")}
-          >
-            <Input
-              value={field.accept ?? ""}
-              onChange={(event) => patch({ accept: event.target.value })}
-            />
-          </Field>
-          {numberInput("maxFileSize", "Dung lượng tối đa mỗi tệp (byte)")}
-          {numberInput("maxFiles", "Số tệp tối đa")}
-        </>
-      )}
-      <RuleEditor
-        label={t("Hiển thị khi")}
-        rule={field.visibleWhen}
-        fields={fields}
-        onChange={(visibleWhen) => patch({ visibleWhen })}
-      />
-      <RuleEditor
-        label={t("Bắt buộc khi")}
-        rule={field.requiredWhen}
-        fields={fields}
-        onChange={(requiredWhen) => patch({ requiredWhen })}
-      />
-      <RuleEditor
-        label={t("Vô hiệu hóa khi")}
-        rule={field.disabledWhen}
-        fields={fields}
-        onChange={(disabledWhen) => patch({ disabledWhen })}
-      />
-      <Field label={t("Trường để so sánh chéo")}>
-        <Select
-          label={t("Trường để so sánh chéo")}
-          value={field.compare?.field ?? "__none__"}
-          options={[
-            { value: "__none__", label: t("Không dùng") },
-            ...fields.map((item) => ({ value: item.key, label: item.key })),
-          ]}
-          onValueChange={(value) =>
-            patch({
-              compare:
-                value === "__none__"
-                  ? undefined
-                  : { field: value, operator: "gte" },
-            })
-          }
-        />
-      </Field>
-      {field.compare && (
-        <Field label={t("Phép so sánh chéo")}>
-          <Select
-            label={t("Phép so sánh chéo")}
-            value={field.compare.operator}
-            options={[
-              { value: "eq", label: t("Bằng") },
-              { value: "gte", label: t("Lớn hơn hoặc bằng") },
-              { value: "lte", label: t("Nhỏ hơn hoặc bằng") },
-            ]}
-            onValueChange={(operator) =>
-              patch({
-                compare: {
-                  ...field.compare!,
-                  operator: operator as "eq" | "gte" | "lte",
-                },
-              })
-            }
-          />
-        </Field>
-      )}
-      {["number", "currency"].includes(field.type) && (
-        <>
-          <Field label={t("Phép tính")}>
-            <Select
-              label={t("Phép tính")}
-              value={field.calculation?.operator ?? "__none__"}
-              options={[
-                { value: "__none__", label: t("Không dùng") },
-                ...[
-                  "add",
-                  "subtract",
-                  "multiply",
-                  "divide",
-                  "sum",
-                  "average",
-                  "count",
-                  "min",
-                  "max",
-                ].map((value) => ({ value, label: t(`calc.${value}`) })),
-              ]}
-              onValueChange={(value) =>
                 patch({
-                  calculation:
-                    value === "__none__"
-                      ? undefined
-                      : {
-                          operator: value as NonNullable<
-                            FormField["calculation"]
-                          >["operator"],
-                          fields: field.calculation?.fields ?? [],
-                          precision: 2,
-                        },
+                  help: { vi: event.target.value, en: field.help?.en ?? "" },
                 })
               }
             />
           </Field>
-          {field.calculation && (
-            <>
-              <Field
-                label={t("Các mã trường đầu vào")}
-                hint={t(
-                  "Phân cách bằng dấu phẩy; tổng dòng lặp dùng lines.amount.",
-                )}
-              >
-                <Input
-                  value={field.calculation.fields.join(",")}
-                  onChange={(event) =>
-                    patch({
-                      calculation: {
-                        ...field.calculation!,
-                        fields: event.target.value
-                          .split(",")
-                          .map((value) => value.trim())
-                          .filter(Boolean),
-                      },
-                    })
-                  }
-                />
-              </Field>
-              <Field label={t("Số chữ số thập phân")}>
-                <Input
-                  type="number"
-                  min={0}
-                  max={8}
-                  value={field.calculation.precision ?? 2}
-                  onChange={(event) =>
-                    patch({
-                      calculation: {
-                        ...field.calculation!,
-                        precision: Number(event.target.value),
-                      },
-                    })
-                  }
-                />
-              </Field>
-            </>
+          <Field label={t("Gợi ý tiếng Anh")}>
+            <Textarea
+              value={field.help?.en ?? ""}
+              onChange={(event) =>
+                patch({
+                  help: { en: event.target.value, vi: field.help?.vi ?? "" },
+                })
+              }
+            />
+          </Field>
+          <Field label={t("Placeholder tiếng Việt")}>
+            <Input
+              value={field.placeholder?.vi ?? ""}
+              onChange={(event) =>
+                patch({
+                  placeholder: {
+                    vi: event.target.value,
+                    en: field.placeholder?.en ?? "",
+                  },
+                })
+              }
+            />
+          </Field>
+          <Field label={t("Placeholder tiếng Anh")}>
+            <Input
+              value={field.placeholder?.en ?? ""}
+              onChange={(event) =>
+                patch({
+                  placeholder: {
+                    en: event.target.value,
+                    vi: field.placeholder?.vi ?? "",
+                  },
+                })
+              }
+            />
+          </Field>
+        </>
+      )}
+      {(section === "all" || section === "data" || section === "general") && (
+        <>
+          <CreatorDefaultEditor field={field} patch={patch} />
+          {field.type === "person" && !field.defaultValueSource && (
+            <PersonDefaultEditor
+              field={field}
+              providers={providers}
+              dependency={
+                field.dataSource?.dependsOn
+                  ? sourceDefaults?.[field.dataSource.dependsOn]
+                  : undefined
+              }
+              patch={patch}
+            />
           )}
-        </>
-      )}
-      {["select", "radio", "multiselect", "checkboxes"].includes(
-        field.type,
-      ) && (
-        <>
-          <Field
-            label={t("Mã nguồn lựa chọn")}
-            hint={t(
-              "Ứng dụng chủ đăng ký provider; schema không chứa URL hay token.",
-            )}
-          >
-            <Input
-              value={field.dataSource?.provider ?? ""}
-              onChange={(event) =>
-                patch({
-                  dataSource: event.target.value
-                    ? {
-                        provider: event.target.value,
-                        dependsOn: field.dataSource?.dependsOn,
-                      }
-                    : undefined,
-                })
-              }
-            />
-          </Field>
-          {field.dataSource && (
-            <Field label={t("Phụ thuộc mã trường")}>
+          {field.type !== "person" && !field.defaultValueSource && (
+            <Field label={t("Giá trị mặc định")}>
               <Input
-                value={field.dataSource.dependsOn ?? ""}
+                value={
+                  typeof field.defaultValue === "string" ||
+                  typeof field.defaultValue === "number" ||
+                  typeof field.defaultValue === "boolean"
+                    ? String(field.defaultValue)
+                    : ""
+                }
                 onChange={(event) =>
                   patch({
-                    dataSource: {
-                      ...field.dataSource!,
-                      dependsOn: event.target.value || undefined,
-                    },
+                    defaultValue:
+                      field.type === "checkbox"
+                        ? event.target.value === "true"
+                        : event.target.value,
                   })
+                }
+              />
+            </Field>
+          )}
+          {field.type === "button" && (
+            <Field label={t("Hành động nút")}>
+              <Select
+                label={t("Hành động nút")}
+                value={field.buttonAction ?? "submit"}
+                options={[
+                  { value: "submit", label: t("Gửi biểu mẫu") },
+                  { value: "reset", label: t("Xóa dữ liệu thử") },
+                ]}
+                onValueChange={(value) =>
+                  patch({ buttonAction: value as "submit" | "reset" })
+                }
+              />
+            </Field>
+          )}
+          {field.type === "alert" && (
+            <Field label={t("Mức thông báo")}>
+              <Select
+                label={t("Mức thông báo")}
+                value={field.tone ?? "info"}
+                options={[
+                  { value: "info", label: t("Thông tin") },
+                  { value: "warning", label: t("Cảnh báo") },
+                  { value: "danger", label: t("Lỗi") },
+                  { value: "success", label: t("Thành công") },
+                ]}
+                onValueChange={(value) =>
+                  patch({ tone: value as FormField["tone"] })
                 }
               />
             </Field>
           )}
         </>
       )}
-      <Field label={t("Mã bộ hiển thị tùy chỉnh")}>
-        <Input
-          value={field.customRenderer ?? ""}
-          onChange={(event) =>
-            patch({ customRenderer: event.target.value || undefined })
-          }
-        />
-      </Field>
+      {(section === "all" || section === "appearance") && <></>}
+      {(section === "all" || section === "validation") && (
+        <>
+          <Field label={t("Chỉ đọc")}>
+            <Checkbox
+              checked={!!field.readOnly}
+              onCheckedChange={(checked) =>
+                patch({ readOnly: checked === true })
+              }
+            />
+          </Field>
+          <Field label={t("Vô hiệu hóa")}>
+            <Checkbox
+              checked={!!field.disabled}
+              onCheckedChange={(checked) =>
+                patch({ disabled: checked === true })
+              }
+            />
+          </Field>
+        </>
+      )}
+      {(section === "all" || section === "validation") && (
+        <>
+          {["number", "currency"].includes(field.type) && (
+            <>
+              {numberInput("min", "Giá trị nhỏ nhất")}
+              {numberInput("max", "Giá trị lớn nhất")}
+              <Field label={t("Chỉ số nguyên")}>
+                <Checkbox
+                  checked={!!field.integer}
+                  onCheckedChange={(checked) =>
+                    patch({ integer: checked === true })
+                  }
+                />
+              </Field>
+            </>
+          )}
+          {![
+            "section",
+            "columns",
+            "tabs",
+            "repeat",
+            "checkbox",
+            "file",
+            "signature",
+          ].includes(field.type) && (
+            <>
+              {numberInput("minLength", "Độ dài tối thiểu")}
+              {numberInput("maxLength", "Độ dài tối đa")}
+            </>
+          )}
+          {field.type === "currency" && (
+            <Field label={t("Mã tiền tệ ISO")}>
+              <Input
+                value={field.currency ?? "VND"}
+                onChange={(event) => patch({ currency: event.target.value })}
+              />
+            </Field>
+          )}
+          {field.type === "repeat" && (
+            <>
+              {numberInput("minRows", "Số dòng tối thiểu")}
+              {numberInput("maxRows", "Số dòng tối đa")}
+              <Field label={t("Mã trường duy nhất trong mỗi dòng")}>
+                <Input
+                  value={field.uniqueBy ?? ""}
+                  onChange={(event) =>
+                    patch({ uniqueBy: event.target.value || undefined })
+                  }
+                />
+              </Field>
+            </>
+          )}
+          {field.type === "file" && (
+            <>
+              <Field
+                label={t("Định dạng tệp cho phép")}
+                hint={t("Ví dụ: .pdf,image/*")}
+              >
+                <Input
+                  value={field.accept ?? ""}
+                  onChange={(event) => patch({ accept: event.target.value })}
+                />
+              </Field>
+              {numberInput("maxFileSize", "Dung lượng tối đa mỗi tệp (byte)")}
+              {numberInput("maxFiles", "Số tệp tối đa")}
+            </>
+          )}
+        </>
+      )}
+      {(section === "all" || section === "logic") && (
+        <>
+          <RuleEditor
+            label={t("Hiển thị khi")}
+            rule={field.visibleWhen}
+            fields={fields}
+            onChange={(visibleWhen) => patch({ visibleWhen })}
+          />
+          <RuleEditor
+            label={t("Bắt buộc khi")}
+            rule={field.requiredWhen}
+            fields={fields}
+            onChange={(requiredWhen) => patch({ requiredWhen })}
+          />
+          <RuleEditor
+            label={t("Vô hiệu hóa khi")}
+            rule={field.disabledWhen}
+            fields={fields}
+            onChange={(disabledWhen) => patch({ disabledWhen })}
+          />
+          <Field label={t("Trường để so sánh chéo")}>
+            <Select
+              label={t("Trường để so sánh chéo")}
+              value={field.compare?.field ?? "__none__"}
+              options={[
+                { value: "__none__", label: t("Không dùng") },
+                ...fields.map((item) => ({ value: item.key, label: item.key })),
+              ]}
+              onValueChange={(value) =>
+                patch({
+                  compare:
+                    value === "__none__"
+                      ? undefined
+                      : { field: value, operator: "gte" },
+                })
+              }
+            />
+          </Field>
+          {field.compare && (
+            <Field label={t("Phép so sánh chéo")}>
+              <Select
+                label={t("Phép so sánh chéo")}
+                value={field.compare.operator}
+                options={[
+                  { value: "eq", label: t("Bằng") },
+                  { value: "gte", label: t("Lớn hơn hoặc bằng") },
+                  { value: "lte", label: t("Nhỏ hơn hoặc bằng") },
+                ]}
+                onValueChange={(operator) =>
+                  patch({
+                    compare: {
+                      ...field.compare!,
+                      operator: operator as "eq" | "gte" | "lte",
+                    },
+                  })
+                }
+              />
+            </Field>
+          )}
+          {["number", "currency"].includes(field.type) && (
+            <>
+              <Field label={t("Phép tính")}>
+                <Select
+                  label={t("Phép tính")}
+                  value={field.calculation?.operator ?? "__none__"}
+                  options={[
+                    { value: "__none__", label: t("Không dùng") },
+                    ...[
+                      "add",
+                      "subtract",
+                      "multiply",
+                      "divide",
+                      "sum",
+                      "average",
+                      "count",
+                      "min",
+                      "max",
+                    ].map((value) => ({ value, label: t(`calc.${value}`) })),
+                  ]}
+                  onValueChange={(value) =>
+                    patch({
+                      calculation:
+                        value === "__none__"
+                          ? undefined
+                          : {
+                              operator: value as NonNullable<
+                                FormField["calculation"]
+                              >["operator"],
+                              fields: field.calculation?.fields ?? [],
+                              precision: 2,
+                            },
+                    })
+                  }
+                />
+              </Field>
+              {field.calculation && (
+                <>
+                  <Field
+                    label={t("Thêm trường vào phép tính")}
+                    hint={t(
+                      "Chọn trường số hoặc tiền tệ; có thể thêm nhiều trường.",
+                    )}
+                  >
+                    <Select
+                      label={t("Thêm trường vào phép tính")}
+                      value="__empty__"
+                      options={[
+                        {
+                          value: "__empty__",
+                          label: calculationFields.length
+                            ? t("Chọn trường")
+                            : t("Không có trường số phù hợp"),
+                        },
+                        ...calculationFields
+                          .filter(
+                            (item) =>
+                              !field.calculation?.fields.includes(item.key),
+                          )
+                          .map((item) => ({
+                            value: item.key,
+                            label: `${item.label[locale]} · ${item.key}`,
+                          })),
+                      ]}
+                      onValueChange={(value) => {
+                        if (value === "__empty__") return;
+                        patch({
+                          calculation: {
+                            ...field.calculation!,
+                            fields: [...field.calculation!.fields, value],
+                          },
+                        });
+                      }}
+                    />
+                  </Field>
+                  {field.calculation.fields.length > 0 && (
+                    <>
+                      <span className="fd-calculation-inputs-label">
+                        {t("Trường đầu vào đã chọn")}
+                      </span>
+                      <div className="fd-calculation-inputs" role="list">
+                        {field.calculation.fields.map((key) => {
+                          const source = fields.find(
+                            (item) => item.key === key,
+                          );
+                          return (
+                            <div
+                              className="fd-calculation-input"
+                              key={key}
+                              role="listitem"
+                            >
+                              <span>
+                                {source ? `${source.label[locale]} · ` : ""}
+                                {key}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                aria-label={t("Xóa trường khỏi phép tính")}
+                                title={t("Xóa trường khỏi phép tính")}
+                                onClick={() =>
+                                  patch({
+                                    calculation: {
+                                      ...field.calculation!,
+                                      fields: field.calculation!.fields.filter(
+                                        (item) => item !== key,
+                                      ),
+                                    },
+                                  })
+                                }
+                              >
+                                <X />
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="fd-calculation-preview">
+                        <span>{t("Công thức xem trước")}</span>
+                        <code>{calculationPreview}</code>
+                      </div>
+                    </>
+                  )}
+                  <Field
+                    label={t("Công thức nâng cao")}
+                    hint={t(
+                      "Dùng mã trường và các hàm SUM, AVG, MIN, MAX, COUNT, ROUND.",
+                    )}
+                  >
+                    <Textarea
+                      rows={2}
+                      value={field.calculation.expression ?? ""}
+                      placeholder={t("Ví dụ: amount * exchange_rate")}
+                      onChange={(event) => {
+                        setFormulaResult(null);
+                        patch({
+                          calculation: {
+                            ...field.calculation!,
+                            expression: event.target.value || undefined,
+                          },
+                        });
+                      }}
+                    />
+                  </Field>
+                  <div className="fd-calculation-formula-tools">
+                    <Select
+                      label={t("Gợi ý trường")}
+                      value="__empty__"
+                      options={[
+                        { value: "__empty__", label: t("Chèn trường") },
+                        ...calculationFields.map((item) => ({
+                          value: item.key,
+                          label: `${item.label[locale]} · ${item.key}`,
+                        })),
+                      ]}
+                      onValueChange={(value) => {
+                        if (value === "__empty__") return;
+                        patch({
+                          calculation: {
+                            ...field.calculation!,
+                            expression: `${field.calculation?.expression ?? ""}${field.calculation?.expression ? " " : ""}${value}`,
+                          },
+                        });
+                      }}
+                    />
+                    <Select
+                      label={t("Gợi ý hàm")}
+                      value="__empty__"
+                      options={[
+                        { value: "__empty__", label: t("Chèn hàm") },
+                        ...["SUM", "AVG", "MIN", "MAX", "COUNT", "ROUND"].map(
+                          (value) => ({ value, label: value }),
+                        ),
+                      ]}
+                      onValueChange={(value) => {
+                        if (value === "__empty__") return;
+                        patch({
+                          calculation: {
+                            ...field.calculation!,
+                            expression: `${field.calculation?.expression ?? ""}${field.calculation?.expression ? " " : ""}${value}(`,
+                          },
+                        });
+                      }}
+                    />
+                  </div>
+                  <div className="fd-calculation-formula-actions">
+                    <Button
+                      type="button"
+                      onClick={() =>
+                        setFormulaResult(
+                          calculate(field, sourceDefaults ?? {}) ??
+                            t("Không thể tính với dữ liệu thử"),
+                        )
+                      }
+                    >
+                      {t("Xem kết quả thử")}
+                    </Button>
+                    {formulaResult !== null && (
+                      <output
+                        className="fd-calculation-result"
+                        aria-live="polite"
+                      >
+                        {t("Kết quả thử")}: <strong>{formulaResult}</strong>
+                      </output>
+                    )}
+                  </div>
+                  <Field
+                    label={t("Mã trường nâng cao")}
+                    hint={t(
+                      "Phân cách bằng dấu phẩy; tổng dòng lặp dùng lines.amount.",
+                    )}
+                  >
+                    <Input
+                      value={field.calculation.fields.join(",")}
+                      onChange={(event) =>
+                        patch({
+                          calculation: {
+                            ...field.calculation!,
+                            fields: event.target.value
+                              .split(",")
+                              .map((value) => value.trim())
+                              .filter(Boolean),
+                          },
+                        })
+                      }
+                    />
+                  </Field>
+                  <Field label={t("Số chữ số thập phân")}>
+                    <Input
+                      type="number"
+                      min={0}
+                      max={8}
+                      value={field.calculation.precision ?? 2}
+                      onChange={(event) =>
+                        patch({
+                          calculation: {
+                            ...field.calculation!,
+                            precision: Number(event.target.value),
+                          },
+                        })
+                      }
+                    />
+                  </Field>
+                </>
+              )}
+            </>
+          )}
+        </>
+      )}
+      {(section === "all" || section === "data") && (
+        <>
+          {["select", "radio", "multiselect", "checkboxes", "person"].includes(
+            field.type,
+          ) && (
+            <>
+              <DataSourceEditor
+                field={field}
+                sources={dataSources}
+                patch={patch}
+              />
+              {field.dataSource && (
+                <Field label={t("Phụ thuộc mã trường")}>
+                  <Input
+                    value={field.dataSource.dependsOn ?? ""}
+                    onChange={(event) =>
+                      patch({
+                        dataSource: {
+                          ...field.dataSource!,
+                          dependsOn: event.target.value || undefined,
+                        },
+                      })
+                    }
+                  />
+                </Field>
+              )}
+            </>
+          )}
+        </>
+      )}
+      {(section === "all" || section === "advanced") && (
+        <>
+          <Field label={t("Mã bộ hiển thị tùy chỉnh")}>
+            <Input
+              value={field.customRenderer ?? ""}
+              onChange={(event) =>
+                patch({ customRenderer: event.target.value || undefined })
+              }
+            />
+          </Field>
+        </>
+      )}
     </FieldGroup>
   );
 }

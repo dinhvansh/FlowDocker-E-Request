@@ -12,7 +12,7 @@ This repo contains design documentation and a **frontend PR 1 prototype with syn
 
 ## Non-negotiables
 - The V1 application is **FlowDocker E-Request**. Do not reuse E-Office Workflow Runtime V2; new workflow integration targets Synergy Codes Workflow Builder CE + Temporal after POC.
-- **Dynamic Forms:** Form.io JS Core candidate; preserve schema version, validation and field ACL at backend, regardless of UI behavior.
+- **Dynamic Forms (owner update, docs/57 and Issue #3):** keep the original FlowDocker Forms engine. Redesign the designer using SurveyJS Creator/Fillout as UX research references only; no Form.io integration or comparison POC for this task. Preserve schema version, validation and field ACL at backend, regardless of UI behavior.
 - **Workflow:** Admin IF/ELSE and parallel approval; graph drafts must be validated/compiled before executing. Never run arbitrary JS in admin-defined expressions.
 - **Approval:** Single source of truth in PostgreSQL. Web and custom Teams Bot use one authenticated, idempotent decision API; transactional state/audit/outbox; durable Temporal signaling.
 - **Teams:** Custom Bot ≠ native Teams Approvals. Avoid unverified Graph beta dependency and design around possible company DLP restrictions.
@@ -100,3 +100,11 @@ Run `npm run i18n:check` (also included in `npm run lint`) and test changed jour
 
 ## FORMS USER DECISION 2026-10-28 — preserve engine, redesign UI from researched benchmarks
 When working on `packages/form-builder` or `apps/e-request-web/src/forms.tsx`, first read **`docs/57-FORMS-UX-BENCHMARK-REDESIGN.md`** and GitHub Issue #3. Owner confirms: keep **original FlowDocker Forms engine**, 33 field type schema, runtime and reusable package; do **NOT** discard/rebuild it or force Form.io conversion. For Form Designer UX, study SurveyJS Creator V2 Toolbox + real design canvas + Property Grid and Fillout clean form presentation; use inspiration only, no copied code/assets. Replace current schema/table-centric primary editor with **WYSIWYG interactive form canvas** using common underlying field-rendering components. Keep palette, inspector, undo/redo, nested/repeating fields, typed logic, local preview, a11y and keyboard alternative. Before declaring DONE supply before/after screenshots, tested 1366×768 and mobile, real build/unit/browser evidence and owner approval. Do not merge without owner.
+
+
+## Mandatory form spacing and sizing — owner requirement
+Read docs/82-FORM-SPACING-AND-SIZING-RULES.md before UI work involving forms, dialogs or inspectors. Use shared FieldGroup + Field; parent owns gap, Field has zero outer margin. Standard field gap 16px, inspector gap 12px, label/control/help/error gap 6px, section gap 24px. Single-line controls: 36px default, 32px compact desktop inspector, 44px mobile. Use --fd-field-gap / --fd-field-content-gap / --fd-section-gap / --fd-control-height tokens. Do not stack child margins with parent gaps or distribute form fields with justify-between to fill panel height. Never assign fixed field-row heights that clip wrapped labels or errors. Preserve intentional repeat-grid/document control sizing. Verify actual browser dimensions, VI/EN, light/dark and mobile for changed surfaces. See docs/82 for full rules.
+
+
+## Mandatory UI typography — owner requirement
+Read docs/83-UI-TYPOGRAPHY-RULES.md. Routine app text (body/controls/labels/hints/errors/notices/tables) uses Inter 12px, line-height 18px, weight 400. Section titles 13/20px, dialog titles 14/20px, page-toolbar titles 18/24px, weight 600. Use shared --fd-font-* tokens; cover portalled dialogs/popovers too. Do not introduce local text-sm/base/lg or hardcoded font sizes for routine text. Keep mobile typography consistent; touch size comes from control height. Authored form/document content and intentional technical monospace retain their own semantics. Verify computed typography in browser for new UI, including help/error states and VI/EN.

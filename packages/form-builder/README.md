@@ -41,7 +41,17 @@ Replace console.log with your host save adapter. Remount the renderer when chang
 
 ## Public host contracts
 
-**FormDesigner**: definition, onChange, optional readOnly. Emits schema only. Host owns storage, version conflicts, publishing, approval and authentication.
+**FormDesigner**: definition, onChange, optional readOnly, providers and inspectorSection (`basic` or `logic`). Emits schema only. Host owns storage, version conflicts, publishing, approval and authentication. The UX V2 designer uses a grouped toolbox, shared runtime field controls on a live canvas, nested selection, insertion points, an optional structural outline and contextual properties. Toolbox/inspector collapse; inspector width can be adjusted on desktop. Mobile switches panes using tabs. Clicking or pressing Enter adds fields; separate handles support drag.
+
+**FormCanvas**: definition, selectedId, readOnly, providers, onSelect, onInsert, onMove, onClone, onDelete; optional additive `onPatch(id, changes)` enables inline labels. Enter/blur commits one change; Escape cancels. Authoring component used inside FormDesigner; supply dnd-kit DndContext/SortableContext when embedding it separately. It reveals conditional fields for editing and renders one structural sample row for repeat fields. Sample inputs are local component state and never saved into the schema. Use FormPreview to exercise real visibility, row editing, validation and submission filtering. This is an authoring surface, not an authorization boundary.
+
+**FieldInspector / FieldInspectorProps / InspectorSection**: exported contextual property panel. Host supplies selected field, references, containers, current category, errors, panel width and typed change/move/clone/delete callbacks. Host owns schema history and persistence; inspector has no network or application routes. FormDesigner is the integrated example; `packages/form-builder/examples` runs without E-Request and includes synthetic payment providers.
+
+The shared UI package also exports `Combobox` / `ComboboxProps` for searchable choice lists. Form runtime select fields and the designer's parent-container picker use it; it preserves the option values and only changes presentation and filtering.
+
+**Repeat presentation**: simple rows of up to six leaf controls render as a real table, with accessible control labels and stacked mobile rows. Complex/nested controls retain the existing stacked layout. Runtime owns row values through the existing engine; min/max guards and row calculations remain unchanged. Internal `RepeatField` and `InlineLabelEditor` are implementation components, not stable public APIs.
+
+**createPaymentDefinition**: synthetic payment scenario with conditional advance reason, provider identifiers, expense rows and decimal aggregate. Register `demo.companies` / `demo.departments` using the host's providers map; no live service, upload or ERP integration is implied. `createShowcaseDefinition` remains available.
 
 **FormRenderer**: definition, values, onChange; optional onSubmit, onInvalid, readOnly, access, providers, onUpload, onRemoveFile, renderers. Validation precedes submit. Rejected submission preserves values. Pending uploads block submission. Reset aborts upload controls. Read-only guards raw submit events as well as buttons.
 
@@ -74,3 +84,55 @@ Independent consumer: examples/forms-consumer. Copy tarball beside package.json,
 Original work is reserved for the owner; see OWNERSHIP.md. No public license grant is assumed. Preserve THIRD_PARTY_NOTICES.md, dependency-inventory.json and licenses/ when redistributing. Upstream parts retain their own licenses. private:true prevents accidental npm publication. Customer commercial license terms, pricing and support obligations are not defined by this package.
 
 UI toolkit only: no Form.io server/hosted submissions, backend ACL, workflow execution, production file storage, CAPTCHA/geocoding integration, rich HTML editor, embedded external forms or server PDF. No verified percentage of complete Form.io equivalence. CSS includes Tailwind preflight/global font rules; verify host styles when embedding. Formal WCAG certification, external customer UAT and stable 1.0 API remain pending.
+
+Repeat settings: `FieldInspector` optionally accepts `onSelectField(id)` and `onAddColumn(type)` for a contextual repeating-table editor. The host owns schema history and selection. Simple leaf columns stay in a horizontally scrollable table on desktop regardless of column count; phone layouts stack rows and complex nested field layouts retain the existing card presentation. No schema migration.
+
+Form orientation: optional `FormDefinition.orientation` accepts `portrait` (default) or `landscape`. The designer selector persists this display metadata; canvas/preview expand up to 760px/1120px within available space. Mobile remains responsive. Import/export preserve orientation and reject unknown enum values. Old strict parsers must update before loading definitions containing the new property; no migration for existing definitions. This is screen presentation, not a PDF generation feature.
+
+Automatic repeat entry: optional `FormField.autoRows: boolean` defaults off. Enable it in repeating-table settings to show a virtual trailing entry row while below maxRows. It is excluded from controlled values and validation until meaningful data is entered; numeric zero is data. Partly filled real rows retain normal required validation. Empty real rows are removed on moving focus to another control outside the row (popup interactions and null blur targets are excluded), preserving minRows. Add row focuses the last entry in automatic mode and appends a real row in manual mode. Read-only/design behavior is unchanged. Import/export accepts the new optional boolean; older strict consumers must update their library.
+
+Currency controls now display localized grouping while keeping canonical decimal strings in values: VI `1.234.567,89`, EN `1,234,567.89`. Enter/paste using the current locale separators. Calculations, min/max/integer and required validation continue to use the canonical value. Currency controls expose textbox semantics with inputMode=decimal; plain number controls retain spinbuttons. This applies to repeating-table cells and disabled calculated totals as well.
+
+Additive field type `person`: stores one stable ID string, or a unique string array with `multiple: true`. Uses shared PeoplePicker in runtime and canvas. Required and choice membership validation apply to injected provider options (or static options). Toolbox-created fields default to the host registry key `organization.people`; standalone consumers must register it or configure a different provider. Schema versions remain unchanged; consumers with an older strict type allowlist must update before importing these forms. The existing 33 field types remain supported. No Graph calls, current-user authentication or workflow assignee execution are added. See docs/61 for sample directory and scope.
+
+Toolbox fields can be dragged by their full name tile or grip. Pointer placement chooses the smallest intersected canvas/container target; upper/lower halves of a scalar field insert before/after it, and container drops append children. Releasing outside a target or Escape cancels. Enter/click adds a field; Space activates keyboard drag. Mouse uses an 8px activation distance, touch uses a 180ms hold with 8px tolerance to preserve vertical scrolling. Mobile click insertion is supported; real touch-drag automation remains unverified. `FormCanvas.dropAfter` is an optional visual hint controlled by the designer. See docs/63 for browser evidence.
+
+## Named data sources
+
+`FormDesigner` accepts optional `dataSources: readonly FormDataSource[]`. Each entry has `id`, bilingual `label` and bilingual `description`. The inspector offers only IDs present in `providers`; registered IDs without metadata use their ID as the label. Saved unavailable IDs remain visible and unchanged until the owner chooses another source. Selecting a different source clears the old dependency; switching to manual choices preserves existing options and defaults. Schema and runtime callbacks are unchanged.
+
+The standalone example in `examples/main.tsx` supplies display metadata alongside its synthetic providers. `DataSourceEditor` is exported for isolated host composition/testing; its `sources` prop must contain only host-approved available sources. Read-only hosts must disable the editor using a containing disabled fieldset.
+
+## Current creator default
+
+Person fields accept optional `defaultValueSource: "currentUser"` instead of a literal `defaultValue`. Pass `runtimeContext={{ currentUserId: "stable-person-id" }}` to FormDesigner/FormCanvas and FormRenderer/FormPreview. The ID must be included in the configured choice source. The standalone example supplies a synthetic account independently of E-Request.
+
+The person inspector offers Current form creator and Allow changing person (uses existing `readOnly`). Single-person fields receive a string; multiple-person fields receive an array. Explicit saved or cleared values take precedence. Reset restores the current context default. Missing context does not guess or fall back to a literal default; the runtime explains that identity is unavailable and required validation still applies.
+
+Headless consumers pass the same context as the fourth argument to `prepareValues` / `submissionValues`, fifth to `validatePreview`, or third to `defaultValues` (the existing second budget argument is unchanged). Context is never exported with the form. This optional schema property requires updating older strict consumers, although schema versions remain 1/2. UI read-only is presentation only: a real backend must independently verify and bind the request creator. No login or server authorization is implemented by this feature.
+
+Fixed person defaults now use the shared searchable PeoplePicker in both Basic and Data inspector sections. FormDesigner passes its `providers` and configured dependency defaults to FieldInspector (`providers?`, `sourceDefaults?`); isolated FieldInspector consumers may inject these too. Only IDs are stored: one string or an array for multiple people. Static field options also work. Search filters the bounded provider results locally, matching the existing runtime picker; it does not query an external service on every keystroke. Loading/error/missing/empty sources and unavailable saved IDs are visible; failures do not erase saved defaults. Retry is offered for failed/empty sources and Clear default remains available when a saved value is unavailable. UI identity enforcement is unchanged.
+
+## Designer configuration indicators
+
+The canvas and inspector derive compact Data / Conditions / Calculation / Validation / Advanced hints from the current field, including nested fields. Clicking a hint in FormDesigner selects the field and opens the matching inspector group (including mobile). Hints indicate configured presence, not schema validity, and are never rendered in FormRenderer/FormPreview. Required alone keeps its existing star.
+
+`fieldConfiguration(field): ConfigurationKind[]` is exported for host presentation. `ConfigurationKind` and `ConfigurationSection` are public types. `FormCanvasProps.onInspect?(fieldId, section)` is optional; without it standalone canvases show noninteractive hints. Inspector consumers reuse existing onSectionChange. Schema/storage and execution contracts are unchanged. Examples consume the same designer/canvas package path. See docs/74 for actual tests and screenshots; no backend/security or platform-ready completion is implied.
+
+
+## Master catalog column mapping
+
+`FormDataSource.mapping?` describes eligible `{key, label: {vi,en}}` columns and optional `defaultValueField` / `defaultLabelField`. The source editor displays stored-key and display-name selectors for these sources. Hosts own the catalog list, column classification and stable key quality; no records are embedded in metadata.
+
+`FormField.dataSource` adds optional `valueField` and `labelField` strings. `DataProvider` context receives these optional keys alongside query/dependency/signal. `useChoices` aborts stale requests and reloads when mapping changes. Legacy definitions/providers remain valid. Older strict consumers must upgrade before importing definitions with mappings; schema versions remain unchanged. Missing saved columns remain visible for repair rather than being silently replaced.
+
+E-Request's `masterFormSources` adapter registers its browser-local synthetic MasterEntity catalogs and projects only selected PUBLIC/INTERNAL scalar columns. It rejects missing/duplicate/reserved IDs, excludes inactive rows, and never guesses row-index identity. Standalone hosts supply their own mapping metadata/providers; no E-Request catalog dependency enters the reusable package. External sync, authorization and production key governance remain backend responsibilities. See docs/75 for verification.
+
+
+## Creator profile defaults
+
+`DefaultValueSource` extends existing `currentUser` with `currentUser.name`, `.email`, `.employeeCode`, `.department`, `.position`, `.managerName`, `.managerId`. Text/textarea/hidden support text attributes; email supports email only; person supports currentUser and managerId (stable directory ID, array when multiple). Exported `defaultSourcesForType`, `creatorProfileLabels` and `resolveDefaultSource` share the allowlist between import validation, editor and engine. Literal defaultValue and defaultValueSource cannot coexist. Type changes clear incompatible sources.
+
+Pass optional `FormRuntimeContext.currentUser` with typed string attributes. Omit unknown/unauthorized attributes; manager name is not an ID and missing manager never guesses a fallback. Old `currentUserId` behavior remains. E-Request uses its synthetic profile; standalone examples supply their own context without host imports. Backend must supply an authorized projection and independently verify creator/locked fields.
+
+Basic/Data inspector offers compatible default sources and Allow editing value (existing readOnly). Runtime warns on missing context attributes; normal required/email validation applies. Explicit saved/cleared input wins over defaults; reset restores context defaults. Nested and repeat fields use the same resolver. Context values are not exported in schemas. submissionValues returns a snapshot of resolved values; actual immutable server revisions and live identity/HR connectivity are not implemented. Old strict clients must upgrade for the additive source enum variants; schema versions remain 1/2. See docs/76.

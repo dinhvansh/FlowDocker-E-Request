@@ -1,0 +1,114 @@
+.fd-antd-page {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: calc(100vh - 56px);
+}
+.fd-antd-page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.fd-antd-page-heading p {
+  margin: 8px 0 0;
+}
+.fd-antd-workspace {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  min-height: 590px;
+  border: 1px solid;
+}
+.fd-antd-roles {
+  padding: 20px 12px;
+  border-right: 1px solid;
+  min-width: 0;
+}
+.fd-antd-list-heading {
+  margin: 0 8px 16px;
+}
+.fd-antd-role-label {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.7;
+  padding: 6px 0;
+}
+.fd-antd-editor {
+  padding: 24px;
+  min-width: 0;
+}
+.fd-antd-scope {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0 24px;
+}
+.fd-antd-scope p {
+  margin: 6px 0 0;
+}
+.fd-antd-scope-select {
+  width: 210px;
+  flex-shrink: 0;
+}
+.fd-antd-matrix-heading {
+  margin: 0 0 16px;
+}
+.fd-antd-check-target {
+  display: inline-flex;
+  min-width: 36px;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.fd-antd-legend {
+  margin: 16px 0 0;
+}
+.fd-antd-fixtures {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  border: 0;
+  padding: 0;
+  margin: 0 0 24px;
+}
+.fd-antd-fixtures legend {
+  margin-bottom: 16px;
+}
+.fd-antd-result {
+  margin-top: 16px;
+}
+@media (max-width: 700px) {
+  .fd-antd-page {
+    padding: 20px 12px;
+    gap: 16px;
+  }
+  .fd-antd-page-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .fd-antd-workspace {
+    display: block;
+    min-height: 0;
+  }
+  .fd-antd-roles {
+    border-right: 0;
+    border-bottom: 1px solid;
+    padding: 16px;
+  }
+  .fd-antd-editor {
+    padding: 20px 16px;
+  }
+  .fd-antd-scope {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .fd-antd-scope-select {
+    width: 100%;
+  }
+  .fd-antd-fixtures {
+    grid-template-columns: 1fr;
+  }
+}

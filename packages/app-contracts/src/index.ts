@@ -34,6 +34,14 @@ export interface ResourceAction {
   resource: string;
   label: string;
   actions: Action[];
+  /** Host-registered fields; sample values must be synthetic, never real records. */
+  fields?: PermissionField[];
+}
+export interface PermissionField {
+  /** Stable policy key, retained across presentation label changes. */
+  key: string;
+  label: string;
+  sampleValue: string | number | boolean;
 }
 export interface Role {
   id: string;
@@ -87,16 +95,74 @@ export function evaluateAccess(
     simulated: true,
   };
 }
+/** Browser-only explanation over synthetic fixtures. This is not an API guard. */
+export function simulateFieldProjection(
+  role: Role,
+  resource: ResourceAction,
+  action: "READ" | "EXPORT",
+  fixture: AccessFixture,
+): {
+  decision: AccessDecision;
+  fields: {
+    key: string;
+    effect: "READ" | "MASK" | "DENY";
+    value?: string | number | boolean;
+  }[];
+} {
+  const decision = evaluateAccess(role, resource.resource, action, fixture);
+  if (!resource.actions.includes(action)) {
+    decision.effect = "DENY";
+    decision.reasons = ["Hành động không có trong danh mục tài nguyên"];
+  } else if (
+    decision.effect === "ALLOW" &&
+    (!resource.actions.includes("READ") ||
+      evaluateAccess(role, resource.resource, "READ", fixture).effect !==
+        "ALLOW")
+  ) {
+    decision.effect = "DENY";
+    decision.reasons = ["Cần quyền xem để đọc hoặc xuất dữ liệu trường"];
+  }
+  const canRead = decision.effect === "ALLOW";
+  return {
+    decision,
+    fields: (resource.fields ?? []).map((field) => {
+      const rule = role.fieldRules[field.key];
+      const effect =
+        canRead && (rule === "READ" || rule === "MASK") ? rule : "DENY";
+      return effect === "DENY"
+        ? { key: field.key, effect }
+        : {
+            key: field.key,
+            effect,
+            value: effect === "MASK" ? "••••" : field.sampleValue,
+          };
+    }),
+  };
+}
+export const isTechnicalKey = (key: string): boolean =>
+  /^[a-z][a-z0-9_]*$/.test(key);
+export function masterFieldKeyError(
+  key: string,
+  fields: readonly MasterField[],
+  currentId: string,
+): string | undefined {
+  if (!key) return "Mã trường là bắt buộc.";
+  if (!isTechnicalKey(key))
+    return "Chỉ dùng chữ thường, số và dấu gạch dưới; bắt đầu bằng chữ. Không dùng khoảng trắng hoặc dấu tiếng Việt.";
+  if (fields.some((field) => field.id !== currentId && field.key === key))
+    return "Mã trường đã tồn tại trong danh mục.";
+  return undefined;
+}
 export function validateEntity(entity: MasterEntity): string[] {
   const errors: string[] = [];
-  if (!/^[a-z][a-z0-9_]*$/.test(entity.key))
+  if (!isTechnicalKey(entity.key))
     errors.push("Mã entity chỉ dùng chữ thường, số và dấu gạch dưới.");
   if (!entity.name.trim()) errors.push("Tên entity là bắt buộc.");
   if (!entity.businessOwner.trim()) errors.push("Cần chỉ định business owner.");
   if (entity.fields.length === 0) errors.push("Cần ít nhất một trường.");
   const keys = new Set<string>();
   for (const field of entity.fields) {
-    if (!/^[a-z][a-z0-9_]*$/.test(field.key))
+    if (!isTechnicalKey(field.key))
       errors.push(`Mã trường ${field.label || "(chưa đặt tên)"} không hợp lệ.`);
     if (keys.has(field.key)) errors.push(`Mã trường ${field.key} bị trùng.`);
     keys.add(field.key);

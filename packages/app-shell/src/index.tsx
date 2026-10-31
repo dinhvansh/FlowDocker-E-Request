@@ -1,7 +1,16 @@
 import { useI18n } from "@flowdocker/i18n";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type MouseEvent,
+  type ReactNode,
+} from "react";
 import {
   Blocks,
+  ChevronLeft,
+  ChevronRight,
   FilePenLine,
   Database,
   LayoutGrid,
@@ -53,6 +62,7 @@ export function AppShell({
   page,
   account,
   onPageChange,
+  getPageHref = (id) => `#${id}`,
   theme,
   onThemeChange,
   children,
@@ -60,6 +70,7 @@ export function AppShell({
   page: PageId;
   account: { displayName: string; initials: string; subtitle: string };
   onPageChange(page: PageId): void;
+  getPageHref?(page: PageId): string;
   theme: "light" | "dark";
   onThemeChange(): void;
   children: ReactNode;
@@ -67,6 +78,8 @@ export function AppShell({
   const { t, storageWarning } = useI18n();
 
   const [navOpen, setNavOpen] = useState(false);
+  const [navCollapsed, setNavCollapsed] = useState(false);
+  const sidebarId = useId();
   const sidebarRef = useRef<HTMLElement>(null);
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
   const [search, setSearch] = useState("");
@@ -74,6 +87,19 @@ export function AppShell({
   const navigate = (id: PageId) => {
     onPageChange(id);
     setNavOpen(false);
+  };
+  const followLink = (event: MouseEvent<HTMLAnchorElement>, id: PageId) => {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
+    event.preventDefault();
+    navigate(id);
   };
   useEffect(() => {
     if (!navOpen) return;
@@ -91,7 +117,11 @@ export function AppShell({
     };
   }, [navOpen]);
   return (
-    <div className="fd-app" data-theme={theme}>
+    <div
+      className="fd-app"
+      data-theme={theme}
+      data-nav-collapsed={navCollapsed}
+    >
       {navOpen && (
         <button
           type="button"
@@ -101,6 +131,7 @@ export function AppShell({
         />
       )}
       <aside
+        id={sidebarId}
         ref={sidebarRef}
         className="fd-sidebar"
         data-open={navOpen}
@@ -142,28 +173,28 @@ export function AppShell({
                 const Icon = item.icon;
 
                 return (
-                  <button
-                    type="button"
+                  <a
+                    href={getPageHref(item.id)}
                     key={item.id}
                     className="fd-nav-link"
                     data-active={page === item.id}
                     aria-current={page === item.id ? "page" : undefined}
-                    onClick={() => navigate(item.id)}
+                    onClick={(event) => followLink(event, item.id)}
                   >
                     <Icon size={18} strokeWidth={1.85} aria-hidden="true" />
                     <span>{t(item.label)}</span>
-                  </button>
+                  </a>
                 );
               })}
             </nav>
           ))}
         </div>
-        <button
-          type="button"
+        <a
+          href={getPageHref("profile")}
           className="fd-sidebar-bottom fd-profile-link"
           data-active={page === "profile"}
           aria-current={page === "profile" ? "page" : undefined}
-          onClick={() => navigate("profile")}
+          onClick={(event) => followLink(event, "profile")}
           aria-label={t("Mở hồ sơ cá nhân")}
         >
           <span className="fd-avatar">{account.initials}</span>
@@ -171,10 +202,33 @@ export function AppShell({
             <strong>{account.displayName}</strong>
             <small>{account.subtitle}</small>
           </div>
-        </button>
+        </a>
       </aside>
       <div className="fd-main-wrap">
         <header className="fd-topbar">
+          <button
+            type="button"
+            className="fd-desktop-nav-toggle fd-icon-button"
+            aria-label={
+              navCollapsed
+                ? t("Mở thanh điều hướng")
+                : t("Thu gọn thanh điều hướng")
+            }
+            title={
+              navCollapsed
+                ? t("Mở thanh điều hướng")
+                : t("Thu gọn thanh điều hướng")
+            }
+            aria-controls={sidebarId}
+            aria-expanded={!navCollapsed}
+            onClick={() => setNavCollapsed((collapsed) => !collapsed)}
+          >
+            {navCollapsed ? (
+              <ChevronRight aria-hidden="true" />
+            ) : (
+              <ChevronLeft aria-hidden="true" />
+            )}
+          </button>
           <button
             ref={menuTriggerRef}
             className="fd-mobile-menu fd-icon-button"

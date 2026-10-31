@@ -1,6 +1,6 @@
 # FlowDocker Forms — owner-directed reusable UI product
 
-Owner explicitly authorized continuing the original form builder toward broad Form.io-like UI coverage and extracting a reusable product (2026-10-28). This supersedes the earlier Form.io-first UI choice for this work only. Form.io POC and approval/backend work remain independent roadmap items.
+Owner explicitly authorized continuing the original form builder and extracting a reusable product (2026-10-28). **Latest decision: keep the FlowDocker engine, stop the Form.io comparison POC, and redesign the designer using SurveyJS Creator interaction patterns and Fillout input quality as research references.** See [current requirements](57-FORMS-UX-BENCHMARK-REDESIGN.md), [implementation evidence](58-FORMS-UX-V2-IMPLEMENTATION.md) and Issue #3. The historical inventory below records capabilities and gaps; it is not a verified percentage or an active Form.io replacement plan.
 
 ## Research and measurement
 Reference: Form.io builder/renderer component catalog, not the Form.io API server, hosting, PDF or enterprise ecosystem. Upstream package metadata checked: `@formio/js` 5.7.0, MIT, repository https://github.com/formio/formio.js. No Form.io source or branding is copied into this implementation.

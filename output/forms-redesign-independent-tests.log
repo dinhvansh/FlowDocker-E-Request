@@ -1,0 +1,15 @@
+
+> flowdocker-forms-source@0.2.0 test
+> vitest run --maxWorkers=1
+
+
+ RUN  v5.0.5 C:/Users/van.nguyendinh/Documents/Codex/2026-10-28/d-andros-portal-d-c-d-3/work/forms-designer-ux-v2
+
+
+ Test Files  8 passed (8)
+      Tests  44 passed (44)
+   Start at  23:44:00
+   Duration  54.35s (tests 43%, import 38%, environment 18%, transform 1%)
+
+    Isolate  8 workers spawned · ~1.43s startup each (spawn + environment, per file)
+             at least ~9.98s faster with isolate: false — reuses workers across files instead of one per file

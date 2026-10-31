@@ -24,14 +24,14 @@ UI primitives có [isolated examples](packages/ui/examples/main.tsx) tại `npm 
 
 Skill [shadcn/ui chính thức](.agents/skills/shadcn/SKILL.md) đã được cài trong dự án từ [shadcn-ui/ui](https://github.com/shadcn-ui/ui/tree/main/skills/shadcn). Các phần UI tiếp theo dùng skill này cùng quy tắc FlowDocker trong `AGENTS.md`, tái sử dụng `@flowdocker/ui`, token chung và nền song ngữ Việt–Anh.
 
-PR 4 bổ sung [Form Studio](docs/55-PR4-FORM-STUDIO.md) tại `#forms`: tạo/sửa biểu mẫu nháp, nhãn Việt–Anh, sáu kiểu trường, sắp xếp và xem thử với kiểm tra cục bộ. Package dùng chung [`@flowdocker/form-builder`](packages/form-builder/README.md) có ví dụ riêng qua `npm run examples:forms`. Chưa tích hợp Form.io, backend, phát hành hay thực thi phê duyệt.
+Form Studio tại `#forms` dùng [engine FlowDocker tự phát triển](docs/56-FLOWDOCKER-FORMS-PRODUCT.md), 33 loại trường, điều kiện, phép tính và preview cục bộ. [UX V2](docs/58-FORMS-UX-V2-IMPLEMENTATION.md) bổ sung toolbox theo nhóm, canvas input thật dùng chung renderer, inspector theo ngữ cảnh, Designer/Preview/Logic/JSON, mẫu thanh toán và chế độ mobile. Package dùng chung [`@flowdocker/form-builder`](packages/form-builder/README.md) có ví dụ riêng qua `npm run examples:forms`. Theo quyết định owner trong Issue #3: giữ engine riêng, không tích hợp hay tiếp tục POC so sánh Form.io. Backend, phát hành và phê duyệt thật chưa được triển khai.
 
 ## Key architectural choices
 
 | Layer | Proposed choice | Status |
 |---|---|---|
 | Frontend | Next.js / React / TypeScript / shadcn/ui | Proposed |
-| Dynamic forms | Form.io JS Core (builder + renderer) | Proposed; POC required |
+| Dynamic forms | Original FlowDocker Forms engine + UX V2 designer | Frontend implemented; owner visual acceptance pending; see docs/57–58 |
 | Workflow design | Synergy Codes Workflow Builder Community | Proposed; POC required |
 | Workflow execution | Temporal | Proposed; POC required |
 | API and durable data | Node.js / TypeScript / PostgreSQL | Proposed |
@@ -158,3 +158,19 @@ Application Builder hỗ trợ danh sách/tìm kiếm ứng dụng, chọn modul
 
 ## Vietnamese / English foundation
 The topbar language picker switches between Vietnamese and English and remembers the selection. All current application screens and the isolated UI examples use the shared private `@flowdocker/i18n` package, including Connections, Flow Studio, Permissions and Profile. New UI must ship in both languages; `npm run i18n:check` is included in lint. User-entered data and technical IDs stay unchanged. See [i18n foundation and coverage](docs/54-BILINGUAL-I18N-FOUNDATION.md).
+
+## People and organization sample
+
+Form Studio now includes a **People picker** field and a **People and organization · sample** form. Master Data → Organization chart shows synthetic reporting relationships and department heads; employee/department catalogs are editable locally. Both views read the same local master records. No Microsoft 365 connection, authenticated current-user default or approval assignment execution is implemented in this slice. See [scope and QA](docs/61-PEOPLE-AND-ORGANIZATION-SAMPLE.md).
+
+### Permission field simulation
+
+The standard shadcn Permission Builder now uses host-registered field catalogs and previews READ/MASK/DENY effects on synthetic data. Resource/scope denial overrides field rules; EXPORT additionally requires READ. This remains a browser-only simulation, not authorization enforcement. See [implementation and evidence](docs/72-PERMISSION-FIELD-SIMULATION.md) and [package API](packages/permission-builder/README.md).
+
+### Form catalog refresh
+
+Form Studio's catalog uses responsive document tiles, illustrative field miniatures, bilingual search/result counts, and subtle entrance/hover feedback with reduced-motion support. Designer and local-draft journeys remain unchanged. See [catalog UX and browser evidence](docs/73-FORMS-CATALOG-UI-MOTION.md).
+
+
+### Navigation links
+Sidebar destinations, profile and workspace quick links use native anchors: right-click open in new tab, Ctrl/Meta-click and middle-click keep the current page. AppShell accepts optional `getPageHref(PageId)` for host routing (default `#page`); ordinary activation still uses `onPageChange`. Action buttons and local inspector tabs retain their existing behavior. See [navigation evidence](docs/78-NATIVE-NAVIGATION-LINKS.md).

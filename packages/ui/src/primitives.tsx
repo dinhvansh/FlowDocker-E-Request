@@ -141,6 +141,10 @@ export function Field({
   children: ReactNode;
 }) {
   const id = useId();
+  const required = / \((bắt buộc|required)\)$/.test(label);
+  const visibleLabel = required
+    ? label.replace(/ \((bắt buộc|required)\)$/, "")
+    : label;
   const controlId = isValidElement(children)
     ? ((children.props as { id?: string }).id ?? id)
     : id;
@@ -148,11 +152,15 @@ export function Field({
     ? cloneElement(
         children as ReactElement<{
           id?: string;
+          "aria-label"?: string;
           "aria-invalid"?: boolean;
           "aria-describedby"?: string;
         }>,
         {
           id: controlId,
+          "aria-label": required
+            ? label
+            : (children.props as { "aria-label"?: string })["aria-label"],
           "aria-invalid": error ? true : undefined,
           "aria-describedby":
             [
@@ -169,7 +177,16 @@ export function Field({
     : children;
   return (
     <ShadField className="fd-field" data-invalid={error ? true : undefined}>
-      <FieldLabel htmlFor={controlId}>{label}</FieldLabel>
+      <FieldLabel htmlFor={controlId}>
+        {visibleLabel}
+        {required && (
+          <>
+            <span className="fd-required-mark" aria-hidden="true">
+              *
+            </span>
+          </>
+        )}
+      </FieldLabel>
       {control}
       {hint && <FieldDescription id={`${id}-hint`}>{hint}</FieldDescription>}
       {error && <FieldError id={`${id}-error`}>{error}</FieldError>}

@@ -1,5 +1,7 @@
 import Decimal from "decimal.js";
 import {
+  defaultSourcesForType,
+  type CreatorProfileAttribute,
   isContainer,
   isFormDefinition,
   scopeFields,
@@ -123,7 +125,9 @@ export function calculate(
   values: PreviewValues,
 ): string | null {
   if (!field.calculation) return null;
-  const { operator, fields, precision = 2 } = field.calculation;
+  const { operator, fields, precision = 2, expression } = field.calculation;
+  if (expression?.trim())
+    return evaluateCalculationExpression(expression, values, precision);
   const entries = fields.flatMap((key) => {
     const value = readReference(values, key);
     return Array.isArray(value) ? value : [value];
@@ -163,9 +167,161 @@ export function calculate(
     return null;
   }
 }
+
+type FormulaToken =
+  | { kind: "number"; value: string }
+  | { kind: "name"; value: string }
+  | { kind: "operator"; value: string }
+  | { kind: "paren"; value: "(" | ")" }
+  | { kind: "comma"; value: "," };
+
+function tokenizeFormula(source: string): FormulaToken[] | null {
+  const tokens: FormulaToken[] = [];
+  let index = 0;
+  while (index < source.length) {
+    const char = source[index];
+    if (/\s/.test(char)) {
+      index += 1;
+      continue;
+    }
+    const number = source.slice(index).match(/^(?:\d+(?:\.\d*)?|\.\d+)/)?.[0];
+    if (number) {
+      tokens.push({ kind: "number", value: number });
+      index += number.length;
+      continue;
+    }
+    const name = source.slice(index).match(/^[A-Za-z_][A-Za-z0-9_.]*/)?.[0];
+    if (name) {
+      tokens.push({ kind: "name", value: name });
+      index += name.length;
+      continue;
+    }
+    if ("+-*/".includes(char)) tokens.push({ kind: "operator", value: char });
+    else if (char === "(" || char === ")")
+      tokens.push({ kind: "paren", value: char });
+    else if (char === ",") tokens.push({ kind: "comma", value: char });
+    else return null;
+    index += 1;
+  }
+  return tokens;
+}
+
+function evaluateCalculationExpression(
+  source: string,
+  values: PreviewValues,
+  precision: number,
+): string | null {
+  const tokens = tokenizeFormula(source);
+  if (!tokens?.length) return null;
+  let cursor = 0;
+  const peek = () => tokens[cursor];
+  const take = () => tokens[cursor++];
+  const asDecimal = (value: FormValue | undefined): Decimal => {
+    if (Array.isArray(value)) {
+      const first = value.find((item) => !emptyValue(item));
+      return first === undefined ? new Decimal(0) : asDecimal(first);
+    }
+    if (emptyValue(value)) return new Decimal(0);
+    if (typeof value !== "string" && typeof value !== "number")
+      throw new Error("Invalid operand");
+    const result = new Decimal(value);
+    if (!result.isFinite() || Math.abs(result.e) > 1000)
+      throw new Error("Invalid operand");
+    return result;
+  };
+  const parseExpression = (): Decimal => {
+    let result = parseTerm();
+    while (peek()?.kind === "operator" && ["+", "-"].includes(peek()!.value)) {
+      const operator = take()!.value;
+      const next = parseTerm();
+      result = operator === "+" ? result.add(next) : result.sub(next);
+    }
+    return result;
+  };
+  const parseTerm = (): Decimal => {
+    let result = parseFactor();
+    while (peek()?.kind === "operator" && ["*", "/"].includes(peek()!.value)) {
+      const operator = take()!.value;
+      const next = parseFactor();
+      result = operator === "*" ? result.mul(next) : result.div(next);
+    }
+    return result;
+  };
+  const parseFactor = (): Decimal => {
+    const token = take();
+    if (!token) throw new Error("Incomplete expression");
+    if (token.kind === "operator" && token.value === "-")
+      return parseFactor().neg();
+    if (token.kind === "number") return new Decimal(token.value);
+    if (token.kind === "paren" && token.value === "(") {
+      const value = parseExpression();
+      if (take()?.value !== ")") throw new Error("Missing parenthesis");
+      return value;
+    }
+    if (token.kind !== "name") throw new Error("Invalid expression");
+    if (peek()?.kind !== "paren" || peek()?.value !== "(")
+      return asDecimal(readReference(values, token.value));
+    take();
+    const args: Decimal[] = [];
+    if (peek()?.value !== ")") {
+      while (true) {
+        args.push(parseExpression());
+        if (peek()?.kind !== "comma") break;
+        take();
+      }
+    }
+    if (take()?.value !== ")") throw new Error("Missing parenthesis");
+    const name = token.value.toUpperCase();
+    if (name === "COUNT") return new Decimal(args.length);
+    if (!args.length) return new Decimal(0);
+    if (name === "SUM") return args.reduce((a, b) => a.add(b), new Decimal(0));
+    if (name === "AVG" || name === "AVERAGE")
+      return args.reduce((a, b) => a.add(b), new Decimal(0)).div(args.length);
+    if (name === "MIN") return Decimal.min(...args);
+    if (name === "MAX") return Decimal.max(...args);
+    if (name === "ROUND")
+      return args[0].toDecimalPlaces(args[1]?.toNumber() ?? precision);
+    throw new Error("Unknown function");
+  };
+  try {
+    const result = parseExpression();
+    if (
+      cursor !== tokens.length ||
+      !result.isFinite() ||
+      Math.abs(result.e) > 1000
+    )
+      return null;
+    return result.toFixed(precision);
+  } catch {
+    return null;
+  }
+}
+export interface FormRuntimeContext {
+  /** Stable directory ID supplied by the host. Not authentication or server authorization. */
+  currentUserId?: string;
+  /** Host-projected creator attributes only. Omit unavailable/unverified values. */
+  currentUser?: Partial<Record<CreatorProfileAttribute, string>>;
+}
+export function resolveDefaultSource(
+  field: FormField,
+  context: FormRuntimeContext = {},
+): FormValue | undefined {
+  const source = field.defaultValueSource;
+  if (!source || !defaultSourcesForType(field.type).includes(source))
+    return undefined;
+  const value =
+    source === "currentUser"
+      ? context.currentUserId
+      : context.currentUser?.[
+          source.slice("currentUser.".length) as CreatorProfileAttribute
+        ];
+  if (typeof value !== "string" || !value.trim()) return undefined;
+  return field.type === "person" && field.multiple ? [value] : value;
+}
 export function defaultValues(
   fields: FormField[],
   budget = { count: 0 },
+  runtimeContext: FormRuntimeContext = {},
 ): PreviewValues {
   const result: PreviewValues = {};
   for (const field of fields) {
@@ -173,13 +329,23 @@ export function defaultValues(
     if (field.type === "repeat")
       result[field.key] = Array.from(
         { length: Math.min(field.minRows ?? 0, 100) },
-        () => defaultValues(field.children ?? [], budget),
+        () => defaultValues(field.children ?? [], budget, runtimeContext),
       );
     else if (field.type === "container")
-      result[field.key] = defaultValues(field.children ?? [], budget);
+      result[field.key] = defaultValues(
+        field.children ?? [],
+        budget,
+        runtimeContext,
+      );
     else if (isContainer(field))
-      Object.assign(result, defaultValues(field.children ?? [], budget));
-    else if (field.defaultValue !== undefined)
+      Object.assign(
+        result,
+        defaultValues(field.children ?? [], budget, runtimeContext),
+      );
+    else if (field.defaultValueSource) {
+      const value = resolveDefaultSource(field, runtimeContext);
+      if (value !== undefined) result[field.key] = value;
+    } else if (field.defaultValue !== undefined)
       result[field.key] = structuredClone(field.defaultValue);
   }
   return result;
@@ -189,9 +355,13 @@ export function prepareValues(
   form: FormDefinition,
   input: PreviewValues,
   access: FieldAccess = {},
+  runtimeContext: FormRuntimeContext = {},
 ): PreviewValues {
   if (!isFormDefinition(form) || !validRuntimeValues(input)) return {};
-  let result: PreviewValues = { ...defaultValues(form.fields), ...input };
+  let result: PreviewValues = {
+    ...defaultValues(form.fields, undefined, runtimeContext),
+    ...input,
+  };
   const pass = (
     fields: FormField[],
     local: PreviewValues,
@@ -222,7 +392,14 @@ export function prepareValues(
               isRecord(row) && index < 100
                 ? pass(
                     field.children ?? [],
-                    { ...defaultValues(field.children ?? []), ...row },
+                    {
+                      ...defaultValues(
+                        field.children ?? [],
+                        undefined,
+                        runtimeContext,
+                      ),
+                      ...row,
+                    },
                     root,
                     budget,
                     `${path}.${index}.`,
@@ -233,7 +410,10 @@ export function prepareValues(
       else if (field.type === "container" && isRecord(next[field.key]))
         next[field.key] = pass(
           field.children ?? [],
-          next[field.key] as PreviewValues,
+          {
+            ...defaultValues(field.children ?? [], undefined, runtimeContext),
+            ...(next[field.key] as PreviewValues),
+          },
           root,
           budget,
           `${path}.`,
@@ -289,12 +469,13 @@ export function validatePreview(
   values: PreviewValues,
   access: FieldAccess = {},
   suppliedOptions: Record<string, string[]> = {},
+  runtimeContext: FormRuntimeContext = {},
 ): FormIssue[] {
   const issues = validateFormDefinition(form);
   if (issues.length) return issues;
   if (!validRuntimeValues(values))
     return [{ message: "Dữ liệu biểu mẫu vượt giới hạn xử lý." }];
-  const prepared = prepareValues(form, values, access);
+  const prepared = prepareValues(form, values, access, runtimeContext);
   const walk = (
     fields: FormField[],
     data: PreviewValues,
@@ -477,7 +658,10 @@ export function validatePreview(
           add("Trường {{key}} cần chữ ký hoặc tên xác nhận.");
         continue;
       }
-      if (["multiselect", "checkboxes", "tags"].includes(field.type)) {
+      if (
+        ["multiselect", "checkboxes", "tags"].includes(field.type) ||
+        (field.type === "person" && field.multiple)
+      ) {
         if (
           !Array.isArray(value) ||
           value.some((item) => typeof item !== "string") ||
@@ -529,9 +713,11 @@ export function validatePreview(
         continue;
       }
       if (
-        field.type === "checkbox"
-          ? typeof value !== "boolean"
-          : typeof value !== "string" && typeof value !== "number"
+        field.type === "person"
+          ? typeof value !== "string"
+          : field.type === "checkbox"
+            ? typeof value !== "boolean"
+            : typeof value !== "string" && typeof value !== "number"
       ) {
         add("Giá trị trường {{key}} không đúng kiểu.");
         continue;
@@ -585,7 +771,7 @@ export function validatePreview(
       if (field.type === "time" && !/^([01]\d|2[0-3]):[0-5]\d$/.test(text))
         add("Định dạng trường {{key}} không hợp lệ.");
       if (
-        ["select", "radio"].includes(field.type) &&
+        ["select", "radio", "person"].includes(field.type) &&
         !(
           suppliedOptions[path] ?? field.options.map((option) => option.value)
         ).includes(text)
@@ -619,9 +805,10 @@ export function submissionValues(
   form: FormDefinition,
   values: PreviewValues,
   access: FieldAccess = {},
+  runtimeContext: FormRuntimeContext = {},
 ): PreviewValues {
   if (!isFormDefinition(form) || !validRuntimeValues(values)) return {};
-  const prepared = prepareValues(form, values, access);
+  const prepared = prepareValues(form, values, access, runtimeContext);
   const pick = (
     fields: FormField[],
     data: PreviewValues,

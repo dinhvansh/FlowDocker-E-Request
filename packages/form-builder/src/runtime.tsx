@@ -1,3 +1,5 @@
+import { useChoices } from "./use-choices";
+import { RepeatField } from "./components/repeat-field";
 import {
   useEffect,
   useId,
@@ -5,17 +7,21 @@ import {
   useState,
   type ComponentType,
   type PointerEvent,
+  type ReactNode,
 } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import {
   Badge,
   Button,
   Checkbox,
+  Combobox,
+  PeoplePicker,
   Field,
   FieldGroup,
   Input,
+  CurrencyInput,
+  DatePicker,
   Notice,
-  Select,
   Tabs,
   Textarea,
   FieldSet,
@@ -24,6 +30,7 @@ import {
   RadioGroupItem,
 } from "@flowdocker/ui";
 import {
+  resolveDefaultSource,
   checkFiles,
   defaultValues,
   evaluateRule,
@@ -32,6 +39,7 @@ import {
   submissionValues,
   validatePreview,
   type FieldAccess,
+  type FormRuntimeContext,
 } from "./engine";
 import {
   flattenFields,
@@ -47,9 +55,12 @@ import {
 export interface ChoiceOption {
   value: string;
   label: { vi: string; en: string };
+  description?: { vi: string; en: string };
 }
 export type DataProvider = (context: {
   query: string;
+  valueField?: string;
+  labelField?: string;
   dependency: FormValue | undefined;
   signal: AbortSignal;
 }) => Promise<ChoiceOption[]>;
@@ -71,6 +82,7 @@ export interface CustomControlProps {
   "aria-invalid"?: boolean;
 }
 export interface FormRendererProps {
+  runtimeContext?: FormRuntimeContext;
   definition: FormDefinition;
   values: PreviewValues;
   onChange(values: PreviewValues): void;
@@ -83,80 +95,6 @@ export interface FormRendererProps {
   onRemoveFile?(reference: string): Promise<void>;
   renderers?: Record<string, ComponentType<CustomControlProps>>;
   preview?: boolean;
-}
-function useChoices(
-  field: FormField,
-  dependency: FormValue | undefined,
-  provider: DataProvider | undefined,
-) {
-  const [query, setQuery] = useState("");
-  const [remote, setRemote] = useState<{
-    requestKey: string;
-    options: ChoiceOption[];
-    status: "loading" | "ready" | "error" | "missing";
-  }>({ options: [], status: "loading", requestKey: "" });
-  const dependencyKey = JSON.stringify(dependency);
-  const requestKey = `${query}:${dependencyKey ?? ""}:${field.dataSource?.provider ?? ""}`;
-  useEffect(() => {
-    if (!field.dataSource) return;
-    if (!provider) return;
-    const controller = new AbortController();
-    const timer = setTimeout(() => {
-      setRemote({ options: [], status: "loading", requestKey });
-      provider({
-        query,
-        dependency:
-          dependencyKey === undefined
-            ? undefined
-            : (JSON.parse(dependencyKey) as FormValue),
-        signal: controller.signal,
-      })
-        .then((options) => {
-          if (!controller.signal.aborted)
-            setRemote({
-              options: options
-                .filter(
-                  (option) =>
-                    option &&
-                    typeof option.value === "string" &&
-                    option.value &&
-                    option.value !== "__fd_clear__" &&
-                    typeof option.label?.vi === "string" &&
-                    typeof option.label?.en === "string",
-                )
-                .slice(0, 500),
-              status: "ready",
-              requestKey,
-            });
-        })
-        .catch(() => {
-          if (!controller.signal.aborted)
-            setRemote({ options: [], status: "error", requestKey });
-        });
-    }, 200);
-    return () => {
-      controller.abort();
-      clearTimeout(timer);
-    };
-  }, [field.dataSource, provider, query, dependencyKey, requestKey]);
-  return {
-    query,
-    setQuery,
-    options: field.dataSource
-      ? provider
-        ? remote.requestKey === requestKey
-          ? remote.options
-          : []
-        : []
-      : field.options,
-    status: field.dataSource
-      ? provider
-        ? remote.requestKey === requestKey
-          ? remote.status
-          : "loading"
-        : "missing"
-      : "ready",
-  };
 }
 function SignatureControl({
   value,
@@ -489,7 +427,9 @@ interface RuntimeFieldsProps extends Pick<
   | "onRemoveFile"
   | "renderers"
   | "readOnly"
+  | "runtimeContext"
 > {
+  design?: { wrap(field: FormField, control: ReactNode): ReactNode };
   fields: FormField[];
   data: PreviewValues;
   root: PreviewValues;
@@ -547,7 +487,11 @@ function RuntimeField({
     }
   }, [field.children, field.type, props.revealFieldId]);
   const visible = evaluateRule(field.visibleWhen, context);
-  if (!visible || accessRule?.read === "deny" || field.type === "hidden")
+  if (
+    (!visible && !props.design) ||
+    accessRule?.read === "deny" ||
+    field.type === "hidden"
+  )
     return null;
   if (accessRule?.read === "mask")
     return (
@@ -598,8 +542,20 @@ function RuntimeField({
   if (isContainer(field)) {
     const children = field.children ?? [];
     return (
-      <FieldSet id={id} className="fd-runtime-section">
-        <FieldLegend>{label}</FieldLegend>
+      <FieldSet
+        id={id}
+        className="fd-runtime-section"
+        data-field-type={field.type}
+      >
+        <FieldLegend
+          className={
+            field.type === "columns" && field.hideLabel !== false
+              ? "sr-only"
+              : undefined
+          }
+        >
+          {label}
+        </FieldLegend>
         {field.help?.[locale] && <p>{field.help[locale]}</p>}
         {field.type === "container" ? (
           <RuntimeFields
@@ -610,63 +566,23 @@ function RuntimeField({
             onChange={setValue}
           />
         ) : field.type === "repeat" ? (
-          <>
-            {(Array.isArray(value) ? value.filter(isRecord) : []).map(
-              (row, index) => (
-                <div className="fd-repeat-row" key={index}>
-                  <div className="fd-section-heading">
-                    <h3>{t("Dòng {{index}}", { index: index + 1 })}</h3>
-                    <Button
-                      type="button"
-                      disabled={
-                        disabled ||
-                        (Array.isArray(value) &&
-                          value.length <= (field.minRows ?? 0))
-                      }
-                      onClick={() =>
-                        setValue(
-                          (value as FormValue[]).filter(
-                            (_, position) => position !== index,
-                          ),
-                        )
-                      }
-                    >
-                      {t("Xóa dòng")}
-                    </Button>
-                  </div>
-                  <RuntimeFields
-                    {...nextProps}
-                    fields={children}
-                    data={row}
-                    prefix={`${path}.${index}.`}
-                    onChange={(next) =>
-                      setValue(
-                        (value as FormValue[]).map((item, position) =>
-                          position === index ? next : item,
-                        ),
-                      )
-                    }
-                  />
-                </div>
-              ),
+          <RepeatField
+            runtimeContext={props.runtimeContext}
+            field={field}
+            rows={Array.isArray(value) ? value.filter(isRecord) : []}
+            onChange={setValue}
+            disabled={disabled}
+            design={!!props.design}
+            renderFields={(fields, row, index, onRowChange) => (
+              <RuntimeFields
+                {...nextProps}
+                fields={fields}
+                data={row}
+                prefix={`${path}.${index}.`}
+                onChange={onRowChange}
+              />
             )}
-            <Button
-              type="button"
-              disabled={
-                disabled ||
-                (Array.isArray(value) ? value.length : 0) >=
-                  (field.maxRows ?? 100)
-              }
-              onClick={() =>
-                setValue([
-                  ...(Array.isArray(value) ? value : []),
-                  defaultValues(children),
-                ])
-              }
-            >
-              {t("Thêm dòng")}
-            </Button>
-          </>
+          />
         ) : field.type === "tabs" ? (
           <>
             <Tabs
@@ -806,9 +722,32 @@ function RuntimeField({
         onCheckedChange={(checked) => setValue(checked === true)}
       />
     );
+  else if (field.type === "person")
+    control = (
+      <PeoplePicker
+        id={id}
+        label={label}
+        multiple={field.multiple}
+        value={
+          Array.isArray(value)
+            ? value.filter((item): item is string => typeof item === "string")
+            : text
+              ? [text]
+              : []
+        }
+        disabled={disabled || choice.status !== "ready"}
+        options={choice.options.map((option) => ({
+          value: option.value,
+          label: option.label[locale],
+          description: option.description?.[locale],
+        }))}
+        onChange={(next) => setValue(field.multiple ? next : (next[0] ?? ""))}
+        aria-invalid={!!error}
+      />
+    );
   else if (field.type === "select")
     control = (
-      <Select
+      <Combobox
         id={id}
         label={label}
         value={text}
@@ -914,6 +853,28 @@ function RuntimeField({
         onChange={(event) => setValue(event.target.value)}
       />
     );
+  else if (field.type === "date" || field.type === "datetime")
+    control = (
+      <DatePicker
+        id={id}
+        label={label}
+        value={text}
+        onValueChange={setValue}
+        withTime={field.type === "datetime"}
+        disabled={disabled}
+        placeholder={field.placeholder?.[locale]}
+      />
+    );
+  else if (field.type === "currency")
+    control = (
+      <CurrencyInput
+        id={id}
+        value={text}
+        onValueChange={setValue}
+        disabled={disabled}
+        placeholder={field.placeholder?.[locale]}
+      />
+    );
   else
     control = (
       <Input
@@ -921,11 +882,9 @@ function RuntimeField({
         type={
           field.type === "phone"
             ? "tel"
-            : field.type === "datetime"
-              ? "datetime-local"
-              : ["number", "currency"].includes(field.type)
-                ? "number"
-                : field.type
+            : field.type === "number"
+              ? "number"
+              : field.type
         }
         value={text}
         disabled={disabled}
@@ -939,15 +898,27 @@ function RuntimeField({
     );
   return (
     <div className="fd-runtime-field">
+      {field.defaultValueSource &&
+        resolveDefaultSource(field, props.runtimeContext) === undefined && (
+          <Notice tone="warning">
+            {t(
+              field.defaultValueSource === "currentUser"
+                ? "Chưa xác định được người đang tạo. Ứng dụng cần cung cấp tài khoản hiện tại."
+                : "Thông tin người tạo đã chọn chưa có dữ liệu. Ứng dụng cần cung cấp thông tin này.",
+            )}
+          </Notice>
+        )}
       {field.dataSource && (
         <>
-          <Field label={t("Tìm lựa chọn cho {{label}}", { label })}>
-            <Input
-              disabled={disabled}
-              value={choice.query}
-              onChange={(event) => choice.setQuery(event.target.value)}
-            />
-          </Field>
+          {!["person", "select"].includes(field.type) && (
+            <Field label={t("Tìm lựa chọn cho {{label}}", { label })}>
+              <Input
+                disabled={disabled}
+                value={choice.query}
+                onChange={(event) => choice.setQuery(event.target.value)}
+              />
+            </Field>
+          )}
           {choice.status !== "ready" && (
             <Notice tone={choice.status === "loading" ? "info" : "warning"}>
               {t(
@@ -972,14 +943,18 @@ function RuntimeField({
     </div>
   );
 }
-function RuntimeFields(props: RuntimeFieldsProps) {
+export function RuntimeFields(props: RuntimeFieldsProps) {
   return (
     <>
       {props.fields.map((field) => (
-        <RuntimeField {...props} key={field.id} field={field} />
+        <RuntimeFieldSlot {...props} key={field.id} field={field} />
       ))}
     </>
   );
+}
+function RuntimeFieldSlot(props: RuntimeFieldsProps & { field: FormField }) {
+  const control = <RuntimeField {...props} />;
+  return props.design ? props.design.wrap(props.field, control) : control;
 }
 export function FormRenderer({
   definition,
@@ -1003,9 +978,20 @@ export function FormRenderer({
   );
   const summary = useRef<HTMLDivElement>(null);
   const schemaIssues = validateFormDefinition(definition);
-  const prepared = prepareValues(definition, values, access);
+  const prepared = prepareValues(
+    definition,
+    values,
+    access,
+    props.runtimeContext,
+  );
   const allIssues = checked
-    ? validatePreview(definition, values, access, optionValues)
+    ? validatePreview(
+        definition,
+        values,
+        access,
+        optionValues,
+        props.runtimeContext,
+      )
     : [];
   const stepIndex = Math.min(step, Math.max(0, definition.fields.length - 1));
   const wizard = definition.display === "wizard";
@@ -1031,12 +1017,15 @@ export function FormRenderer({
       </Notice>
     );
   const update = (next: PreviewValues) => {
-    onChange(prepareValues(definition, next, access));
+    onChange(prepareValues(definition, next, access, props.runtimeContext));
     setChecked(false);
     setResult("");
   };
   return (
-    <div className="fd-form-preview">
+    <div
+      className="fd-form-preview"
+      data-orientation={definition.orientation ?? "portrait"}
+    >
       <h2>{definition.title[locale]}</h2>
       {props.preview && (
         <Notice>
@@ -1095,7 +1084,9 @@ export function FormRenderer({
         onReset={(event) => {
           event.preventDefault();
           if (props.readOnly || busy.current) return;
-          update(defaultValues(definition.fields));
+          update(
+            defaultValues(definition.fields, undefined, props.runtimeContext),
+          );
           setStep(0);
           setResetKey((key) => key + 1);
         }}
@@ -1109,6 +1100,7 @@ export function FormRenderer({
             values,
             access,
             optionValues,
+            props.runtimeContext,
           );
           if (problems.length) {
             props.onInvalid?.(problems);
@@ -1128,7 +1120,12 @@ export function FormRenderer({
           setSubmitting(true);
           try {
             await props.onSubmit(
-              submissionValues(definition, prepared, access),
+              submissionValues(
+                definition,
+                prepared,
+                access,
+                props.runtimeContext,
+              ),
             );
             setResult("Bộ tích hợp đã xử lý dữ liệu biểu mẫu.");
             setFailed(false);
@@ -1185,6 +1182,7 @@ export function FormRenderer({
                       values,
                       access,
                       optionValues,
+                      props.runtimeContext,
                     ).filter(
                       (issue) =>
                         !issue.fieldId || currentIds.has(issue.fieldId),
@@ -1222,7 +1220,13 @@ export function FormRenderer({
             type="button"
             disabled={props.readOnly || submitting}
             onClick={() => {
-              update(defaultValues(definition.fields));
+              update(
+                defaultValues(
+                  definition.fields,
+                  undefined,
+                  props.runtimeContext,
+                ),
+              );
               setStep(0);
               setResetKey((key) => key + 1);
             }}

@@ -55,3 +55,7 @@
 
 ## Decision
 For V1, **exclude ONLYOFFICE and signing**. Select Form.io JS Core + Synergy Codes CE + Temporal only **after an executable, pinned-version POC** proves licensing and required APIs. Preserve a record of evidence.
+
+## Optional Ant Design permissions preview (2026-10-30)
+
+`@flowdocker/permission-builder/antd-preview` links `antd` 6.6.8 and `@ant-design/icons` 6.3.4, both MIT per installed package metadata and LICENSE files. Preserved upstream license texts are in `packages/permission-builder/legal/`. Versions and transitive dependencies are in package-lock.json. This opt-in UI comparison does not replace the main shadcn/Radix toolkit. Runtime package installation reported zero audit vulnerabilities; this is not a complete release/legal approval or SBOM assessment.

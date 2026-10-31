@@ -1,4 +1,11 @@
 import type { ReactNode } from "react";
+export { OrganizationCanvas } from "./organization-chart";
+export type { OrganizationCanvasProps } from "./organization-chart";
+export { organizationLayout } from "./organization-layout";
+export type {
+  OrganizationPerson,
+  OrganizationPosition,
+} from "./organization-layout";
 import { useI18n } from "@flowdocker/i18n";
 import {
   Background,

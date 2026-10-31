@@ -1,0 +1,158 @@
+.fd-field-configuration {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin: 4px 0 10px;
+}
+.fd-field-configuration .fd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.5;
+}
+.fd-field-configuration .fd-badge svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+.fd-field-configuration .fd-field-configuration-link {
+  height: auto;
+  min-height: 28px;
+  padding: 2px 0;
+}
+.fd-field-inspector-header .fd-field-configuration {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.fd-calculation-inputs {
+  display: grid;
+  gap: 6px;
+  margin: -2px 0 4px;
+}
+
+.fd-calculation-inputs-label,
+.fd-calculation-preview > span {
+  color: var(--fd-text-muted);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.fd-calculation-input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 28px;
+  padding: 4px 6px 4px 8px;
+  border: 1px solid var(--fd-border);
+  border-radius: 5px;
+  background: var(--fd-surface-raised);
+  color: var(--fd-text-primary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.fd-calculation-input span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fd-calculation-input button {
+  flex: 0 0 24px;
+  width: 24px;
+  min-height: 24px;
+  padding: 0;
+}
+
+.fd-calculation-input button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.fd-calculation-preview {
+  display: grid;
+  gap: 3px;
+  padding: 6px 8px;
+  border-left: 2px solid var(--fd-color-brand);
+  background: var(--fd-brand-soft);
+}
+
+.fd-calculation-preview code {
+  overflow-wrap: anywhere;
+  color: var(--fd-text-primary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.fd-calculation-formula-tools {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.fd-calculation-formula-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.fd-calculation-result {
+  min-height: 32px;
+  padding: 6px 8px;
+  border-left: 2px solid var(--fd-color-brand);
+  background: var(--fd-brand-soft);
+  color: var(--fd-text-primary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+@media (max-width: 720px) {
+  .fd-calculation-formula-tools {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fd-numbering-editor {
+  display: grid;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.fd-numbering-segments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fd-numbering-segment {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+  padding: 3px 4px 3px 8px;
+  border: 1px solid var(--fd-border);
+  border-radius: 5px;
+  background: var(--fd-surface-raised);
+  color: var(--fd-text-primary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.fd-numbering-segment button {
+  width: 22px;
+  min-height: 22px;
+  padding: 0;
+}
+
+.fd-numbering-segment button svg {
+  width: 13px;
+  height: 13px;
+}

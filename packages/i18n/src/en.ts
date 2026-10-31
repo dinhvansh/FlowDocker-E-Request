@@ -1,5 +1,128 @@
 import { formMessages } from "./form-messages";
 export const en = {
+  "Để trống": "Leave blank",
+  "Bản ghi đang được tham chiếu. Gỡ tham chiếu trước khi xóa hoặc đổi mã.":
+    "This record is referenced. Remove its references before deleting it or changing its key.",
+  "Dữ liệu đã thay đổi ở tab khác. Tải lại trang trước khi cập nhật.":
+    "Data changed in another tab. Reload before updating.",
+  "Không lưu được thay đổi. Nội dung đang sửa được giữ lại; hãy kiểm tra lưu trữ và thử lại.":
+    "Could not save changes. Your edits are kept; check browser storage and retry.",
+  "Đang lưu...": "Saving...",
+  "Mã bản ghi này được dành riêng cho hệ thống.":
+    "This record key is reserved for the system.",
+  "Trường này là bắt buộc.": "This field is required.",
+  "Nhập một số hợp lệ.": "Enter a valid number.",
+  "Chọn Có hoặc Không.": "Choose Yes or No.",
+  "Giá trị phải là văn bản.": "The value must be text.",
+  "Chọn ngày hợp lệ.": "Choose a valid date.",
+  "Mã bản ghi đã tồn tại.": "This record key already exists.",
+  "Chọn bản ghi có trong danh mục tham chiếu.":
+    "Choose an existing record from the referenced catalog.",
+  "Bản ghi danh mục": "Catalog records",
+  "Dữ liệu minh họa, chỉ lưu trong trình duyệt.":
+    "Demo data, saved in this browser only.",
+  "Thêm bản ghi": "Add record",
+  "Sửa bản ghi": "Edit record",
+  "Xóa bản ghi": "Delete record",
+  "Sửa bản ghi {{name}}": "Edit record {{name}}",
+  "Xóa bản ghi {{name}}": "Delete record {{name}}",
+  "Dữ liệu do nguồn ngoài quản lý, chỉ được xem tại đây.":
+    "Source-managed data is read-only here.",
+  "Ứng dụng chưa bật chỉnh sửa bản ghi.":
+    "This application has not enabled record editing.",
+  "Sửa mã trường không hợp lệ hoặc trùng trước khi nhập bản ghi.":
+    "Fix invalid or duplicate field keys before editing records.",
+  "Đã cập nhật bản ghi trong trình duyệt.": "Records updated in this browser.",
+  "Chưa có bản ghi. Thêm bản ghi đầu tiên để bắt đầu.":
+    "No records yet. Add the first record to get started.",
+  "Xác nhận xóa bản ghi": "Confirm record deletion",
+  "Lưu bản ghi": "Save record",
+  "Xóa bản ghi {{name}} khỏi danh mục {{catalog}}? Thao tác này không thể hoàn tác.":
+    "Delete record {{name}} from {{catalog}}? This cannot be undone.",
+  "Mã định danh của bản ghi đã tạo không thể thay đổi.":
+    "The ID of an existing record cannot be changed.",
+
+  "Mã trường là bắt buộc.": "Field key is required.",
+  "Chỉ dùng chữ thường, số và dấu gạch dưới; bắt đầu bằng chữ. Không dùng khoảng trắng hoặc dấu tiếng Việt.":
+    "Use lowercase letters, numbers and underscores, starting with a letter. Spaces and accented characters are not allowed.",
+  "Mã trường đã tồn tại trong danh mục.":
+    "This field key already exists in the catalog.",
+  "Không lưu được mã trường. Kiểm tra kết nối lưu trữ và thử lại.":
+    "Could not save the field key. Check storage access and try again.",
+  "Ví dụ: currency_name. Mã hợp lệ được lưu khi rời ô hoặc nhấn Enter; Escape để hủy sửa.":
+    "Example: currency_name. Valid keys save on blur or Enter; Escape cancels the edit.",
+
+  "Xóa entity": "Delete entity",
+  "Xác nhận xóa entity": "Confirm entity deletion",
+  "Đang xóa...": "Deleting...",
+  "Đã xóa entity khỏi dữ liệu cục bộ.": "Entity deleted from local data.",
+  "Xóa danh mục {{name}} ({{key}}) và {{count}} bản ghi khỏi trình duyệt? Thao tác này không thể hoàn tác.":
+    "Delete catalog {{name}} ({{key}}) and {{count}} records from this browser? This cannot be undone.",
+  "Không xóa được entity. Dữ liệu có thể đang được sử dụng hoặc trình duyệt không cho phép lưu. Hãy kiểm tra và thử lại.":
+    "Could not delete the entity. It may be in use or browser storage may be unavailable. Check and try again.",
+  "Danh mục tổ chức mẫu được hệ thống sử dụng, không thể xóa.":
+    "The sample organization catalog is used by the system and cannot be deleted.",
+  "Chỉ có thể xóa danh mục nội bộ ở trạng thái bản nháp.":
+    "Only local catalogs in draft status can be deleted.",
+  "Danh mục đang được trường tham chiếu của danh mục khác sử dụng.":
+    "Another catalog has a field referencing this catalog.",
+  "Danh mục đang được cấu hình trong vai trò phân quyền.":
+    "This catalog is configured in a permission role.",
+  "Danh mục đang được biểu mẫu sử dụng. Đổi nguồn dữ liệu của trường trước khi xóa.":
+    "A form uses this catalog. Change the field data source before deleting it.",
+  "Không đọc được dữ liệu phụ thuộc. Chưa thể xóa entity.":
+    "Cannot read dependencies. Entity deletion is unavailable.",
+
+  "Họ tên người tạo": "Creator full name",
+  "Email người tạo": "Creator email",
+  "Mã nhân viên người tạo": "Creator employee code",
+  "Phòng ban người tạo": "Creator department",
+  "Chức danh người tạo": "Creator job title",
+  "Tên quản lý trực tiếp của người tạo": "Creator direct manager name",
+  "Quản lý trực tiếp của người tạo": "Creator direct manager",
+  "Nguồn giá trị mặc định": "Default value source",
+  "Tự điền khi trường chưa có giá trị. Giữ nguyên dữ liệu đã lưu hoặc đã xóa.":
+    "Fills only when no value exists. Preserves saved or explicitly cleared values.",
+  "Nhập giá trị cố định": "Enter a fixed value",
+  "Cho phép sửa giá trị": "Allow editing value",
+  "Thông tin người tạo đã chọn chưa có dữ liệu. Ứng dụng cần cung cấp thông tin này.":
+    "The selected creator information is unavailable. The application must supply this attribute.",
+
+  "Kéo vào mẫu hoặc bấm để thêm": "Drag into the form or click to add",
+  "Chèn sau trường này": "Insert after this field",
+  "Thả vào đây để thêm cuối mẫu": "Drop here to append to the form",
+  "Sơ đồ": "Diagram",
+  "Danh sách": "List",
+  "{{count}} nhân viên · {{departments}} phòng ban":
+    "{{count}} employees · {{departments}} departments",
+  "Đang tải sơ đồ tổ chức...": "Loading organization chart...",
+  "Thông tin nhân viên": "Employee details",
+  "Đóng thông tin": "Close details",
+  "Xem thông tin {{name}}": "View details for {{name}}",
+  "Mở nhánh của {{name}}": "Expand branch for {{name}}",
+  "Thu gọn nhánh của {{name}}": "Collapse branch for {{name}}",
+  "Sơ đồ tổ chức tương tác": "Interactive organization chart",
+  "Kéo nền để di chuyển · dùng nút + / − để phóng to, thu nhỏ":
+    "Drag the background to pan · use + / − to zoom",
+  "Chọn người": "People picker",
+  "Cho phép chọn nhiều người": "Allow multiple people",
+  "Tìm tên, email hoặc phòng ban...": "Search name, email or department...",
+  "Không tìm thấy người phù hợp": "No matching people",
+  "Danh mục": "Catalog",
+  "Sơ đồ tổ chức": "Organization chart",
+  "Chưa có phòng ban": "No department",
+  "Quản lý trực tiếp": "Direct manager",
+  "Không tìm thấy người quản lý": "Manager not found",
+  "Chưa có người quản lý": "No manager assigned",
+  "Trưởng phòng": "Department head",
+  "Quan hệ báo cáo trực tiếp và trưởng phòng từ danh mục mẫu.":
+    "Reporting lines and department heads from the sample directory.",
+  "Lọc phòng ban": "Filter by department",
+  "Tất cả phòng ban": "All departments",
+  "Dữ liệu tổ chức giả lập, chỉ lưu trên trình duyệt. Chưa kết nối Microsoft 365.":
+    "Synthetic organization data, stored only in this browser. Microsoft 365 is not connected.",
+  "Quan hệ báo cáo": "Reporting lines",
+  "Không có nhân viên đang hoạt động": "No active employees",
   ...formMessages,
   "Biểu mẫu": "Forms",
   "Thiết kế biểu mẫu": "Form Studio",
@@ -252,6 +375,24 @@ export const en = {
   "Kết nối": "Connections",
   "Quản trị": "Administration",
   "Phân quyền": "Permissions",
+  "Ant Design · bản thử": "Ant Design · preview",
+  "Xem bản shadcn": "View shadcn version",
+  "Quản lý những gì mỗi vai trò được xem và thực hiện.":
+    "Manage what each role can see and do.",
+  "Bản thử nghiệm · Chỉ lưu trong trình duyệt, chưa áp dụng quyền thật.":
+    "Prototype · Saved in this browser. Live permissions are not enforced.",
+  "Cấu hình vai trò": "Role settings",
+  "Mô phỏng truy cập": "Simulate access",
+  "Thay đổi tự lưu dưới dạng bản nháp trong trình duyệt.":
+    "Changes auto-save as a draft in this browser.",
+  "Các quyền bên dưới áp dụng trong phạm vi này.":
+    "The permissions below apply within this scope.",
+  "{{count}} quyền đã chọn": "{{count}} permissions selected",
+  "Không áp dụng": "Not applicable",
+  "Chưa chọn = từ chối · Dấu gạch ngang = không áp dụng.":
+    "Unchecked = denied · Dash = not applicable.",
+  "Vuốt ngang bảng để xem đủ các hành động.":
+    "Scroll the table horizontally to see all actions.",
   "Chọn giá trị": "Select a value",
   "Chưa có dữ liệu": "No data yet",
   Đóng: "Close",
@@ -420,7 +561,6 @@ export const en = {
   "Mã nhân viên": "Employee ID",
   "Phòng ban": "Department",
   "Chức danh": "Job title",
-  "Quản lý trực tiếp": "Line manager",
   "Vai trò ứng dụng": "Application role",
   "Thông tin ở đây là dữ liệu mẫu. Khi có đăng nhập, tên và email sẽ lấy từ Entra ID; phòng ban, chức danh và quản lý cần nguồn HR đã được xác nhận. Người dùng không tự sửa các trường này trong bản demo.":
     "This is sample data. Once sign-in is available, names and emails will come from Entra ID; departments, job titles and managers require a verified HR source. Users cannot edit these fields in the demo.",
@@ -658,4 +798,138 @@ export const en = {
   ALLOW: "Allow",
   DENY: "Deny",
   "(chưa đặt tên)": "(unnamed)",
+  "Chọn trường {{label}}": "Select field {{label}}",
+  "Có điều kiện": "Conditional",
+  "Canvas biểu mẫu trực tiếp": "Live form canvas",
+  "Chọn trường để chỉnh sửa. Dữ liệu trên canvas chỉ dùng để thử.":
+    "Select a field to edit. Canvas values are for testing only.",
+  "Chèn trường bên dưới": "Insert field below",
+  "Chèn trường": "Insert field",
+  Canvas: "Canvas",
+  "Cây cấu trúc": "Field tree",
+  "Đang chọn trường để chèn tại vị trí {{position}}":
+    "Choose a field to insert at position {{position}}",
+  "Thường dùng": "Frequently used",
+  "Văn bản và liên hệ": "Text and contact",
+  "Lựa chọn": "Choices",
+  "Ngày giờ và tiền": "Date, time and money",
+  "Bố cục và nhóm": "Layout and groups",
+  "Không tìm thấy kiểu trường": "No field types found",
+  "Canvas trực tiếp": "Live canvas",
+  "Máy tính": "Desktop",
+  "Điện thoại": "Mobile",
+  "Kiểm tra dữ liệu": "Validation",
+  "Điều kiện và tính toán": "Logic and calculations",
+  "Hiển thị": "Appearance",
+  "Di chuyển hoặc xóa các trường con trước khi đổi sang kiểu đơn.":
+    "Move or remove child fields before changing to a simple type.",
+  "Đổi tên biểu mẫu": "Rename form",
+  "Schema JSON": "Schema JSON",
+  "Schema FlowDocker · chỉ xem. Dùng Nhập schema JSON trong chế độ thiết kế để thay cấu trúc.":
+    "FlowDocker schema · read only. Use Import schema JSON in Designer to replace the structure.",
+  "Độ rộng thuộc tính": "Inspector width",
+  "Ẩn trong bản xem thử khi điều kiện không khớp.":
+    "Hidden in Preview when its condition does not match.",
+  "Phiên bản {{version}}": "Version {{version}}",
+  "Mở mẫu thanh toán": "Open payment sample",
+  "Kéo {{type}} vào canvas": "Drag {{type}} onto canvas",
+  "Tùy chọn biểu mẫu": "Form options",
+  "Bản nháp chỉ được lưu trên trình duyệt này.":
+    "Drafts are stored only in this browser.",
+  "Công cụ": "Tools",
+  "Độ rộng canvas": "Canvas width",
+  "Chọn ngày": "Choose date",
+  "Lịch · {{label}}": "Calendar · {{label}}",
+  "Tháng sau": "Next month",
+  "Tháng trước": "Previous month",
+  "Chọn tháng": "Choose month",
+  "Chọn năm": "Choose year",
+  "Điều hướng lịch": "Calendar navigation",
+  "{{date}} · đã chọn": "{{date}} · selected",
+  "Hôm nay": "Today",
+  "Xóa ngày": "Clear date",
+  Xong: "Done",
+  Giờ: "Hour",
+  Phút: "Minute",
+  "Nhóm thuộc tính": "Property category",
+  "Điều chỉnh độ rộng bảng": "Adjust panel width",
+  Dòng: "Row",
+  "Một dòng minh họa · thêm và xóa dòng trong Xem thử":
+    "One sample row · add and remove rows in Preview",
+  "Nhãn trên canvas": "Canvas label",
+  "Enter để lưu · Esc để hủy": "Enter to save · Esc to cancel",
+  "Sửa nhãn trên canvas": "Edit label on canvas",
+  "Thả vào nhóm này": "Drop into this group",
+  "Chèn trước trường này": "Insert before this field",
+  "Xóa dòng {{index}}": "Remove row {{index}}",
+  "Thao tác": "Actions",
+  "Danh sách nhập tay": "Manual choices",
+  "Tự nhập các lựa chọn bên dưới; không lấy dữ liệu từ nguồn khác.":
+    "Enter choices below; data is not loaded from another source.",
+  "Nguồn {{source}} chưa có trong ứng dụng này. Chọn nguồn khác hoặc dùng danh sách nhập tay.":
+    "Source {{source}} is unavailable in this application. Choose another source or use manual choices.",
+  "Nguồn không khả dụng: {{source}}": "Unavailable source: {{source}}",
+  "Nguồn này không chứa danh sách người. Chọn Người trong tổ chức hoặc nhập danh sách người thủ công.":
+    "This source does not contain people. Choose Organization people or enter a people list manually.",
+  "Người đang tạo biểu mẫu": "Current form creator",
+  "Nhập giá trị": "Enter a value",
+  "Cho phép đổi người": "Allow changing person",
+  "Mã người mặc định": "Default person ID",
+  "Tự điền tài khoản hiện tại khi trường chưa có giá trị. Không thay người đã lưu trong phiếu.":
+    "Fill the current account when the field has no value. Keep the person already saved on the request.",
+  "Chưa xác định được người đang tạo. Ứng dụng cần cung cấp tài khoản hiện tại.":
+    "The current creator is unavailable. The application must supply the current account.",
+  "Chọn người cụ thể": "Select specific people",
+  "Người mặc định": "Default person",
+  "Tìm và chọn người từ nguồn dữ liệu của trường. Để trống nếu không cần mặc định.":
+    "Find and select people from this field's data source. Leave empty for no default.",
+  "Người không còn khả dụng": "Person no longer available",
+  "Một số người mặc định không còn trong nguồn. Chọn lại hoặc bỏ mặc định.":
+    "Some default people are no longer in the source. Select again or clear the default.",
+  "Nguồn này phụ thuộc trường {{field}}. Hãy đặt giá trị mặc định cho trường đó để chọn người.":
+    "This source depends on field {{field}}. Set that field's default value to choose people.",
+  "Tải lại danh sách": "Reload list",
+  "Bỏ mặc định": "Clear default",
+  "Chọn trường được xem, che giá trị hoặc ẩn. Chưa có quy tắc sẽ mặc định ẩn; quyền thao tác và phạm vi vẫn phải thỏa mãn.":
+    "Choose which fields to show, mask or hide. Fields without a rule are hidden; action and scope requirements still apply.",
+  "Tài nguyên chứa trường": "Resource fields",
+  "Tài nguyên chưa khai báo trường": "No fields registered for these resources",
+  "Dùng Mô phỏng truy cập để xem dữ liệu mẫu sau khi áp dụng quy tắc.":
+    "Use Simulate access to preview synthetic data after applying these rules.",
+  "Dữ liệu mẫu sau phân quyền": "Synthetic data after permissions",
+  "Chỉ minh họa bằng dữ liệu tổng hợp. Trường bị ẩn không có giá trị trong kết quả.":
+    "Synthetic examples only. Hidden fields have no value in the result.",
+  "Quyền hiệu lực": "Effective access",
+  "Giá trị trả về": "Returned value",
+  "Không trả về": "Not returned",
+  "Chỉ xem dữ liệu trường khi mô phỏng Xem hoặc Xuất trên tài nguyên đã khai báo trường.":
+    "Field data is shown only when simulating View or Export on a resource with registered fields.",
+  "Hành động không có trong danh mục tài nguyên":
+    "Action is not registered for this resource",
+  "Cần quyền xem để đọc hoặc xuất dữ liệu trường":
+    "View permission is required to read or export field data",
+  "Tên nhà cung cấp": "Vendor name",
+  "Tài khoản ngân hàng": "Bank account",
+  "Mã đề nghị": "Request number",
+  "Số tiền": "Amount",
+  Trường: "Field",
+  "{{visible}} trên {{total}} biểu mẫu": "{{visible}} of {{total}} forms",
+  "Đang chỉnh sửa": "Currently editing",
+  "Mở thiết kế": "Open designer",
+  "Thử tên khác hoặc xóa từ khóa tìm kiếm.":
+    "Try another name or clear your search.",
+  "Cấu hình đã thiết lập cho {{field}}": "Configured settings for {{field}}",
+  "Mở cấu hình {{group}} cho {{field}}":
+    "Open {{group}} settings for {{field}}",
+  "Điều kiện": "Conditions",
+  "Tính toán": "Calculation",
+  "Cột mã lưu": "Stored key column",
+  "Cột tên hiển thị": "Display name column",
+  "Cột đã lưu không còn khả dụng. Chọn lại cột từ danh mục.":
+    "The saved column is no longer available. Select another catalog column.",
+  "Chọn ID hoặc mã duy nhất và ổn định. Biểu mẫu chỉ lưu mã này, không lưu tên hiển thị.":
+    "Choose a unique, stable ID or code. The form stores this key, not the display name.",
+  "Chọn cột dữ liệu": "Choose a data column",
+  "{{label}} ({{key}})": "{{label}} ({{key}})",
+  "Cột không khả dụng: {{column}}": "Unavailable column: {{column}}",
 } as const;

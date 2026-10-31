@@ -1,16 +1,19 @@
+import { saveLocalMasterRecords } from "./master-records";
+import { masterDeleteBlockers, removeLocalMaster } from "./master-deletion";
+import { formCatalog, readFormDrafts } from "./form-drafts";
 import { I18nProvider, useI18n } from "@flowdocker/i18n";
-import React, { Suspense, lazy, useEffect, useState } from "react";
+import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { ArrowRight, Blocks, Database, LockKeyhole } from "lucide-react";
 import { AppShell, type PageId } from "@flowdocker/app-shell";
-import { MasterBuilder } from "@flowdocker/master-builder";
+import { OrganizationMasterPage } from "./organization-page";
 import { PermissionBuilder } from "@flowdocker/permission-builder";
 import { Badge, Button, DataTable, Notice } from "@flowdocker/ui";
 import type { MasterEntity, Role } from "@flowdocker/app-contracts";
 import { entityService, resources, roleService } from "./mock";
 import { ConnectionsPage } from "./connections";
 import { ApplicationsPage } from "./applications";
-import { FormsPage } from "./forms";
+import { FormsPage, type FormsPageHandle } from "./forms";
 import { ProfilePage } from "./profile";
 import { demoProfile } from "./demo-profile";
 import "@flowdocker/ui/styles.css";
@@ -20,6 +23,13 @@ const FlowStudioPage = lazy(() =>
     default: module.FlowStudioPage,
   })),
 );
+const AntPermissionBuilder = lazy(() =>
+  import("@flowdocker/permission-builder/antd-preview").then((module) => ({
+    default: module.AntPermissionBuilder,
+  })),
+);
+const permissionPreview =
+  new URLSearchParams(location.search).get("permission-ui") === "antd";
 
 function initialPage(): PageId {
   const hash = location.hash.slice(1);
@@ -43,6 +53,7 @@ function App() {
   }, [t]);
 
   const [page, setPage] = useState<PageId>(initialPage);
+  const formsRef = useRef<FormsPageHandle>(null);
   const [theme, setTheme] = useState<"light" | "dark">(() =>
     localStorage.getItem("flowdocker.theme") === "dark" ? "dark" : "light",
   );
@@ -60,11 +71,16 @@ function App() {
       .finally(() => setLoading(false));
   }, []);
   useEffect(() => {
-    const onHash = () => setPage(initialPage());
+    const onHash = () => {
+      const next = initialPage();
+      if (next === "forms") formsRef.current?.openCatalog();
+      setPage(next);
+    };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
   const navigate = (id: PageId) => {
+    if (id === "forms") formsRef.current?.openCatalog();
     location.hash = id;
     setPage(id);
   };
@@ -76,6 +92,39 @@ function App() {
     });
   const saveEntity = async (value: MasterEntity) => {
     await entityService.save(value);
+    setEntities(await entityService.list());
+  };
+  const deleteBlockers = (entity: MasterEntity) => {
+    try {
+      return masterDeleteBlockers(entity, entities, roles, [
+        ...formCatalog(readFormDrafts(localStorage)),
+        ...(formsRef.current?.getDefinitions() ?? []),
+      ]).map((issue) => t(issue));
+    } catch {
+      return [t("Không đọc được dữ liệu phụ thuộc. Chưa thể xóa entity.")];
+    }
+  };
+  const deleteEntity = async (id: string) => {
+    const rawRoles = localStorage.getItem("flowdocker.demo.roles.v1");
+    const currentRoles: Role[] =
+      rawRoles === null ? roles : JSON.parse(rawRoles);
+    if (
+      !Array.isArray(currentRoles) ||
+      !currentRoles.every(
+        (role) => role && role.grants && typeof role.grants === "object",
+      )
+    )
+      throw new Error("Invalid role storage");
+    const savedForms = formCatalog(readFormDrafts(localStorage));
+    const liveForms = formsRef.current?.getDefinitions() ?? [];
+    removeLocalMaster(localStorage, entities, id, (current) => {
+      const entity = current.find((item) => item.id === id)!;
+      const issues = masterDeleteBlockers(entity, current, currentRoles, [
+        ...savedForms,
+        ...liveForms,
+      ]);
+      if (issues.length) throw new Error(issues.join(" "));
+    });
     setEntities(await entityService.list());
   };
   const saveRole = async (value: Role) => {
@@ -95,22 +144,44 @@ function App() {
       onThemeChange={changeTheme}
     >
       {page === "master" && (
-        <MasterBuilder
+        <OrganizationMasterPage
           entities={entities}
           onSave={saveEntity}
+          onSaveRecords={async (expected, records) => {
+            saveLocalMasterRecords(localStorage, entities, expected, records);
+            setEntities(await entityService.list());
+          }}
+          onDelete={deleteEntity}
+          getDeleteBlockers={deleteBlockers}
           loading={loading}
           error={error}
         />
       )}
-      {page === "permissions" && (
-        <PermissionBuilder
-          roles={roles}
-          resources={resources}
-          onSave={saveRole}
-          loading={loading}
-          error={error}
-        />
-      )}
+      {page === "permissions" &&
+        (permissionPreview ? (
+          <Suspense
+            fallback={
+              <section className="fd-screen">{t("Đang tải...")}</section>
+            }
+          >
+            <AntPermissionBuilder
+              roles={roles}
+              resources={resources}
+              onSave={saveRole}
+              loading={loading}
+              error={error}
+              theme={theme}
+            />
+          </Suspense>
+        ) : (
+          <PermissionBuilder
+            roles={roles}
+            resources={resources}
+            onSave={saveRole}
+            loading={loading}
+            error={error}
+          />
+        ))}
       {page === "connections" && (
         <ConnectionsPage onOpenFlows={() => navigate("flows")} />
       )}
@@ -161,7 +232,7 @@ function App() {
                 </div>
               </div>
               <div className="fd-quick-links">
-                <button onClick={() => navigate("master")}>
+                <a href="#master">
                   <span className="fd-quick-icon">
                     <Database size={19} />
                   </span>
@@ -172,8 +243,8 @@ function App() {
                     </small>
                   </span>
                   <ArrowRight size={17} />
-                </button>
-                <button onClick={() => navigate("permissions")}>
+                </a>
+                <a href="#permissions">
                   <span className="fd-quick-icon purple">
                     <LockKeyhole size={19} />
                   </span>
@@ -184,7 +255,7 @@ function App() {
                     </small>
                   </span>
                   <ArrowRight size={17} />
-                </button>
+                </a>
               </div>
               <div className="fd-section-heading">
                 <div>
@@ -270,7 +341,7 @@ function App() {
       )}
       {page === "applications" && <ApplicationsPage onOpenModule={navigate} />}
       <div hidden={page !== "forms"}>
-        <FormsPage />
+        <FormsPage ref={formsRef} entities={entities} />
       </div>
     </AppShell>
   );

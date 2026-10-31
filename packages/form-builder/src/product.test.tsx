@@ -23,6 +23,7 @@ import {
   type PreviewValues,
 } from "./schema";
 import {
+  calculate,
   defaultValues,
   prepareValues,
   submissionValues,
@@ -224,6 +225,37 @@ describe("FlowDocker Forms typed engine", () => {
     });
     expect(values.total).toBe("0.30");
     expect(validatePreview(form, values)).toEqual([]);
+  });
+
+  it("evaluates safe advanced calculation expressions with field and function suggestions", () => {
+    const amount = field("amount", "currency");
+    const rate = field("exchange_rate", "number");
+    const total = field("total", "currency", {
+      calculation: {
+        operator: "multiply",
+        fields: ["amount", "exchange_rate"],
+        expression: "amount * exchange_rate",
+        precision: 2,
+      },
+    });
+    expect(calculate(total, { amount: "125.50", exchange_rate: "1.2" })).toBe(
+      "150.60",
+    );
+    expect(
+      calculate(
+        {
+          ...total,
+          calculation: {
+            ...total.calculation!,
+            expression: "ROUND(SUM(amount, exchange_rate), 1)",
+          },
+        },
+        { amount: "125.50", exchange_rate: "1.2" },
+      ),
+    ).toBe("126.70");
+    expect(validateFormDefinition(definition([amount, rate, total]))).toEqual(
+      [],
+    );
   });
   it("rejects division by zero and calculation cycles", () => {
     const form = definition([
@@ -662,10 +694,19 @@ describe("FlowDocker Forms interactive contracts", () => {
     }
     render(<Builder />);
     fireEvent.click(screen.getByRole("button", { name: /^Thêm Email$/ }));
-    expect(screen.getByText("email_1")).toBeTruthy();
+    expect(screen.getByRole("textbox", { name: "Mã trường" })).toHaveProperty(
+      "value",
+      "email_1",
+    );
     fireEvent.click(screen.getByRole("button", { name: "Hoàn tác" }));
-    expect(screen.queryByText("email_1")).toBeNull();
+    expect(screen.getByRole("textbox", { name: "Mã trường" })).toHaveProperty(
+      "value",
+      "name",
+    );
     fireEvent.click(screen.getByRole("button", { name: "Làm lại" }));
-    expect(screen.getByText("email_1")).toBeTruthy();
+    expect(screen.getByRole("textbox", { name: "Mã trường" })).toHaveProperty(
+      "value",
+      "email_1",
+    );
   });
 });

@@ -1,0 +1,37 @@
+### Result
+["Create new draft through dialog","Inline label retains focus","Keyboard insertion + inline label + required update live canvas","Undo required","New draft persists after reload"]
+### Ran Playwright code
+```js
+await (/* eslint-disable @typescript-eslint/no-unused-expressions -- Playwright CLI entry. */
+async (page) => {
+ const checks=[]; const ok=(value,label)=>{if(!value) throw new Error(label);checks.push(label);};
+ const title=`Thanh toán UX kiểm tra ${Date.now()}`;
+ await page.getByRole('textbox',{name:'Tên biểu mẫu · tiếng Việt',exact:true}).fill(title);
+ await page.getByRole('textbox',{name:'Tên biểu mẫu · tiếng Anh',exact:true}).fill('Payment UX verification');
+ await page.getByRole('button',{name:'Tạo bản nháp',exact:true}).click();
+ ok(await page.getByRole('heading',{name:title,exact:true}).count()>0,'Create new draft through dialog');
+ await page.getByRole('button',{name:'Thêm Văn bản ngắn',exact:true}).focus();
+ await page.keyboard.press('Enter');
+ await page.getByRole('button',{name:'Sửa nhãn trên canvas',exact:true}).click();
+ const label=page.getByRole('textbox',{name:'Nhãn trên canvas',exact:true});
+ await label.fill('Nhà cung cấp kiểm tra');
+ ok(await label.evaluate(node=>node===document.activeElement),'Inline label retains focus');
+ await label.press('Enter');
+ await page.getByRole('checkbox',{name:'Bắt buộc',exact:true}).check();
+ ok(await page.locator('.fd-live-form').getByRole('textbox',{name:'Nhà cung cấp kiểm tra (bắt buộc)',exact:true}).count()===1,'Keyboard insertion + inline label + required update live canvas');
+ await page.getByRole('button',{name:'Hoàn tác',exact:true}).click();
+ ok(!(await page.getByRole('checkbox',{name:'Bắt buộc',exact:true}).isChecked()),'Undo required');
+ await page.getByRole('button',{name:'Làm lại',exact:true}).click();
+ await page.getByRole('button',{name:'Lưu bản nháp',exact:true}).click();
+ await page.reload();
+ await page.getByRole('button',{name:'Danh sách biểu mẫu',exact:true}).click();
+ await page.getByRole('button',{name:new RegExp(`^${title}`)}).click();
+ ok(await page.locator('.fd-live-form').getByRole('textbox',{name:'Nhà cung cấp kiểm tra (bắt buộc)',exact:true}).count()===1,'New draft persists after reload');
+ await page.getByRole('button',{name:'Danh sách biểu mẫu',exact:true}).click();
+ await page.getByRole('button',{name:'Mở mẫu thanh toán',exact:true}).click();
+ return checks;
+}
+)(page);
+```
+### Events
+- New console entries: .playwright-cli\console-2026-10-28T15-08-24-979Z.log#L52
