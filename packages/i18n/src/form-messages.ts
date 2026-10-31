@@ -320,4 +320,17 @@ export const formMessages = {
   "Không thể đổi ID của biểu mẫu đang mở.":
     "The open form ID cannot be changed.",
   "Đang mở trình soạn mã...": "Opening code editor...",
+  Canvas: "Canvas",
+  "Thử dữ liệu": "Test data",
+  "Thử cục bộ bằng engine hiện có. Dữ liệu thử không gửi lên máy chủ.":
+    "Local test using the existing engine. Test values are not sent to a server.",
+  "Dữ liệu thử và kết quả tính toán": "Test values and calculated results",
+  "Dữ liệu đầu vào JSON": "JSON input values",
+  "Dữ liệu thử phải là đối tượng JSON hợp lệ trong giới hạn xử lý.":
+    "Test values must be a valid JSON object within processing limits.",
+  "Xóa dữ liệu thử": "Clear test values",
+  "Kết quả sau mặc định và tính toán": "Resolved defaults and calculations",
+  "Dữ liệu thử hợp lệ theo cấu hình biểu mẫu.":
+    "Test values satisfy the form configuration.",
+  "Đặt lại JSON": "Reset JSON",
 } as const;

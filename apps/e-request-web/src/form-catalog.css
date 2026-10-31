@@ -369,3 +369,17 @@
     height: 360px;
   }
 }
+
+.fd-test-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px;
+}
+.fd-test-preview details > summary {
+  cursor: pointer;
+  padding: 12px 0;
+}
+.fd-technical-json {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}

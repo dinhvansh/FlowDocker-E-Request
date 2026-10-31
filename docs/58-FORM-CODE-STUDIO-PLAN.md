@@ -35,3 +35,9 @@ Each finished slice is verified, committed and pushed before the next slice.
 - Source reconciliation patches changed JSON paths and preserves unrelated formatting. Editor is retained across tab and language changes; external source patches map the cursor and preserve undo history.
 - Typecheck PASS; 8 focused tests PASS (host/source model). Real browser code date selection → inspector and canvas category selection → code PASS; script output/playwright/code-studio-selection-qa.cjs and screenshot code-studio-selection-1440.png.
 - Audit follow-up: code mode currently shows palette/canvas/inspector vertically inside the narrow half, causing excess scroll. Address panel presentation in slice 6; no visual acceptance claim yet.
+
+## Slice 4 evidence
+- Code workspace has Canvas / Test data views. FormTestPreview reuses FormPreview, prepareValues and validatePreview; input JSON, resolved defaults/calculations, validation feedback and reset are local only.
+- Invalid test JSON stays visible and retains previous valid engine inputs. Existing runtime size/depth/prototype-key bounds apply. Test values survive valid schema edits; activating a different form resets them.
+- Existing field inspector remains available for all configuration; no alternate engine or new schema. Synthetic calculation fixture verifies amount 3 → 6.00 and 7 → 14.00; malformed JSON retains 14.00. The engine intentionally serializes decimal results as strings.
+- Typecheck and lint/i18n PASS. Focused preview/host tests verified before commit. Backend and real submit remain outside this frontend slice.

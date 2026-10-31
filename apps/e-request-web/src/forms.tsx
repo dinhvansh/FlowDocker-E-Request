@@ -21,6 +21,7 @@ import { ArrowLeft, MoreHorizontal, Plus, Save } from "lucide-react";
 import {
   FormDesigner,
   FormPreview,
+  FormTestPreview,
   type DataProvider,
   type FormDataSource,
   exportFormDefinition,
@@ -168,6 +169,7 @@ export function FormsPage({
   const [codeDirty, setCodeDirty] = useState(false);
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState("schema");
+  const [codeView, setCodeView] = useState("canvas");
   const [values, setValues] = useState<PreviewValues>({});
   const [message, setMessage] = useState("");
   const [saveError, setSaveError] = useState(false);
@@ -227,7 +229,6 @@ export function FormsPage({
   };
   const update = (next: FormDefinition) => {
     setDraft(next);
-    setValues({});
     setMessage("");
     setSaveError(false);
   };
@@ -400,63 +401,90 @@ export function FormsPage({
                   )}
                 </div>
                 <div className="fd-hybrid-designer">
-                  {codeInvalid && (
-                    <Notice tone="warning">
-                      {t(
-                        "Mã chưa hợp lệ; hãy sửa mã để tiếp tục thiết kế và lưu.",
-                      )}
-                    </Notice>
+                  {tab === "code" && (
+                    <Tabs
+                      active={codeView}
+                      onChange={setCodeView}
+                      tabs={[
+                        { id: "canvas", label: t("Canvas") },
+                        { id: "test", label: t("Thử dữ liệu") },
+                      ]}
+                    />
                   )}
-                  <div hidden={!titlesOpen}>
-                    <FieldGroup className="fd-form-titles">
-                      <Field label={t("Tên biểu mẫu · tiếng Việt")}>
-                        <Input
-                          value={draft.title.vi}
-                          onChange={(event) =>
-                            update({
-                              ...draft,
-                              title: { ...draft.title, vi: event.target.value },
-                            })
-                          }
-                        />
-                      </Field>
-                      <Field label={t("Tên biểu mẫu · tiếng Anh")}>
-                        <Input
-                          value={draft.title.en}
-                          onChange={(event) =>
-                            update({
-                              ...draft,
-                              title: { ...draft.title, en: event.target.value },
-                            })
-                          }
-                        />
-                      </Field>
-                    </FieldGroup>
+                  <div hidden={tab === "code" && codeView !== "canvas"}>
+                    {codeInvalid && (
+                      <Notice tone="warning">
+                        {t(
+                          "Mã chưa hợp lệ; hãy sửa mã để tiếp tục thiết kế và lưu.",
+                        )}
+                      </Notice>
+                    )}
+                    <div hidden={!titlesOpen}>
+                      <FieldGroup className="fd-form-titles">
+                        <Field label={t("Tên biểu mẫu · tiếng Việt")}>
+                          <Input
+                            value={draft.title.vi}
+                            onChange={(event) =>
+                              update({
+                                ...draft,
+                                title: {
+                                  ...draft.title,
+                                  vi: event.target.value,
+                                },
+                              })
+                            }
+                          />
+                        </Field>
+                        <Field label={t("Tên biểu mẫu · tiếng Anh")}>
+                          <Input
+                            value={draft.title.en}
+                            onChange={(event) =>
+                              update({
+                                ...draft,
+                                title: {
+                                  ...draft.title,
+                                  en: event.target.value,
+                                },
+                              })
+                            }
+                          />
+                        </Field>
+                      </FieldGroup>
+                    </div>
+                    <FormDesigner
+                      runtimeContext={demoFormRuntimeContext}
+                      dataSources={availableSources}
+                      providers={providers}
+                      inspectorSection={tab === "logic" ? "logic" : "basic"}
+                      key={draft.id}
+                      definition={draft}
+                      selectedFieldId={selectedFieldId}
+                      onSelectField={(id) => {
+                        setSelectedFieldId(id);
+                        setRevealField((previous) => ({
+                          id,
+                          revision: (previous?.revision ?? 0) + 1,
+                        }));
+                      }}
+                      readOnly={codeInvalid}
+                      onChange={(next) => {
+                        update(next);
+                        setCodeText((current) =>
+                          reconcileFormCode(current, next),
+                        );
+                        setCodeDirty(false);
+                      }}
+                    />
                   </div>
-                  <FormDesigner
-                    runtimeContext={demoFormRuntimeContext}
-                    dataSources={availableSources}
-                    providers={providers}
-                    inspectorSection={tab === "logic" ? "logic" : "basic"}
-                    key={draft.id}
-                    definition={draft}
-                    selectedFieldId={selectedFieldId}
-                    onSelectField={(id) => {
-                      setSelectedFieldId(id);
-                      setRevealField((previous) => ({
-                        id,
-                        revision: (previous?.revision ?? 0) + 1,
-                      }));
-                    }}
-                    readOnly={codeInvalid}
-                    onChange={(next) => {
-                      update(next);
-                      setCodeText((current) =>
-                        reconcileFormCode(current, next),
-                      );
-                      setCodeDirty(false);
-                    }}
-                  />
+                  {tab === "code" && codeView === "test" && (
+                    <FormTestPreview
+                      definition={draft}
+                      values={values}
+                      onChange={setValues}
+                      providers={providers}
+                      runtimeContext={demoFormRuntimeContext}
+                    />
+                  )}
                 </div>
               </div>
               {tab === "preview" && (

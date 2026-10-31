@@ -30,3 +30,5 @@ export type {
   FieldInspectorProps,
   InspectorSection,
 } from "./components/field-inspector";
+
+export { FormTestPreview, parseTestValues } from "./test-preview";
