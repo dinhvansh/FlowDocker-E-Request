@@ -966,13 +966,18 @@ a {
 .fd-section-heading h3,
 .fd-content h3,
 .fd-overview-side h2 {
-  font-size: 14px;
+  font-family: var(--fd-font-ui);
+  font-size: var(--fd-font-section-size);
+  line-height: var(--fd-font-section-line-height);
   margin: 0;
-  font-weight: 700;
+  font-weight: var(--fd-font-heading-weight);
 }
 .fd-section-heading p,
 .fd-content > p {
-  font-size: 14px;
+  font-family: var(--fd-font-ui);
+  font-size: var(--fd-font-ui-size);
+  line-height: var(--fd-font-ui-line-height);
+  font-weight: var(--fd-font-ui-weight);
   color: var(--fd-text-muted);
   margin: 3px 0 0;
 }
@@ -2828,7 +2833,9 @@ a {
 .fd-designer-v2 .fd-form-palette h2,
 .fd-designer-v2 .fd-form-properties h2,
 .fd-canvas-workspace > .fd-section-heading h2 {
-  font-size: 14px;
+  font-size: var(--fd-font-section-size);
+  line-height: var(--fd-font-section-line-height);
+  font-weight: var(--fd-font-heading-weight);
 }
 .fd-toolbox-group {
   border-bottom: 1px solid var(--fd-border);
@@ -4165,6 +4172,7 @@ a {
 }
 :is(.fd-app, .fd-modal)
   :is(
+    .fd-section-heading h2,
     .fd-section-heading h3,
     .fd-pane-title > strong,
     .fd-field-inspector-header h2,
