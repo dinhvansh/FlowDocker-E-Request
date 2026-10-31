@@ -2,6 +2,7 @@
 
 - `packages/ui/src/components/ui/*`: generated with `shadcn@4.23.0 add` (shadcn/ui registry source, MIT). Adapted locally for FlowDocker package and theme integration. https://ui.shadcn.com/
 - `radix-ui`: MIT, Copyright WorkOS. Used by shadcn Select, Dialog, Tabs and Checkbox.
+- Calendar and Popover were added from the shadcn/ui registry (MIT); Calendar uses `react-day-picker` (MIT, Copyright Giacomo Petrucci) and `date-fns` (MIT). FlowDocker owns its controlled DatePicker wrapper, not these upstream implementations. Bundled license texts are collected by the Forms library packaging step.
 - `cn`: MIT, Copyright shadcn. Used by the generated components.
 - `class-variance-authority`: Apache-2.0. Used for component variants.
 - `@fontsource/inter`: bundles Inter by the Inter Project Authors under SIL Open Font License 1.1.

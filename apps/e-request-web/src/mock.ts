@@ -4,6 +4,7 @@ import type {
   ResourceAction,
   Role,
 } from "@flowdocker/app-contracts";
+import { withOrganizationSamples } from "./organization";
 
 export const seedEntities: MasterEntity[] = [
   {
@@ -154,10 +155,34 @@ export const resources: ResourceAction[] = [
     label: "Asset Category",
     actions: ["READ", "CREATE", "UPDATE", "ARCHIVE", "EXPORT"],
   },
-  { resource: "master.vendor", label: "Vendor", actions: ["READ", "EXPORT"] },
+  {
+    resource: "master.vendor",
+    label: "Vendor",
+    actions: ["READ", "EXPORT"],
+    fields: [
+      {
+        key: "vendor.name",
+        label: "Tên nhà cung cấp",
+        sampleValue: "SYNTHETIC VENDOR",
+      },
+      {
+        key: "vendor.bank_account",
+        label: "Tài khoản ngân hàng",
+        sampleValue: "SYNTHETIC-ACCOUNT-001",
+      },
+    ],
+  },
   {
     resource: "request.payment",
     label: "Payment Request",
+    fields: [
+      {
+        key: "request.code",
+        label: "Mã đề nghị",
+        sampleValue: "DEMO-2026-00001",
+      },
+      { key: "request.amount", label: "Số tiền", sampleValue: 1500000 },
+    ],
     actions: ["READ", "CREATE", "UPDATE", "APPROVE", "EXPORT"],
   },
   {
@@ -210,13 +235,16 @@ export const seedRoles: Role[] = [
 function makeService<T extends { id: string }>(
   key: string,
   seed: T[],
+  merge: (rows: T[]) => T[] = (rows) => rows,
 ): MockService<T> {
   const read = (): T[] => {
     try {
       const stored = localStorage.getItem(key);
-      return stored ? (JSON.parse(stored) as T[]) : seed;
+      return merge(
+        stored ? (JSON.parse(stored) as T[]) : structuredClone(seed),
+      );
     } catch {
-      return seed;
+      return merge(structuredClone(seed));
     }
   };
   return {
@@ -236,5 +264,6 @@ function makeService<T extends { id: string }>(
 export const entityService = makeService(
   "flowdocker.demo.entities.v1",
   seedEntities,
+  withOrganizationSamples,
 );
 export const roleService = makeService("flowdocker.demo.roles.v1", seedRoles);

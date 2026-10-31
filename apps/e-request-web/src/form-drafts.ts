@@ -1,8 +1,12 @@
 import {
   createShowcaseDefinition,
+  createPaymentDefinition,
   isFormDefinition,
   type FormDefinition,
 } from "@flowdocker/form-builder";
+import { createExpenseRequestTemplate } from "./expense-request-template";
+import { createConnectedExpenseTemplate } from "./connected-expense-template";
+import { organizationForm } from "./organization";
 export const formDraftStorageKey = "flowdocker.form-drafts.v1";
 export const demoForms: FormDefinition[] = [
   {
@@ -79,7 +83,19 @@ export const demoForms: FormDefinition[] = [
     ],
   },
   createShowcaseDefinition(),
+  createPaymentDefinition(),
+  createExpenseRequestTemplate(),
+  createConnectedExpenseTemplate(),
+  organizationForm,
 ];
+/** Saved edits take precedence; missing built-in examples remain discoverable without storage writes. */
+export function formCatalog(saved: FormDefinition[]): FormDefinition[] {
+  const ids = new Set(saved.map((form) => form.id));
+  return [
+    ...saved,
+    ...structuredClone(demoForms.filter((form) => !ids.has(form.id))),
+  ];
+}
 export function readFormDrafts(
   storage: Pick<Storage, "getItem">,
 ): FormDefinition[] {

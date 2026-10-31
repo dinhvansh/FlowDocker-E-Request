@@ -1,0 +1,40 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions -- Playwright CLI function entry point. */
+async (page) => {
+ const checks=[];const ok=(condition,label)=>{if(!condition)throw new Error(label);checks.push(label);};
+ await page.keyboard.press('Escape');
+ if(await page.getByRole('option',{name:'English',exact:true}).count()) await page.getByRole('option',{name:'English',exact:true}).click();
+ if(await page.getByRole('button',{name:'Switch to dark theme',exact:true}).count()) await page.getByRole('button',{name:'Switch to dark theme',exact:true}).click();
+ if(await page.getByRole('button',{name:'Select field Vendor',exact:true}).count()===0) await page.getByRole('button',{name:'Open payment sample',exact:true}).click();
+ await page.getByRole('button',{name:'Select field Vendor',exact:true}).click();
+ await page.evaluate(()=>window.scrollTo(0,0));
+ await page.screenshot({path:'output/playwright/forms-ux-v2-1440-en-dark.png'});
+ ok(await page.getByRole('textbox',{name:'Vietnamese label',exact:true}).inputValue()==='Nhà cung cấp','Language switch preserves bilingual draft labels');
+ await page.getByRole('button',{name:'Add Short text',exact:true}).focus();
+ await page.keyboard.press('Enter');
+ ok(await page.getByRole('textbox',{name:'Field key',exact:true}).inputValue()==='text_1','Keyboard insertion adds real field');
+ await page.getByRole('button',{name:'Undo',exact:true}).click();
+ await page.getByRole('button',{name:'Select field Vendor',exact:true}).click();
+ const selected=page.locator('[data-canvas-field="payment-vendor"]');
+ await selected.getByRole('button',{name:'Move down',exact:true}).focus();
+ await page.keyboard.press('Enter');
+ ok(await page.getByRole('button',{name:'Undo',exact:true}).isEnabled(),'Keyboard move updates history');
+ await page.getByRole('button',{name:'Undo',exact:true}).click();
+ await page.getByRole('button',{name:'Field properties',exact:true}).click();
+ ok(await page.locator('.fd-form-properties').isVisible()===false,'Inspector collapses');
+ await page.getByRole('button',{name:'Field properties',exact:true}).click();
+ await page.setViewportSize({width:390,height:844});
+ await page.getByRole('tab',{name:'Canvas',exact:true}).click();
+ ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'390px page has no horizontal overflow');
+ await page.evaluate(()=>window.scrollTo(0,0));
+ await page.screenshot({path:'output/playwright/forms-ux-v2-390-en-dark.png',fullPage:true});
+ await page.getByRole('tab',{name:'Field properties',exact:true}).click();
+ ok(await page.getByRole('textbox',{name:'Field key',exact:true}).isVisible(),'Mobile inspector is reachable');
+ await page.getByRole('tab',{name:'Field library',exact:true}).click();
+ ok(await page.getByRole('searchbox',{name:'Search field types...',exact:true}).isVisible(),'Mobile toolbox is reachable');
+ await page.getByRole('tab',{name:'Canvas',exact:true}).click();
+ await page.getByRole('tab',{name:'Form preview',exact:true}).click();
+ ok(await page.locator('.fd-preview-paper').getByRole('textbox',{name:'Vendor (required)',exact:true}).isVisible(),'Mobile runtime preview works');
+ ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Mobile preview has no horizontal overflow');
+ await page.screenshot({path:'output/playwright/forms-ux-v2-390-preview-en-dark.png',fullPage:true});
+ return checks;
+}

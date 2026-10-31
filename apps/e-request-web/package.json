@@ -8,17 +8,17 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@flowdocker/form-builder": "*",
     "@flowdocker/app-contracts": "*",
     "@flowdocker/app-shell": "*",
-    "@flowdocker/master-builder": "*",
     "@flowdocker/flow-canvas": "*",
+    "@flowdocker/form-builder": "*",
+    "@flowdocker/i18n": "*",
+    "@flowdocker/master-builder": "*",
     "@flowdocker/permission-builder": "*",
     "@flowdocker/ui": "*",
     "@xyflow/react": "^12.9.2",
     "lucide-react": "^0.468.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "@flowdocker/i18n": "*"
+    "react-dom": "^19.2.0"
   }
 }

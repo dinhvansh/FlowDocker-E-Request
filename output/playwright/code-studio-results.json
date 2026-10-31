@@ -1,0 +1,36 @@
+{
+  "result": "PASS",
+  "viewportMeasurements": [
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "font": "Inter",
+      "fontSize": 12,
+      "lineHeight": 18
+    },
+    {
+      "width": 1366,
+      "scrollWidth": 1366,
+      "font": "Inter",
+      "fontSize": 12,
+      "lineHeight": 18
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "font": "Inter",
+      "fontSize": 12,
+      "lineHeight": 18
+    }
+  ],
+  "calculated": {
+    "total": "14.00",
+    "grand": "25.00",
+    "quantityDefault": 2
+  },
+  "browserErrors": [],
+  "independentHost": "PASS",
+  "clipboard": "PASS; original restored",
+  "download": "flowdocker-form-ai-context.md",
+  "storage": "original values restored"
+}

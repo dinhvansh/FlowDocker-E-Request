@@ -3,11 +3,14 @@ import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   LanguagePicker,
+  DatePicker,
+  PeoplePicker,
   Badge,
   Button,
   DataTable,
   EmptyState,
   Field,
+  FieldGroup,
   Input,
   Modal,
   Notice,
@@ -24,6 +27,9 @@ function Examples() {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [kind, setKind] = useState("LOCAL_CATALOG");
+  const [date, setDate] = useState("");
+  const [dateTime, setDateTime] = useState("");
+  const [people, setPeople] = useState<string[]>([]);
   return (
     <div className="fd-app" data-theme={theme}>
       <main
@@ -32,6 +38,26 @@ function Examples() {
         <LanguagePicker />
         <h1>{t("FlowDocker UI · isolated examples")}</h1>
         <p>{t("Dữ liệu tổng hợp, không cần API hay credentials.")}</p>
+        <Field label={t("Chọn người")}>
+          <PeoplePicker
+            label={t("Chọn người")}
+            multiple
+            value={people}
+            onChange={setPeople}
+            options={[
+              {
+                value: "demo-a",
+                label: "An Demo",
+                description: "an@example.test",
+              },
+              {
+                value: "demo-b",
+                label: "Bình Demo",
+                description: "binh@example.test",
+              },
+            ]}
+          />
+        </Field>
         <Button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
           {theme === "light" ? t("Bật giao diện tối") : t("Bật giao diện sáng")}
         </Button>
@@ -61,7 +87,22 @@ function Examples() {
           }}
         >
           {tab === "default" ? (
-            <>
+            <FieldGroup>
+              <Field label={t("Ngày")}>
+                <DatePicker
+                  label={t("Ngày")}
+                  value={date}
+                  onValueChange={setDate}
+                />
+              </Field>
+              <Field label={t("Ngày và giờ")}>
+                <DatePicker
+                  label={t("Ngày và giờ")}
+                  value={dateTime}
+                  onValueChange={setDateTime}
+                  withTime
+                />
+              </Field>
               <Field label={t("Tìm dữ liệu mẫu")}>
                 <Input
                   value={search}
@@ -94,7 +135,7 @@ function Examples() {
                   { key: "name", heading: t("TÊN"), render: (r) => r.name },
                 ]}
               />
-            </>
+            </FieldGroup>
           ) : tab === "empty" ? (
             <EmptyState
               title={t("Chưa có dữ liệu")}

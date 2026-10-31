@@ -8,12 +8,14 @@
     "./styles.css": "./styles.css"
   },
   "dependencies": {
+    "@flowdocker/i18n": "*",
     "@fontsource/inter": "^5.3.0",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.0",
+    "date-fns": "^4.4.0",
     "lucide-react": "^0.468.0",
     "radix-ui": "^1.8.1",
     "react": "^19.2.0",
-    "@flowdocker/i18n": "*"
+    "react-day-picker": "^10.0.2"
   }
 }

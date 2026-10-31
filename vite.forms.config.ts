@@ -41,10 +41,10 @@ export default defineConfig({
   build: {
     outDir: "dist/forms-library",
     lib: {
-      entry: "packages/form-builder/src/standalone.tsx",
+      entry: {forms:"packages/form-builder/src/standalone.tsx", "code-studio":"packages/form-builder/src/code-studio.tsx"},
       name: "FlowDockerForms",
       formats: ["es"],
-      fileName: () => "flowdocker-forms.js",
+      fileName: (_format, entryName) => entryName === "forms" ? "flowdocker-forms.js" : "code-studio.js",
       cssFileName: "styles",
     },
     rollupOptions: {

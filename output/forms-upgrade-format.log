@@ -1,0 +1,6 @@
+
+> format:check
+> prettier --check 'apps/e-request-web/src/**/*.{ts,tsx}' 'packages/**/*.{ts,tsx,css}'
+
+Checking formatting...
+All matched files use Prettier code style!

@@ -1,0 +1,27 @@
+### Result
+["Palette pointer drag inserts into columns preserving children","Undo nested insertion","Escape cancels inline edit"]
+### Ran Playwright code
+```js
+await (/* eslint-disable @typescript-eslint/no-unused-expressions -- Playwright CLI entry. */
+async (page) => {
+ const source=page.getByRole('button',{name:'Kéo Email vào canvas',exact:true});
+ const target=page.locator('[data-canvas-field="payment-details"] .fd-canvas-field-bar').first();
+ const start=await source.boundingBox();const end=await target.boundingBox();
+ await page.mouse.move(start.x+start.width/2,start.y+start.height/2);await page.mouse.down();
+ await page.mouse.move(start.x+start.width/2+12,start.y+start.height/2,{steps:4});
+ await page.mouse.move(end.x+end.width/2,end.y+end.height/2,{steps:18});
+ await page.mouse.up();
+ await page.getByRole('tab',{name:'Schema JSON',exact:true}).click();
+ const schema=JSON.parse(await page.getByRole('textbox',{name:'Nội dung schema JSON',exact:true}).inputValue());
+ if(!schema.fields[0].children.some(field=>field.type==='email')) throw new Error('Palette drag did not insert inside columns');
+ await page.getByRole('tab',{name:'Thiết kế trường',exact:true}).click();
+ await page.getByRole('button',{name:'Hoàn tác',exact:true}).click();
+ await page.getByRole('button',{name:'Chọn trường Nhà cung cấp',exact:true}).click();
+ await page.getByRole('button',{name:'Sửa nhãn trên canvas',exact:true}).click();
+ await page.getByRole('textbox',{name:'Nhãn trên canvas',exact:true}).fill('Hủy nhãn này');
+ await page.keyboard.press('Escape');
+ if(await page.getByRole('button',{name:'Chọn trường Nhà cung cấp',exact:true}).count()!==1) throw new Error('Escape changed schema');
+ return ['Palette pointer drag inserts into columns preserving children','Undo nested insertion','Escape cancels inline edit'];
+}
+)(page);
+```

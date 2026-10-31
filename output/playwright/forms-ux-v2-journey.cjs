@@ -1,0 +1,47 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions -- Playwright CLI function entry point. */
+async (page) => {
+ await page.getByRole("button",{name:"Mở mẫu thanh toán",exact:true}).click();
+ const checks=[];
+ const ok=(condition,label)=>{if(!condition)throw new Error(label);checks.push(label);};
+ await page.getByRole('button',{name:'Chọn trường Nhà cung cấp',exact:true}).click();
+ await page.getByRole('button',{name:'Chèn trường bên dưới',exact:true}).click();
+ await page.getByRole('button',{name:'Thêm Tiền tệ',exact:true}).click();
+ await page.getByRole('textbox',{name:'Nhãn tiếng Việt',exact:true}).fill('Số tiền thanh toán');
+ await page.getByRole('textbox',{name:'Nhãn tiếng Anh',exact:true}).fill('Payment amount');
+ await page.getByRole('checkbox',{name:'Bắt buộc',exact:true}).check();
+ const canvas=page.locator('.fd-live-form');
+ ok(await canvas.getByRole('spinbutton',{name:'Số tiền thanh toán (bắt buộc)',exact:true}).count()===1,'Inserted live required amount control');
+ await page.getByRole('button',{name:'Lưu bản nháp',exact:true}).click();
+ ok(await page.getByText('Đã lưu bản nháp biểu mẫu trên máy này.',{exact:true}).count()===1,'Local draft saved');
+ await page.getByRole('tab',{name:'Xem thử biểu mẫu',exact:true}).click();
+ const preview=page.locator('.fd-preview-paper');
+ ok(await preview.getByRole('textbox',{name:'Lý do tạm ứng',exact:true}).count()===0,'Conditional field hidden for invoice');
+ await preview.getByRole('button',{name:'Kiểm tra dữ liệu thử',exact:true}).click();
+ ok(await preview.getByRole('alert').count()>0,'Invalid preview produces error summary');
+ await preview.getByRole('combobox',{name:'Công ty (bắt buộc)',exact:true}).click();
+ await page.getByRole('option',{name:'Công ty mẫu',exact:true}).click();
+ await preview.getByRole('textbox',{name:'Nhà cung cấp (bắt buộc)',exact:true}).fill('Synthetic Vendor');
+ await preview.getByRole('spinbutton',{name:'Số tiền thanh toán (bắt buộc)',exact:true}).fill('0.50');
+ await preview.getByRole('radio',{name:'Tạm ứng',exact:true}).click();
+ ok(await preview.getByRole('textbox',{name:'Lý do tạm ứng (bắt buộc)',exact:true}).count()===1,'Conditional field shown and required for advance');
+ await preview.getByRole('textbox',{name:'Lý do tạm ứng (bắt buộc)',exact:true}).fill('Synthetic advance');
+ if(await preview.getByRole('textbox',{name:'Nội dung (bắt buộc)',exact:true}).count()===0) await preview.getByRole('button',{name:'Thêm dòng',exact:true}).click();
+ await preview.getByRole('textbox',{name:'Nội dung (bắt buộc)',exact:true}).nth(0).fill('First');
+ await preview.getByRole('spinbutton',{name:'Chi phí (bắt buộc)',exact:true}).nth(0).fill('0.20');
+ await preview.getByRole('button',{name:'Thêm dòng',exact:true}).click();
+ await preview.getByRole('textbox',{name:'Nội dung (bắt buộc)',exact:true}).nth(1).fill('Second');
+ await preview.getByRole('spinbutton',{name:'Chi phí (bắt buộc)',exact:true}).nth(1).fill('0.30');
+ ok(await preview.getByRole('spinbutton',{name:'Tổng chi phí',exact:true}).inputValue()==='0.50','Decimal total is 0.50');
+ await preview.getByRole('button',{name:'Kiểm tra dữ liệu thử',exact:true}).click();
+ ok(await preview.getByText('Dữ liệu thử hợp lệ trên trình duyệt; chưa gửi yêu cầu.',{exact:true}).count()===1,'Valid local preview without backend success claim');
+ await page.screenshot({path:'output/playwright/forms-ux-v2-payment-preview.png',fullPage:true});
+ await page.getByRole('tab',{name:'Thiết kế trường',exact:true}).click();
+ ok(await page.getByRole('button',{name:'Hoàn tác',exact:true}).isEnabled(),'Undo preserved across Preview');
+ await page.reload();
+ await page.getByRole("button",{name:"Danh sách biểu mẫu",exact:true}).click();
+ await page.getByRole("button",{name:/^Đề nghị thanh toán · mẫu/}).click();
+ ok(await page.locator('.fd-live-form').getByRole('spinbutton',{name:'Số tiền thanh toán (bắt buộc)',exact:true}).count()===1,'Saved field restored after reload');
+ await page.evaluate(()=>window.scrollTo(0,0));
+ await page.screenshot({path:'output/playwright/forms-ux-v2-payment-1366.png'});
+ return checks;
+}

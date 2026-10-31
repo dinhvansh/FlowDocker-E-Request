@@ -1,0 +1,505 @@
+{
+  "id": "expense-request-vnd-template",
+  "title": {
+    "vi": "Đề nghị thanh toán · mẫu chi phí VND",
+    "en": "Expense request · VND template"
+  },
+  "version": 1,
+  "schemaVersion": 2,
+  "status": "DRAFT",
+  "orientation": "landscape",
+  "fields": [
+    {
+      "id": "expense-template-guide",
+      "key": "guide",
+      "type": "alert",
+      "label": {
+        "vi": "Mẫu thử · chỉ lưu bản thiết kế trên máy",
+        "en": "Demo · design saved on this device only"
+      },
+      "required": false,
+      "options": [],
+      "tone": "info",
+      "help": {
+        "vi": "Nhập thông tin minh họa. Mẫu dùng VND, tỷ giá 1. Chưa kết nối nhân sự, cấp số chứng từ, ngân hàng hoặc quy trình duyệt.",
+        "en": "Use synthetic entries. This template uses VND at rate 1. Identity, document numbering, banking and approvals are not connected."
+      }
+    },
+    {
+      "id": "expense-template-general",
+      "key": "general",
+      "type": "section",
+      "label": {
+        "vi": "Thông tin chung",
+        "en": "General information"
+      },
+      "required": false,
+      "options": [],
+      "children": [
+        {
+          "id": "expense-template-general_layout",
+          "key": "general_layout",
+          "type": "columns",
+          "label": {
+            "vi": "Thông tin chứng từ",
+            "en": "Document details"
+          },
+          "required": false,
+          "options": [],
+          "columns": 2,
+          "children": [
+            {
+              "id": "expense-template-document_ref",
+              "key": "document_ref",
+              "type": "text",
+              "label": {
+                "vi": "Số chứng từ · mẫu",
+                "en": "Document reference · sample"
+              },
+              "required": false,
+              "options": [],
+              "defaultValue": "DEMO-EXPENSE-001",
+              "readOnly": true,
+              "help": {
+                "vi": "Mã minh họa; chưa cấp số tự động.",
+                "en": "Sample reference; automatic numbering is not connected."
+              }
+            },
+            {
+              "id": "expense-template-requester",
+              "key": "requester",
+              "type": "text",
+              "label": {
+                "vi": "Người yêu cầu",
+                "en": "Requestor"
+              },
+              "required": true,
+              "options": []
+            },
+            {
+              "id": "expense-template-department",
+              "key": "department",
+              "type": "select",
+              "label": {
+                "vi": "Bộ phận · danh sách mẫu",
+                "en": "Department · sample list"
+              },
+              "required": true,
+              "options": [
+                {
+                  "value": "demo-it",
+                  "label": {
+                    "vi": "CNTT · mẫu",
+                    "en": "IT · sample"
+                  }
+                },
+                {
+                  "value": "demo-admin",
+                  "label": {
+                    "vi": "Hành chính · mẫu",
+                    "en": "Administration · sample"
+                  }
+                },
+                {
+                  "value": "demo-sales",
+                  "label": {
+                    "vi": "Kinh doanh · mẫu",
+                    "en": "Sales · sample"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "expense-template-accounting_date",
+              "key": "accounting_date",
+              "type": "date",
+              "label": {
+                "vi": "Ngày hạch toán",
+                "en": "Accounting date"
+              },
+              "required": false,
+              "options": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "expense-template-beneficiary",
+      "key": "beneficiary",
+      "type": "section",
+      "label": {
+        "vi": "Thông tin người thụ hưởng",
+        "en": "Beneficiary details"
+      },
+      "required": false,
+      "options": [],
+      "children": [
+        {
+          "id": "expense-template-beneficiary_layout",
+          "key": "beneficiary_layout",
+          "type": "columns",
+          "label": {
+            "vi": "Tài khoản thanh toán",
+            "en": "Payment account"
+          },
+          "required": false,
+          "options": [],
+          "columns": 2,
+          "children": [
+            {
+              "id": "expense-template-beneficiary_name",
+              "key": "beneficiary_name",
+              "type": "text",
+              "label": {
+                "vi": "Tên người/đơn vị thụ hưởng",
+                "en": "Beneficiary name"
+              },
+              "required": true,
+              "options": []
+            },
+            {
+              "id": "expense-template-account_number",
+              "key": "account_number",
+              "type": "text",
+              "label": {
+                "vi": "Số tài khoản · chỉ nhập dữ liệu mẫu",
+                "en": "Account number · synthetic data only"
+              },
+              "required": true,
+              "options": [],
+              "maxLength": 64
+            },
+            {
+              "id": "expense-template-bank_name",
+              "key": "bank_name",
+              "type": "text",
+              "label": {
+                "vi": "Ngân hàng",
+                "en": "Bank"
+              },
+              "required": true,
+              "options": []
+            },
+            {
+              "id": "expense-template-bank_branch",
+              "key": "bank_branch",
+              "type": "text",
+              "label": {
+                "vi": "Chi nhánh",
+                "en": "Branch"
+              },
+              "required": false,
+              "options": []
+            }
+          ]
+        },
+        {
+          "id": "expense-template-transfer_description",
+          "key": "transfer_description",
+          "type": "textarea",
+          "label": {
+            "vi": "Nội dung chuyển khoản",
+            "en": "Transfer description"
+          },
+          "required": true,
+          "options": [],
+          "maxLength": 500
+        }
+      ]
+    },
+    {
+      "id": "expense-template-lines",
+      "key": "lines",
+      "type": "repeat",
+      "label": {
+        "vi": "Chi tiết chi phí",
+        "en": "Expense lines"
+      },
+      "required": false,
+      "options": [],
+      "minRows": 1,
+      "maxRows": 50,
+      "children": [
+        {
+          "id": "expense-template-invoice_date",
+          "key": "invoice_date",
+          "type": "date",
+          "label": {
+            "vi": "Ngày hóa đơn",
+            "en": "Invoice date"
+          },
+          "required": true,
+          "options": []
+        },
+        {
+          "id": "expense-template-invoice_ref",
+          "key": "invoice_ref",
+          "type": "text",
+          "label": {
+            "vi": "Số hóa đơn",
+            "en": "Invoice reference"
+          },
+          "required": true,
+          "options": [],
+          "maxLength": 100
+        },
+        {
+          "id": "expense-template-description",
+          "key": "description",
+          "type": "textarea",
+          "label": {
+            "vi": "Diễn giải",
+            "en": "Description"
+          },
+          "required": true,
+          "options": [],
+          "maxLength": 1000
+        },
+        {
+          "id": "expense-template-expense_type",
+          "key": "expense_type",
+          "type": "select",
+          "label": {
+            "vi": "Loại chi phí · mẫu",
+            "en": "Expense type · sample"
+          },
+          "required": true,
+          "options": [
+            {
+              "value": "software",
+              "label": {
+                "vi": "Bản quyền phần mềm",
+                "en": "Software licenses"
+              }
+            },
+            {
+              "value": "services",
+              "label": {
+                "vi": "Dịch vụ",
+                "en": "Services"
+              }
+            },
+            {
+              "value": "office",
+              "label": {
+                "vi": "Văn phòng",
+                "en": "Office expenses"
+              }
+            },
+            {
+              "value": "other",
+              "label": {
+                "vi": "Khác",
+                "en": "Other"
+              }
+            }
+          ]
+        },
+        {
+          "id": "expense-template-currency_code",
+          "key": "currency_code",
+          "type": "select",
+          "label": {
+            "vi": "Loại tiền",
+            "en": "Currency"
+          },
+          "required": true,
+          "options": [
+            {
+              "value": "VND",
+              "label": {
+                "vi": "VND",
+                "en": "VND"
+              }
+            }
+          ],
+          "defaultValue": "VND"
+        },
+        {
+          "id": "expense-template-amount",
+          "key": "amount",
+          "type": "currency",
+          "label": {
+            "vi": "Số tiền",
+            "en": "Amount"
+          },
+          "required": true,
+          "options": [],
+          "currency": "VND",
+          "min": 0
+        },
+        {
+          "id": "expense-template-amount_vnd",
+          "key": "amount_vnd",
+          "type": "currency",
+          "label": {
+            "vi": "Thành tiền VND",
+            "en": "Total payment VND"
+          },
+          "required": false,
+          "options": [],
+          "currency": "VND",
+          "calculation": {
+            "operator": "multiply",
+            "fields": [
+              "amount",
+              "exchange_rate"
+            ],
+            "precision": 2
+          }
+        },
+        {
+          "id": "expense-template-exchange_rate",
+          "key": "exchange_rate",
+          "type": "number",
+          "label": {
+            "vi": "Tỷ giá",
+            "en": "Exchange rate"
+          },
+          "required": true,
+          "options": [],
+          "defaultValue": "1",
+          "readOnly": true,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "expense-template-settlement",
+      "key": "settlement",
+      "type": "section",
+      "label": {
+        "vi": "Tạm ứng và thanh toán",
+        "en": "Advance and settlement"
+      },
+      "required": false,
+      "options": [],
+      "children": [
+        {
+          "id": "expense-template-advance_layout",
+          "key": "advance_layout",
+          "type": "columns",
+          "label": {
+            "vi": "Thông tin tạm ứng",
+            "en": "Advance details"
+          },
+          "required": false,
+          "options": [],
+          "columns": 2,
+          "children": [
+            {
+              "id": "expense-template-advance_ref",
+              "key": "advance_ref",
+              "type": "text",
+              "label": {
+                "vi": "Số chứng từ tạm ứng",
+                "en": "Advance reference"
+              },
+              "required": false,
+              "options": [],
+              "requiredWhen": {
+                "mode": "all",
+                "conditions": [
+                  {
+                    "field": "advance_amount",
+                    "operator": "gt",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            {
+              "id": "expense-template-advance_amount",
+              "key": "advance_amount",
+              "type": "currency",
+              "label": {
+                "vi": "Số tiền đã tạm ứng",
+                "en": "Advance amount"
+              },
+              "required": true,
+              "options": [],
+              "currency": "VND",
+              "min": 0,
+              "defaultValue": "0"
+            }
+          ]
+        },
+        {
+          "id": "expense-template-totals_layout",
+          "key": "totals_layout",
+          "type": "columns",
+          "label": {
+            "vi": "Đối trừ",
+            "en": "Settlement totals"
+          },
+          "required": false,
+          "options": [],
+          "columns": 2,
+          "children": [
+            {
+              "id": "expense-template-total_payment",
+              "key": "total_payment",
+              "type": "currency",
+              "label": {
+                "vi": "Tổng thanh toán VND",
+                "en": "Total payment VND"
+              },
+              "required": false,
+              "options": [],
+              "currency": "VND",
+              "calculation": {
+                "operator": "sum",
+                "fields": [
+                  "lines.amount_vnd"
+                ],
+                "precision": 2
+              }
+            },
+            {
+              "id": "expense-template-difference",
+              "key": "difference",
+              "type": "currency",
+              "label": {
+                "vi": "Chênh lệch",
+                "en": "Difference"
+              },
+              "required": false,
+              "options": [],
+              "currency": "VND",
+              "calculation": {
+                "operator": "subtract",
+                "fields": [
+                  "advance_amount",
+                  "total_payment"
+                ],
+                "precision": 2
+              },
+              "help": {
+                "vi": "Tạm ứng trừ tổng thanh toán. Số âm: còn phải thanh toán; số dương: cần hoàn lại.",
+                "en": "Advance minus total payment. Negative: amount still payable; positive: amount to return."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "expense-template-approval_note",
+      "key": "approval_note",
+      "type": "alert",
+      "label": {
+        "vi": "Phê duyệt · chưa kết nối",
+        "en": "Approvals · not connected"
+      },
+      "required": false,
+      "options": [],
+      "tone": "info",
+      "help": {
+        "vi": "Các vị trí trong mẫu PDF: quản lý trực tiếp, trưởng bộ phận, kế toán và CFO. Người duyệt, kết quả và lịch sử sẽ do quy trình cung cấp; người làm đơn không tự nhập phần này.",
+        "en": "PDF approval positions: line manager, department head, accounting and CFO. Approvers, decisions and history must come from the workflow, not the requestor."
+      }
+    }
+  ]
+}

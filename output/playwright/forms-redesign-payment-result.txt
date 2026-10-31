@@ -1,0 +1,71 @@
+### Result
+["Pointer drag highlights a valid target","Pointer drag reorders a nested field","Edited option-based show rule applies to invoice","Advance reason hidden for invoice after Undo","Invalid preview shows error summary","Repeating table calculates decimal total 0.50","Payment preview valid locally","Removing row recalculates total","Minimum row guard","Payment saved and reopened after reload"]
+### Ran Playwright code
+```js
+await (/* eslint-disable @typescript-eslint/no-unused-expressions -- Playwright CLI entry. */
+async (page) => {
+ const checks=[]; const ok=(value,label)=>{if(!value)throw new Error(label);checks.push(label);};
+ await page.setViewportSize({width:1440,height:900});
+ const vendor=page.locator('[data-canvas-field="payment-vendor"]');
+ await page.getByRole('button',{name:'Chọn trường Nhà cung cấp',exact:true}).click();
+ const target=page.locator('[data-canvas-field="payment-invoice_date"]');
+ await target.scrollIntoViewIfNeeded();
+ const start=await vendor.locator('.fd-drag-handle').boundingBox(); const end=await target.boundingBox();
+ await page.mouse.move(start.x+start.width/2,start.y+start.height/2); await page.mouse.down();
+ await page.mouse.move(start.x+start.width/2,start.y+start.height/2+12,{steps:4});
+ await page.mouse.move(end.x+end.width/2,end.y+end.height/2,{steps:16});
+ ok(await page.locator('[data-drop-active="true"]').count()>0,'Pointer drag highlights a valid target');
+ await page.mouse.up();
+ await page.getByRole('tab',{name:'Schema JSON',exact:true}).click();
+ const schema=JSON.parse(await page.getByRole('textbox',{name:'Nội dung schema JSON',exact:true}).inputValue());
+ ok(schema.fields[0].children.findIndex(field=>field.key==='vendor')!==3,'Pointer drag reorders a nested field');
+ await page.getByRole('tab',{name:'Thiết kế trường',exact:true}).click();
+ await page.getByRole('button',{name:'Hoàn tác',exact:true}).click();
+ await page.getByRole('button',{name:'Chọn trường Lý do tạm ứng',exact:true}).click();
+ await page.getByRole('combobox',{name:'Nhóm thuộc tính',exact:true}).click();
+ await page.getByRole('option',{name:'Điều kiện và tính toán',exact:true}).click();
+ const rule=page.locator('.fd-form-properties .fd-rule-editor').first();
+ await rule.getByRole('combobox',{name:'Giá trị so sánh',exact:true}).click();
+ await page.getByRole('option',{name:'Thanh toán hóa đơn',exact:true}).click();
+ await page.getByRole('tab',{name:'Xem thử biểu mẫu',exact:true}).click();
+ const preview=page.locator('.fd-preview-paper');
+ ok(await preview.getByRole('textbox',{name:'Lý do tạm ứng',exact:true}).count()===1,'Edited option-based show rule applies to invoice');
+ await page.getByRole('tab',{name:'Thiết kế trường',exact:true}).click();
+ await page.getByRole('button',{name:'Hoàn tác',exact:true}).click();
+ if(await page.getByRole('button',{name:'Lưu bản nháp',exact:true}).isEnabled()) await page.getByRole('button',{name:'Lưu bản nháp',exact:true}).click();
+ await page.getByRole('tab',{name:'Xem thử biểu mẫu',exact:true}).click();
+ ok(await preview.getByRole('textbox',{name:/^Lý do tạm ứng/}).count()===0,'Advance reason hidden for invoice after Undo');
+ await preview.getByRole('button',{name:'Kiểm tra dữ liệu thử',exact:true}).click();
+ ok(await preview.getByRole('alert').count()>0,'Invalid preview shows error summary');
+ await preview.getByRole('combobox',{name:'Công ty (bắt buộc)',exact:true}).click();
+ await page.getByRole('option',{name:'Công ty mẫu',exact:true}).click();
+ await preview.getByRole('combobox',{name:'Phòng ban',exact:true}).click();
+ await page.getByRole('option',{name:'CNTT · mẫu',exact:true}).click();
+ await preview.getByRole('textbox',{name:'Nhà cung cấp (bắt buộc)',exact:true}).fill('Synthetic Vendor');
+ await preview.getByRole('spinbutton',{name:'Số tiền đề nghị (bắt buộc)',exact:true}).fill('0.50');
+ await preview.getByRole('radio',{name:'Tạm ứng',exact:true}).click();
+ await preview.getByRole('textbox',{name:'Lý do tạm ứng (bắt buộc)',exact:true}).fill('Synthetic advance');
+ await preview.getByRole('textbox',{name:'Nội dung (bắt buộc)',exact:true}).first().fill('First');
+ await preview.getByRole('spinbutton',{name:'Chi phí (bắt buộc)',exact:true}).first().fill('0.20');
+ await preview.getByRole('button',{name:'Thêm dòng',exact:true}).click();
+ await preview.getByRole('textbox',{name:'Nội dung (bắt buộc)',exact:true}).nth(1).fill('Second');
+ await preview.getByRole('spinbutton',{name:'Chi phí (bắt buộc)',exact:true}).nth(1).fill('0.30');
+ ok(await preview.getByRole('spinbutton',{name:'Tổng chi phí',exact:true}).inputValue()==='0.50','Repeating table calculates decimal total 0.50');
+ await preview.getByRole('button',{name:'Kiểm tra dữ liệu thử',exact:true}).click();
+ ok(await preview.getByText('Dữ liệu thử hợp lệ trên trình duyệt; chưa gửi yêu cầu.',{exact:true}).count()===1,'Payment preview valid locally');
+ await preview.locator('.fd-repeat-table').scrollIntoViewIfNeeded();
+ await page.screenshot({path:'output/playwright/forms-redesign-payment-table.png'});
+ await preview.getByRole('button',{name:'Xóa dòng 1',exact:true}).click();
+ ok(await preview.getByRole('spinbutton',{name:'Tổng chi phí',exact:true}).inputValue()==='0.30','Removing row recalculates total');
+ ok(await preview.getByRole('button',{name:'Xóa dòng 1',exact:true}).isDisabled(),'Minimum row guard');
+ await page.getByRole('tab',{name:'Thiết kế trường',exact:true}).click();
+ await page.reload();
+ await page.getByRole('button',{name:'Danh sách biểu mẫu',exact:true}).click();
+ await page.getByRole('button',{name:/^Đề nghị thanh toán · mẫu/}).click();
+ ok(await page.locator('.fd-live-form').getByRole('spinbutton',{name:'Số tiền đề nghị (bắt buộc)',exact:true}).count()===1,'Payment saved and reopened after reload');
+ return checks;
+}
+)(page);
+```
+### Events
+- New console entries: .playwright-cli\console-2026-10-28T15-08-24-979Z.log#L54

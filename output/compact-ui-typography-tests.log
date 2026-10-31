@@ -1,0 +1,18 @@
+
+> test
+> vitest run --reporter=dot --maxWorkers=2
+
+
+ RUN  v5.0.5 D:/Andros portal/FlowDocker-E-Request
+
+·····················································
+
+ Test Files  11 passed (11)
+      Tests  53 passed (53)
+   Start at  22:47:30
+   Duration  20.66s (tests 49%, environment 36%, import 13%, transform 1%)
+
+Environment  jsdom was created 11 times · 13.40s total, 36% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

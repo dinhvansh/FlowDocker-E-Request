@@ -1,0 +1,68 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions -- Playwright CLI entry. */
+async (page) => {
+  await page.mouse.up(); await page.keyboard.press('Escape');
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto('http://127.0.0.1:5174/#forms');
+  await page.getByRole('button',{name:'Biểu mẫu',exact:true}).click();
+  await page.getByRole('button',{name:'Tạo biểu mẫu',exact:true}).click();
+  const discard=page.getByRole('button',{name:'Bỏ thay đổi và tiếp tục',exact:true});
+  if(await discard.isVisible()) await discard.click();
+  await page.getByRole('textbox',{name:'Tên biểu mẫu · tiếng Việt',exact:true}).fill('Thử kéo trường · QA');
+  await page.getByRole('textbox',{name:'Tên biểu mẫu · tiếng Anh',exact:true}).fill('Direct field drag · QA');
+  await page.getByRole('button',{name:'Tạo bản nháp',exact:true}).click();
+  const search=page.getByRole('searchbox',{name:'Tìm kiểu trường...',exact:true});
+  const rootFields=()=>page.locator('[data-canvas-field]').evaluateAll(nodes=>nodes.filter(node=>!node.parentElement.closest('[data-canvas-field]')).map(node=>({id:node.getAttribute('data-canvas-field'),type:node.querySelector('.fd-canvas-select')?.textContent})));
+  const drag = async (label,target,portion=.5,release=true) => {
+    await search.fill(label);
+    const source=page.getByRole('button',{name:'Thêm '+label,exact:true});
+    await source.scrollIntoViewIfNeeded();
+    await target.scrollIntoViewIfNeeded();
+    await source.hover();
+    const a=await source.boundingBox();const b=await target.boundingBox();
+    await page.mouse.move(a.x+a.width*.65,a.y+a.height*.5);await page.mouse.down();
+    await page.mouse.move(a.x+a.width*.65+12,a.y+a.height*.5,{steps:3});
+    await page.mouse.move(b.x+b.width*.5,b.y+b.height*portion,{steps:20});
+    await page.locator('.fd-dnd-preview').waitFor();
+    if(release) { await page.mouse.up(); await page.locator('.fd-dnd-preview').waitFor({state:'hidden'}); }
+  };
+  await drag('Văn bản ngắn',page.locator('.fd-live-form-header'));
+  if((await rootFields()).length!==1) throw Error('Whole tile did not insert exactly one field into empty form');
+  let first=(await rootFields())[0];
+  await drag('Số',page.locator('[data-canvas-field="'+first.id+'"]'),.85);
+  if((await rootFields()).map(item=>item.type).join('|')!=='Văn bản ngắn|Số') throw Error('Lower half drop not inserted after');
+  await drag('Email',page.locator('[data-canvas-field="'+first.id+'"]'),.15,false);
+  await page.getByText('Chèn trước trường này',{exact:true}).waitFor();
+  await page.screenshot({path:'output/playwright/forms-direct-drag-during-1440.png'});
+  await page.mouse.up();
+  await page.locator('.fd-dnd-preview').waitFor({state:'hidden'});
+  if((await rootFields()).map(item=>item.type).join('|')!=='Email|Văn bản ngắn|Số') throw Error('Upper half drop not inserted before');
+  await drag('Ngày',page.locator('.fd-form-document-bar'),.5);
+  if((await rootFields()).length!==3) throw Error('Outside drop inserted a field');
+  await drag('Ngày',page.locator('.fd-live-form-header'),.5,false);
+  await page.keyboard.press('Escape'); await page.mouse.up();
+  if((await rootFields()).length!==3) throw Error('Escape changed schema');
+  await page.getByRole('button',{name:'Hoàn tác',exact:true}).click();
+  if((await rootFields()).length!==2) throw Error('Undo failed');
+  await page.getByRole('button',{name:'Làm lại',exact:true}).click();
+  if((await rootFields()).length!==3) throw Error('Redo failed');
+  await page.getByRole('button',{name:'Hoàn tác',exact:true}).click();
+  await page.getByRole('button',{name:'Hoàn tác',exact:true}).click();
+  await page.getByRole('button',{name:'Hoàn tác',exact:true}).click();
+  await drag('Bố cục cột',page.locator('.fd-live-form-header'));
+  first=(await rootFields())[0];
+  await drag('Email',page.locator('[data-canvas-field="'+first.id+'"]'));
+  if(await page.locator('[data-canvas-field="'+first.id+'"] [data-canvas-field]').count()!==1) throw Error('Column drop did not create a nested field');
+  await page.screenshot({path:'output/playwright/forms-direct-drag-columns-1440.png'});
+  await page.getByRole('button',{name:'Hoàn tác',exact:true}).click();
+  await page.getByRole('button',{name:'Hoàn tác',exact:true}).click();
+  await drag('Bảng dòng lặp',page.locator('.fd-live-form-header'));
+  first=(await rootFields())[0];
+  await drag('Số',page.locator('[data-canvas-field="'+first.id+'"]'));
+  await page.getByRole('tab',{name:'Schema JSON',exact:true}).click();
+  const schema=JSON.parse(await page.getByRole('textbox',{name:'Nội dung schema JSON',exact:true}).inputValue());
+  if(schema.fields[0].type!=='repeat'||schema.fields[0].children?.[0]?.type!=='number') throw Error('Repeat nested drop lost schema');
+  await page.getByRole('tab',{name:'Thiết kế trường',exact:true}).click();
+  await page.setViewportSize({width:1366,height:768});
+  await page.screenshot({path:'output/playwright/forms-direct-drag-repeat-1366.png'});
+  return {result:'PASS',checks:['whole tile empty form','before/after position','no double insert','outside drop cancel','Escape cancel','undo/redo','nested columns','nested repeat schema'],saved:false};
+}

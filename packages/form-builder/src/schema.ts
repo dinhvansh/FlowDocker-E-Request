@@ -1,5 +1,6 @@
 export type BilingualText = { vi: string; en: string };
 export const formFieldTypes = [
+  "person",
   "text",
   "textarea",
   "email",
@@ -60,7 +61,56 @@ export interface Calculation {
     | "min"
     | "max";
   fields: string[];
+  /** Optional safe expression such as `amount * exchange_rate` or `SUM(lines.amount)`. */
+  expression?: string;
   precision?: number;
+}
+export type ColumnAggregation =
+  "none" | "sum" | "average" | "min" | "max" | "count";
+export const creatorProfileLabels = {
+  name: "Họ tên người tạo",
+  email: "Email người tạo",
+  employeeCode: "Mã nhân viên người tạo",
+  department: "Phòng ban người tạo",
+  position: "Chức danh người tạo",
+  managerName: "Tên quản lý trực tiếp của người tạo",
+  managerId: "Quản lý trực tiếp của người tạo",
+} as const;
+export type CreatorProfileAttribute = keyof typeof creatorProfileLabels;
+export type DefaultValueSource =
+  "currentUser" | `currentUser.${CreatorProfileAttribute}`;
+export type NumberingTokenKind =
+  | "literal"
+  | "sequence"
+  | "year"
+  | "month"
+  | "day"
+  | "creator"
+  | "employeeCode"
+  | "department"
+  | "position"
+  | "managerId"
+  | "managerName"
+  | "typeCode";
+export interface NumberingToken {
+  kind: NumberingTokenKind;
+  value?: string;
+}
+export interface NumberingConfig {
+  segments: NumberingToken[];
+  sequenceDigits: number;
+  scope: "app" | "year";
+}
+export function defaultSourcesForType(
+  type: FormFieldType,
+): DefaultValueSource[] {
+  if (type === "person") return ["currentUser", "currentUser.managerId"];
+  if (type === "email") return ["currentUser.email"];
+  if (["text", "textarea", "hidden"].includes(type))
+    return (Object.keys(creatorProfileLabels) as CreatorProfileAttribute[])
+      .filter((key) => key !== "managerId")
+      .map((key) => `currentUser.${key}` as DefaultValueSource);
+  return [];
 }
 export interface FormField {
   id: string;
@@ -68,10 +118,15 @@ export interface FormField {
   label: BilingualText;
   type: FormFieldType;
   required: boolean;
+  multiple?: boolean;
   options: { value: string; label: BilingualText }[];
   help?: BilingualText;
   placeholder?: BilingualText;
   defaultValue?: FormValue;
+  /** Resolved from host context when no saved value exists; never an identity credential. */
+  defaultValueSource?: DefaultValueSource;
+  /** Local numbering template; authoritative sequence allocation belongs to the host. */
+  numbering?: NumberingConfig;
   readOnly?: boolean;
   disabled?: boolean;
   min?: number;
@@ -84,16 +139,25 @@ export interface FormField {
   requiredWhen?: FormRule;
   disabledWhen?: FormRule;
   calculation?: Calculation;
+  aggregation?: ColumnAggregation;
   children?: FormField[];
   columns?: 1 | 2 | 3;
+  /** Hide the visual legend for a columns layout while keeping it accessible. */
+  hideLabel?: boolean;
   minRows?: number;
   maxRows?: number;
+  autoRows?: boolean;
   uniqueBy?: string;
   currency?: string;
   accept?: string;
   maxFileSize?: number;
   maxFiles?: number;
-  dataSource?: { provider: string; dependsOn?: string };
+  dataSource?: {
+    provider: string;
+    dependsOn?: string;
+    valueField?: string;
+    labelField?: string;
+  };
   customRenderer?: string;
   buttonAction?: "submit" | "reset";
   tone?: "info" | "warning" | "danger" | "success";
@@ -106,6 +170,9 @@ export interface FormDefinition {
   fields: FormField[];
   schemaVersion?: 1 | 2;
   display?: "form" | "wizard";
+  orientation?: "portrait" | "landscape";
+  /** Currency used by currency fields that do not override it locally. */
+  currency?: string;
 }
 export interface FormIssue {
   fieldId?: string;
@@ -122,6 +189,7 @@ export const containerTypes: readonly FormFieldType[] = [
   "table",
 ];
 export const choiceTypes: readonly FormFieldType[] = [
+  "person",
   "select",
   "radio",
   "multiselect",
@@ -129,6 +197,7 @@ export const choiceTypes: readonly FormFieldType[] = [
   "survey",
 ];
 export const fieldTypeLabels: Record<FormFieldType, string> = {
+  person: "Chọn người",
   text: "Văn bản ngắn",
   textarea: "Văn bản dài",
   email: "Email",
@@ -244,7 +313,10 @@ const allowedKeys = new Set([
   "help",
   "placeholder",
   "defaultValue",
+  "defaultValueSource",
+  "numbering",
   "readOnly",
+  "multiple",
   "disabled",
   "min",
   "max",
@@ -256,10 +328,12 @@ const allowedKeys = new Set([
   "requiredWhen",
   "disabledWhen",
   "calculation",
+  "aggregation",
   "children",
   "columns",
   "minRows",
   "maxRows",
+  "autoRows",
   "uniqueBy",
   "currency",
   "accept",
@@ -317,7 +391,13 @@ function fieldsShape(
           (typeof field[key] !== "number" || !Number.isFinite(field[key]))
         )
           return false;
-      for (const key of ["readOnly", "disabled", "integer"])
+      for (const key of [
+        "readOnly",
+        "disabled",
+        "integer",
+        "autoRows",
+        "multiple",
+      ])
         if (field[key] !== undefined && typeof field[key] !== "boolean")
           return false;
       if (
@@ -343,6 +423,45 @@ function fieldsShape(
       if (field.defaultValue !== undefined && !boundedValue(field.defaultValue))
         return false;
       if (
+        field.defaultValueSource !== undefined &&
+        (!defaultSourcesForType(field.type as FormFieldType).includes(
+          field.defaultValueSource as DefaultValueSource,
+        ) ||
+          field.defaultValue !== undefined)
+      )
+        return false;
+      if (
+        field.numbering !== undefined &&
+        (!isObject(field.numbering) ||
+          !Array.isArray(field.numbering.segments) ||
+          field.numbering.segments.length > 20 ||
+          !Number.isInteger(field.numbering.sequenceDigits) ||
+          Number(field.numbering.sequenceDigits) < 1 ||
+          Number(field.numbering.sequenceDigits) > 12 ||
+          !["app", "year"].includes(String(field.numbering.scope)) ||
+          !field.numbering.segments.every(
+            (segment) =>
+              isObject(segment) &&
+              [
+                "literal",
+                "sequence",
+                "year",
+                "month",
+                "day",
+                "creator",
+                "employeeCode",
+                "department",
+                "position",
+                "managerId",
+                "managerName",
+                "typeCode",
+              ].includes(String(segment.kind)) &&
+              (segment.value === undefined ||
+                typeof segment.value === "string"),
+          ))
+      )
+        return false;
+      if (
         field.children !== undefined &&
         (!containerTypes.includes(field.type as FormFieldType) ||
           !fieldsShape(field.children, depth + 1, budget))
@@ -360,7 +479,13 @@ function fieldsShape(
         (!isObject(field.dataSource) ||
           typeof field.dataSource.provider !== "string" ||
           (field.dataSource.dependsOn !== undefined &&
-            typeof field.dataSource.dependsOn !== "string"))
+            typeof field.dataSource.dependsOn !== "string") ||
+          (field.dataSource.valueField !== undefined &&
+            (typeof field.dataSource.valueField !== "string" ||
+              !field.dataSource.valueField.trim())) ||
+          (field.dataSource.labelField !== undefined &&
+            (typeof field.dataSource.labelField !== "string" ||
+              !field.dataSource.labelField.trim())))
       )
         return false;
       if (
@@ -380,10 +505,20 @@ function fieldsShape(
           !Array.isArray(field.calculation.fields) ||
           field.calculation.fields.length > 20 ||
           !field.calculation.fields.every((key) => typeof key === "string") ||
+          (field.calculation.expression !== undefined &&
+            (typeof field.calculation.expression !== "string" ||
+              field.calculation.expression.length > 500)) ||
           (field.calculation.precision !== undefined &&
             (!Number.isInteger(field.calculation.precision) ||
               Number(field.calculation.precision) < 0 ||
               Number(field.calculation.precision) > 8)))
+      )
+        return false;
+      if (
+        field.aggregation !== undefined &&
+        !["none", "sum", "average", "min", "max", "count"].includes(
+          String(field.aggregation),
+        )
       )
         return false;
       return true;
@@ -402,6 +537,8 @@ export function isFormDefinition(value: unknown): value is FormDefinition {
         "fields",
         "schemaVersion",
         "display",
+        "orientation",
+        "currency",
       ].includes(key),
     ) &&
     typeof value.id === "string" &&
@@ -414,6 +551,10 @@ export function isFormDefinition(value: unknown): value is FormDefinition {
       [1, 2].includes(Number(value.schemaVersion))) &&
     (value.display === undefined ||
       ["form", "wizard"].includes(String(value.display))) &&
+    (value.orientation === undefined ||
+      ["portrait", "landscape"].includes(String(value.orientation))) &&
+    (value.currency === undefined ||
+      /^[A-Z]{3}$/.test(String(value.currency))) &&
     fieldsShape(value.fields)
   );
 }
@@ -639,12 +780,18 @@ export function createField(
   return {
     id: crypto.randomUUID(),
     key: `${type}_${count}`,
-    label: { vi: fieldTypeLabels[type], en: type },
+    label: {
+      vi: fieldTypeLabels[type],
+      en: type === "person" ? "People picker" : type,
+    },
     type,
     required: false,
     options: choiceTypes.includes(type)
       ? [{ value: "option_1", label: { vi: "Lựa chọn 1", en: "Option 1" } }]
       : [],
+    ...(type === "person"
+      ? { options: [], dataSource: { provider: "organization.people" } }
+      : {}),
     ...(containerTypes.includes(type) ? { children: [] } : {}),
   };
 }

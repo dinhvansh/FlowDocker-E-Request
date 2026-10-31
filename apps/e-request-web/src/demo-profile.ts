@@ -11,6 +11,7 @@ export type UserProfile = {
 };
 
 /** Synthetic fixture only; real identity and HR fields require verified APIs. */
+export const demoCurrentPersonId = "demo_current_person";
 export const demoProfile: UserProfile = {
   name: "Nguyễn Văn A",
   initials: "VA",
@@ -21,4 +22,16 @@ export const demoProfile: UserProfile = {
   position: "Chuyên viên quản trị nền tảng",
   manager: "Chưa đồng bộ từ HR",
   role: "Platform Admin (demo)",
+};
+
+/** Synthetic form context; unknown manager is deliberately omitted. */
+export const demoFormRuntimeContext = {
+  currentUserId: demoCurrentPersonId,
+  currentUser: {
+    name: demoProfile.name,
+    email: demoProfile.email,
+    employeeCode: demoProfile.employeeCode,
+    department: demoProfile.department,
+    position: demoProfile.position,
+  },
 };

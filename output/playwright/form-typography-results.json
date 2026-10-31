@@ -1,0 +1,831 @@
+{
+  "result": "PASS",
+  "fonts": [
+    {
+      "selector": ".fd-inspector-form .fd-field > :is(input,[data-slot=field-label],[data-slot=field-description],[data-slot=field-error],[role=combobox],.fd-date-trigger)",
+      "nodes": [
+        {
+          "text": "Tên hiển thị",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Mã trường",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Ví dụ: currency_name. Mã hợp lệ được lưu khi rời ô",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Kiểu dữ liệu",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Văn bản",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Phân loại",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Công khai",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        }
+      ]
+    },
+    {
+      "selector": ".fd-inspector-form .fd-field > :is(input,[data-slot=field-label],[data-slot=field-description],[data-slot=field-error],[role=combobox],.fd-date-trigger)",
+      "nodes": [
+        {
+          "text": "Tên hiển thị",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Mã trường",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Ví dụ: currency_name. Mã hợp lệ được lưu khi rời ô",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Chỉ dùng chữ thường, số và dấu gạch dưới; bắt đầu ",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Kiểu dữ liệu",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Văn bản",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Phân loại",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Công khai",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        }
+      ]
+    },
+    {
+      "selector": ".fd-section-heading p,.fd-page-toolbar p",
+      "nodes": [
+        {
+          "text": "Định nghĩa danh mục, nguồn sở hữu và cấu trúc trườ",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Dữ liệu minh họa, chỉ lưu trong trình duyệt.",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Chọn biểu mẫu để chỉnh sửa hoặc tạo biểu mẫu mới.",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        }
+      ]
+    },
+    {
+      "selector": ".fd-pane-title > strong",
+      "nodes": [
+        {
+          "text": "Danh sách entity",
+          "family": "Inter, Arial, sans-serif",
+          "size": "13px",
+          "line": "20px",
+          "weight": "600"
+        }
+      ]
+    },
+    {
+      "selector": ".fd-section-heading h3,[data-slot=empty-title]",
+      "nodes": [
+        {
+          "text": "Bản ghi danh mục",
+          "family": "Inter, Arial, sans-serif",
+          "size": "13px",
+          "line": "20px",
+          "weight": "600"
+        },
+        {
+          "text": "Chưa có bản ghi. Thêm bản ghi đầu tiên để bắt đầu.",
+          "family": "Inter, Arial, sans-serif",
+          "size": "13px",
+          "line": "20px",
+          "weight": "600"
+        },
+        {
+          "text": "Chưa có biểu mẫu",
+          "family": "Inter, Arial, sans-serif",
+          "size": "13px",
+          "line": "20px",
+          "weight": "600"
+        }
+      ]
+    },
+    {
+      "selector": ".fd-page-toolbar h1",
+      "nodes": [
+        {
+          "text": "Thiết kế dữ liệu danh mục",
+          "family": "Inter, Arial, sans-serif",
+          "size": "18px",
+          "line": "24px",
+          "weight": "600"
+        },
+        {
+          "text": "Biểu mẫu",
+          "family": "Inter, Arial, sans-serif",
+          "size": "18px",
+          "line": "24px",
+          "weight": "600"
+        }
+      ]
+    },
+    {
+      "selector": ".fd-modal [data-slot=dialog-title]",
+      "nodes": [
+        {
+          "text": "Thêm bản ghi",
+          "family": "Inter, Arial, sans-serif",
+          "size": "14px",
+          "line": "20px",
+          "weight": "600"
+        }
+      ]
+    },
+    {
+      "selector": "[role=dialog] [data-slot=field-group] .fd-field > :is(input,[data-slot=field-label],[data-slot=field-description],[data-slot=field-error],[role=combobox],.fd-date-trigger)",
+      "nodes": [
+        {
+          "text": "Code*",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Name*",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Active",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Chọn giá trị",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Date",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Chọn ngày",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        }
+      ]
+    },
+    {
+      "selector": "[role=dialog] [data-slot=field-group] .fd-field > :is(input,[data-slot=field-label],[data-slot=field-description],[data-slot=field-error],[role=combobox],.fd-date-trigger)",
+      "nodes": [
+        {
+          "text": "Code*",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Name*",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Trường này là bắt buộc.",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Active",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Chọn giá trị",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Date",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Chọn ngày",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        }
+      ]
+    },
+    {
+      "selector": "[role=dialog] [data-slot=field-group] .fd-field > :is(input,[data-slot=field-label],[data-slot=field-description],[data-slot=field-error],[role=combobox],.fd-date-trigger)",
+      "nodes": [
+        {
+          "text": "Code*",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Name*",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Active",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Select a value",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Date",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Choose date",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        }
+      ]
+    },
+    {
+      "selector": "[role=dialog] [data-slot=field-group] .fd-field > :is(input,[data-slot=field-label],[data-slot=field-description],[data-slot=field-error],[role=combobox],.fd-date-trigger)",
+      "nodes": [
+        {
+          "text": "Code*",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Name*",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Active",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Select a value",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Date",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Choose date",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        }
+      ]
+    },
+    {
+      "selector": ".fd-form-properties [data-slot=field-group] .fd-field > :is(input,[data-slot=field-label],[data-slot=field-description],[data-slot=field-error],[role=combobox],.fd-date-trigger)",
+      "nodes": [
+        {
+          "text": "Vietnamese label",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "English label",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Required",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Field key",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Data type",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Short text",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Vietnamese help text",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "English help text",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Vietnamese placeholder",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "English placeholder",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Default value source",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Enter a fixed value",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "Default value",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        },
+        {
+          "text": "",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        }
+      ]
+    },
+    {
+      "selector": ".fd-notice [data-slot=alert-description]",
+      "nodes": [
+        {
+          "text": "Valid in this simulation; API and migration checks",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        }
+      ]
+    },
+    {
+      "selector": ".fd-modal-body p",
+      "nodes": [
+        {
+          "text": "Delete catalog qa_spacing (qa_spacing) and 0 recor",
+          "family": "Inter, Arial, sans-serif",
+          "size": "12px",
+          "line": "18px",
+          "weight": "400"
+        }
+      ]
+    },
+    {
+      "selector": ".fd-modal [data-slot=dialog-title]",
+      "nodes": [
+        {
+          "text": "Delete entity",
+          "family": "Inter, Arial, sans-serif",
+          "size": "14px",
+          "line": "20px",
+          "weight": "600"
+        }
+      ]
+    }
+  ],
+  "spacing": {
+    "compact": [
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": null,
+        "labelGap": 6,
+        "height": 32
+      },
+      {
+        "detailGaps": [
+          6
+        ],
+        "margin": "0px",
+        "gap": 12,
+        "labelGap": 6,
+        "height": 32
+      },
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": 12,
+        "labelGap": 6,
+        "height": 32
+      },
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": 12,
+        "labelGap": 6,
+        "height": 32
+      }
+    ],
+    "compactError": [
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": null,
+        "labelGap": 6,
+        "height": 32
+      },
+      {
+        "detailGaps": [
+          6,
+          6
+        ],
+        "margin": "0px",
+        "gap": 12,
+        "labelGap": 6,
+        "height": 32
+      },
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": 12,
+        "labelGap": 6,
+        "height": 32
+      },
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": 12,
+        "labelGap": 6,
+        "height": 32
+      }
+    ],
+    "standard": [
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": null,
+        "labelGap": 6,
+        "height": 36
+      },
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": 16,
+        "labelGap": 6,
+        "height": 36
+      },
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": 16,
+        "labelGap": 6,
+        "height": 36
+      },
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": 16,
+        "labelGap": 6,
+        "height": 36
+      }
+    ],
+    "mobile": [
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": null,
+        "labelGap": 6,
+        "height": 44
+      },
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": 16,
+        "labelGap": 6,
+        "height": 44
+      },
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": 16,
+        "labelGap": 6,
+        "height": 44
+      },
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": 16,
+        "labelGap": 6,
+        "height": 44
+      }
+    ],
+    "formInspector": [
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": null,
+        "labelGap": 6,
+        "height": 32
+      },
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": 12,
+        "labelGap": 6,
+        "height": 32
+      },
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": 12,
+        "labelGap": null
+      },
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": 12,
+        "labelGap": 6,
+        "height": 32
+      },
+      {
+        "detailGaps": [],
+        "margin": "0px",
+        "gap": 12,
+        "labelGap": 6,
+        "height": 32
+      }
+    ]
+  }
+}
