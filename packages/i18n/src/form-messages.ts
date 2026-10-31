@@ -152,6 +152,7 @@ export const formMessages = {
     "Use field keys and SUM, AVG, MIN, MAX, COUNT, ROUND functions.",
   "Gợi ý trường": "Field suggestions",
   "Gợi ý hàm": "Function suggestions",
+  "Gợi ý khi gõ": "Typing suggestions",
   "Chèn trường": "Insert field",
   "Chèn hàm": "Insert function",
   "Xem kết quả thử": "Preview result",

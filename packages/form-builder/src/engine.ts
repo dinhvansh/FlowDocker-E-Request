@@ -196,8 +196,12 @@ function tokenizeFormula(source: string): FormulaToken[] | null {
       index += name.length;
       continue;
     }
-    if ("+-*/".includes(char)) tokens.push({ kind: "operator", value: char });
-    else if (char === "(" || char === ")")
+    if ("+-*/><=!".includes(char)) {
+      const next = source[index + 1];
+      const value = next && "=>".includes(next) ? `${char}${next}` : char;
+      tokens.push({ kind: "operator", value });
+      index += value.length - 1;
+    } else if (char === "(" || char === ")")
       tokens.push({ kind: "paren", value: char });
     else if (char === ",") tokens.push({ kind: "comma", value: char });
     else return null;
@@ -238,6 +242,30 @@ function evaluateCalculationExpression(
     }
     return result;
   };
+  const parseComparison = (): Decimal => {
+    const left = parseExpression();
+    const token = peek();
+    if (
+      token?.kind !== "operator" ||
+      ![">", ">=", "<", "<=", "=", "==", "!=", "!=="].includes(token.value)
+    )
+      return left;
+    const operator = take()!.value;
+    const right = parseExpression();
+    const result =
+      operator === ">"
+        ? left.gt(right)
+        : operator === ">="
+          ? left.gte(right)
+          : operator === "<"
+            ? left.lt(right)
+            : operator === "<="
+              ? left.lte(right)
+              : operator === "!=" || operator === "!=="
+                ? !left.eq(right)
+                : left.eq(right);
+    return new Decimal(result ? 1 : 0);
+  };
   const parseTerm = (): Decimal => {
     let result = parseFactor();
     while (peek()?.kind === "operator" && ["*", "/"].includes(peek()!.value)) {
@@ -254,7 +282,7 @@ function evaluateCalculationExpression(
       return parseFactor().neg();
     if (token.kind === "number") return new Decimal(token.value);
     if (token.kind === "paren" && token.value === "(") {
-      const value = parseExpression();
+      const value = parseComparison();
       if (take()?.value !== ")") throw new Error("Missing parenthesis");
       return value;
     }
@@ -265,13 +293,17 @@ function evaluateCalculationExpression(
     const args: Decimal[] = [];
     if (peek()?.value !== ")") {
       while (true) {
-        args.push(parseExpression());
+        args.push(parseComparison());
         if (peek()?.kind !== "comma") break;
         take();
       }
     }
     if (take()?.value !== ")") throw new Error("Missing parenthesis");
     const name = token.value.toUpperCase();
+    if (name === "IF") {
+      if (args.length !== 3) throw new Error("IF expects three arguments");
+      return args[0].isZero() ? args[2] : args[1];
+    }
     if (name === "COUNT") return new Decimal(args.length);
     if (!args.length) return new Decimal(0);
     if (name === "SUM") return args.reduce((a, b) => a.add(b), new Decimal(0));
@@ -284,7 +316,7 @@ function evaluateCalculationExpression(
     throw new Error("Unknown function");
   };
   try {
-    const result = parseExpression();
+    const result = parseComparison();
     if (
       cursor !== tokens.length ||
       !result.isFinite() ||

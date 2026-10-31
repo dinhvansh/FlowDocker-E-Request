@@ -261,6 +261,11 @@ export function AdvancedProperties({
 }) {
   const { t, locale } = useI18n();
   const [formulaResult, setFormulaResult] = useState<string | null>(null);
+  const [formulaFocused, setFormulaFocused] = useState(false);
+  const formulaQuery =
+    (field.calculation?.expression ?? "").match(
+      /[A-Za-z_][A-Za-z0-9_.]*$/,
+    )?.[0] ?? "";
   const calculationFields = useMemo(
     () => fields.filter((item) => ["number", "currency"].includes(item.type)),
     [fields],
@@ -715,6 +720,10 @@ export function AdvancedProperties({
                       rows={2}
                       value={field.calculation.expression ?? ""}
                       placeholder={t("Ví dụ: amount * exchange_rate")}
+                      onFocus={() => setFormulaFocused(true)}
+                      onBlur={() =>
+                        window.setTimeout(() => setFormulaFocused(false), 120)
+                      }
                       onChange={(event) => {
                         setFormulaResult(null);
                         patch({
@@ -725,6 +734,58 @@ export function AdvancedProperties({
                         });
                       }}
                     />
+                    {formulaFocused && (
+                      <div
+                        className="fd-formula-suggestions"
+                        role="listbox"
+                        aria-label={t("Gợi ý khi gõ")}
+                      >
+                        {[
+                          ...calculationFields.map((item) => ({
+                            value: item.key,
+                            label: `${item.label[locale]} · ${item.key}`,
+                          })),
+                          ...[
+                            "IF(",
+                            "SUM(",
+                            "AVG(",
+                            "MIN(",
+                            "MAX(",
+                            "COUNT(",
+                            "ROUND(",
+                          ].map((value) => ({
+                            value,
+                            label: value,
+                          })),
+                        ]
+                          .filter(
+                            (suggestion) =>
+                              !formulaQuery ||
+                              suggestion.value
+                                .toLowerCase()
+                                .includes(formulaQuery.toLowerCase()),
+                          )
+                          .map((suggestion) => (
+                            <Button
+                              key={suggestion.value}
+                              type="button"
+                              variant="ghost"
+                              role="option"
+                              onMouseDown={(event) => event.preventDefault()}
+                              onClick={() => {
+                                patch({
+                                  calculation: {
+                                    ...field.calculation!,
+                                    expression: `${field.calculation?.expression ?? ""}${suggestion.value}`,
+                                  },
+                                });
+                              }}
+                            >
+                              {suggestion.label}
+                            </Button>
+                          ))}
+                      </div>
+                    )}
                   </Field>
                   <div className="fd-calculation-formula-tools">
                     <Select

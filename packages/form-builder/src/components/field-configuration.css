@@ -104,6 +104,26 @@
   gap: 8px;
 }
 
+.fd-formula-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-height: 116px;
+  overflow: auto;
+  padding: 4px;
+  border: 1px solid var(--fd-border);
+  border-radius: 5px;
+  background: var(--fd-surface-raised);
+}
+
+.fd-formula-suggestions button {
+  min-height: 28px;
+  padding: 3px 7px;
+  color: var(--fd-text-secondary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+}
+
 .fd-calculation-result {
   min-height: 32px;
   padding: 6px 8px;
