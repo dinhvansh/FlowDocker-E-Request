@@ -221,11 +221,12 @@
 .fd-repeat-total-row {
   border-top: 2px solid var(--fd-border-strong, var(--fd-border));
   background: var(--fd-surface-raised);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .fd-repeat-total-row td,
 .fd-repeat-total-row th {
   padding-top: 8px;
   padding-bottom: 8px;
+  font-weight: 700;
 }
