@@ -265,6 +265,18 @@ describe("FlowDocker Forms typed engine", () => {
         { amount: "125.50", exchange_rate: "1.2" },
       ),
     ).toBe("112.95");
+    expect(
+      calculate(
+        {
+          ...total,
+          calculation: {
+            ...total.calculation!,
+            expression: "SUM(lines.amount)",
+          },
+        },
+        { lines: [{ amount: "10.25" }, { amount: "5.75" }] },
+      ),
+    ).toBe("16.00");
     expect(validateFormDefinition(definition([amount, rate, total]))).toEqual(
       [],
     );

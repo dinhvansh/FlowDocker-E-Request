@@ -289,17 +289,33 @@ function evaluateCalculationExpression(
     if (token.kind !== "name") throw new Error("Invalid expression");
     if (peek()?.kind !== "paren" || peek()?.value !== "(")
       return asDecimal(readReference(values, token.value));
+    const functionName = token.value.toUpperCase();
+    const expandsColumn = ["SUM", "AVG", "MIN", "MAX", "COUNT"].includes(
+      functionName,
+    );
     take();
     const args: Decimal[] = [];
     if (peek()?.value !== ")") {
       while (true) {
-        args.push(parseComparison());
+        const next = peek();
+        const nextAfter = tokens[cursor + 1];
+        if (
+          expandsColumn &&
+          next?.kind === "name" &&
+          (nextAfter?.kind === "comma" || nextAfter?.value === ")")
+        ) {
+          const reference = readReference(values, take()!.value);
+          const entries = Array.isArray(reference) ? reference : [reference];
+          args.push(...entries.map(asDecimal));
+        } else {
+          args.push(parseComparison());
+        }
         if (peek()?.kind !== "comma") break;
         take();
       }
     }
     if (take()?.value !== ")") throw new Error("Missing parenthesis");
-    const name = token.value.toUpperCase();
+    const name = functionName;
     if (name === "IF") {
       if (args.length !== 3) throw new Error("IF expects three arguments");
       return args[0].isZero() ? args[2] : args[1];
