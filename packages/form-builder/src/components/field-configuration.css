@@ -27,3 +27,66 @@
   margin-top: 8px;
   margin-bottom: 0;
 }
+
+.fd-calculation-inputs {
+  display: grid;
+  gap: 6px;
+  margin: -2px 0 4px;
+}
+
+.fd-calculation-inputs-label,
+.fd-calculation-preview > span {
+  color: var(--fd-text-muted);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.fd-calculation-input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 28px;
+  padding: 4px 6px 4px 8px;
+  border: 1px solid var(--fd-border);
+  border-radius: 5px;
+  background: var(--fd-surface-raised);
+  color: var(--fd-text-primary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.fd-calculation-input span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fd-calculation-input button {
+  flex: 0 0 24px;
+  width: 24px;
+  min-height: 24px;
+  padding: 0;
+}
+
+.fd-calculation-input button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.fd-calculation-preview {
+  display: grid;
+  gap: 3px;
+  padding: 6px 8px;
+  border-left: 2px solid var(--fd-color-brand);
+  background: var(--fd-brand-soft);
+}
+
+.fd-calculation-preview code {
+  overflow-wrap: anywhere;
+  color: var(--fd-text-primary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  line-height: 18px;
+}

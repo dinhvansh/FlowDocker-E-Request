@@ -1,5 +1,5 @@
 import { CreatorDefaultEditor } from "./components/creator-default-editor";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import {
   Button,
@@ -10,6 +10,7 @@ import {
   Select,
   Textarea,
 } from "@flowdocker/ui";
+import { X } from "lucide-react";
 import { type FormField, type FormRule, type RuleOperator } from "./schema";
 import type { PreviewValues } from "./schema";
 import type { FormRendererProps } from "./runtime";
@@ -257,7 +258,29 @@ export function AdvancedProperties({
   fields: FormField[];
   patch(value: Partial<FormField>): void;
 }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const calculationFields = useMemo(
+    () => fields.filter((item) => ["number", "currency"].includes(item.type)),
+    [fields],
+  );
+  const calculationPreview = field.calculation
+    ? (() => {
+        const labels = field.calculation.fields.map(
+          (key) =>
+            fields.find((item) => item.key === key)?.label[locale] ?? key,
+        );
+        const symbols: Record<string, string> = {
+          add: " + ",
+          subtract: " − ",
+          multiply: " × ",
+          divide: " ÷ ",
+        };
+        const symbol = symbols[field.calculation.operator];
+        return symbol
+          ? labels.join(symbol)
+          : `${t(`calc.${field.calculation.operator}`)}(${labels.join(", ")})`;
+      })()
+    : "";
   const numberInput = (
     key:
       | "min"
@@ -597,7 +620,91 @@ export function AdvancedProperties({
               {field.calculation && (
                 <>
                   <Field
-                    label={t("Các mã trường đầu vào")}
+                    label={t("Thêm trường vào phép tính")}
+                    hint={t(
+                      "Chọn trường số hoặc tiền tệ; có thể thêm nhiều trường.",
+                    )}
+                  >
+                    <Select
+                      label={t("Thêm trường vào phép tính")}
+                      value="__empty__"
+                      options={[
+                        {
+                          value: "__empty__",
+                          label: calculationFields.length
+                            ? t("Chọn trường")
+                            : t("Không có trường số phù hợp"),
+                        },
+                        ...calculationFields
+                          .filter(
+                            (item) =>
+                              !field.calculation?.fields.includes(item.key),
+                          )
+                          .map((item) => ({
+                            value: item.key,
+                            label: `${item.label[locale]} · ${item.key}`,
+                          })),
+                      ]}
+                      onValueChange={(value) => {
+                        if (value === "__empty__") return;
+                        patch({
+                          calculation: {
+                            ...field.calculation!,
+                            fields: [...field.calculation!.fields, value],
+                          },
+                        });
+                      }}
+                    />
+                  </Field>
+                  {field.calculation.fields.length > 0 && (
+                    <>
+                      <span className="fd-calculation-inputs-label">
+                        {t("Trường đầu vào đã chọn")}
+                      </span>
+                      <div className="fd-calculation-inputs" role="list">
+                        {field.calculation.fields.map((key) => {
+                          const source = fields.find(
+                            (item) => item.key === key,
+                          );
+                          return (
+                            <div
+                              className="fd-calculation-input"
+                              key={key}
+                              role="listitem"
+                            >
+                              <span>
+                                {source ? `${source.label[locale]} · ` : ""}
+                                {key}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                aria-label={t("Xóa trường khỏi phép tính")}
+                                title={t("Xóa trường khỏi phép tính")}
+                                onClick={() =>
+                                  patch({
+                                    calculation: {
+                                      ...field.calculation!,
+                                      fields: field.calculation!.fields.filter(
+                                        (item) => item !== key,
+                                      ),
+                                    },
+                                  })
+                                }
+                              >
+                                <X />
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="fd-calculation-preview">
+                        <span>{t("Công thức xem trước")}</span>
+                        <code>{calculationPreview}</code>
+                      </div>
+                    </>
+                  )}
+                  <Field
+                    label={t("Mã trường nâng cao")}
                     hint={t(
                       "Phân cách bằng dấu phẩy; tổng dòng lặp dùng lines.amount.",
                     )}

@@ -121,6 +121,15 @@ export const formMessages = {
   Chứa: "Contains",
   "Phép tính": "Calculation",
   "Các mã trường đầu vào": "Input field keys",
+  "Mã trường nâng cao": "Advanced field keys",
+  "Thêm trường vào phép tính": "Add a field to the calculation",
+  "Trường đầu vào đã chọn": "Selected input fields",
+  "Không có trường số phù hợp": "No compatible number fields",
+  "Xóa trường khỏi phép tính": "Remove field from calculation",
+  "Công thức xem trước": "Formula preview",
+  "Chọn trường": "Choose a field",
+  "Chọn trường số hoặc tiền tệ; có thể thêm nhiều trường.":
+    "Choose number or currency fields; you can add multiple fields.",
   "Phân cách bằng dấu phẩy; tổng dòng lặp dùng lines.amount.":
     "Separate with commas; use lines.amount to aggregate repeat rows.",
   "Số chữ số thập phân": "Decimal places",
