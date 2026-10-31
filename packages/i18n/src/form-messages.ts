@@ -147,6 +147,17 @@ export const formMessages = {
   "Không có trường số phù hợp": "No compatible number fields",
   "Xóa trường khỏi phép tính": "Remove field from calculation",
   "Công thức xem trước": "Formula preview",
+  "Công thức nâng cao": "Advanced formula",
+  "Dùng mã trường và các hàm SUM, AVG, MIN, MAX, COUNT, ROUND.":
+    "Use field keys and SUM, AVG, MIN, MAX, COUNT, ROUND functions.",
+  "Gợi ý trường": "Field suggestions",
+  "Gợi ý hàm": "Function suggestions",
+  "Chèn trường": "Insert field",
+  "Chèn hàm": "Insert function",
+  "Xem kết quả thử": "Preview result",
+  "Kết quả thử": "Preview result",
+  "Không thể tính với dữ liệu thử": "Could not calculate with sample data",
+  "Ví dụ: amount * exchange_rate": "Example: amount * exchange_rate",
   "Chọn trường": "Choose a field",
   "Chọn trường số hoặc tiền tệ; có thể thêm nhiều trường.":
     "Choose number or currency fields; you can add multiple fields.",

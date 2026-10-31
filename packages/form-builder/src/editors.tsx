@@ -15,6 +15,7 @@ import { type FormField, type FormRule, type RuleOperator } from "./schema";
 import type { PreviewValues } from "./schema";
 import type { FormRendererProps } from "./runtime";
 import { PersonDefaultEditor } from "./components/person-default-editor";
+import { calculate } from "./engine";
 import {
   DataSourceEditor,
   type FormDataSource,
@@ -259,6 +260,7 @@ export function AdvancedProperties({
   patch(value: Partial<FormField>): void;
 }) {
   const { t, locale } = useI18n();
+  const [formulaResult, setFormulaResult] = useState<string | null>(null);
   const calculationFields = useMemo(
     () => fields.filter((item) => ["number", "currency"].includes(item.type)),
     [fields],
@@ -703,6 +705,89 @@ export function AdvancedProperties({
                       </div>
                     </>
                   )}
+                  <Field
+                    label={t("Công thức nâng cao")}
+                    hint={t(
+                      "Dùng mã trường và các hàm SUM, AVG, MIN, MAX, COUNT, ROUND.",
+                    )}
+                  >
+                    <Textarea
+                      rows={2}
+                      value={field.calculation.expression ?? ""}
+                      placeholder={t("Ví dụ: amount * exchange_rate")}
+                      onChange={(event) => {
+                        setFormulaResult(null);
+                        patch({
+                          calculation: {
+                            ...field.calculation!,
+                            expression: event.target.value || undefined,
+                          },
+                        });
+                      }}
+                    />
+                  </Field>
+                  <div className="fd-calculation-formula-tools">
+                    <Select
+                      label={t("Gợi ý trường")}
+                      value="__empty__"
+                      options={[
+                        { value: "__empty__", label: t("Chèn trường") },
+                        ...calculationFields.map((item) => ({
+                          value: item.key,
+                          label: `${item.label[locale]} · ${item.key}`,
+                        })),
+                      ]}
+                      onValueChange={(value) => {
+                        if (value === "__empty__") return;
+                        patch({
+                          calculation: {
+                            ...field.calculation!,
+                            expression: `${field.calculation?.expression ?? ""}${field.calculation?.expression ? " " : ""}${value}`,
+                          },
+                        });
+                      }}
+                    />
+                    <Select
+                      label={t("Gợi ý hàm")}
+                      value="__empty__"
+                      options={[
+                        { value: "__empty__", label: t("Chèn hàm") },
+                        ...["SUM", "AVG", "MIN", "MAX", "COUNT", "ROUND"].map(
+                          (value) => ({ value, label: value }),
+                        ),
+                      ]}
+                      onValueChange={(value) => {
+                        if (value === "__empty__") return;
+                        patch({
+                          calculation: {
+                            ...field.calculation!,
+                            expression: `${field.calculation?.expression ?? ""}${field.calculation?.expression ? " " : ""}${value}(`,
+                          },
+                        });
+                      }}
+                    />
+                  </div>
+                  <div className="fd-calculation-formula-actions">
+                    <Button
+                      type="button"
+                      onClick={() =>
+                        setFormulaResult(
+                          calculate(field, sourceDefaults ?? {}) ??
+                            t("Không thể tính với dữ liệu thử"),
+                        )
+                      }
+                    >
+                      {t("Xem kết quả thử")}
+                    </Button>
+                    {formulaResult !== null && (
+                      <output
+                        className="fd-calculation-result"
+                        aria-live="polite"
+                      >
+                        {t("Kết quả thử")}: <strong>{formulaResult}</strong>
+                      </output>
+                    )}
+                  </div>
                   <Field
                     label={t("Mã trường nâng cao")}
                     hint={t(

@@ -61,6 +61,8 @@ export interface Calculation {
     | "min"
     | "max";
   fields: string[];
+  /** Optional safe expression such as `amount * exchange_rate` or `SUM(lines.amount)`. */
+  expression?: string;
   precision?: number;
 }
 export const creatorProfileLabels = {
@@ -497,6 +499,9 @@ function fieldsShape(
           !Array.isArray(field.calculation.fields) ||
           field.calculation.fields.length > 20 ||
           !field.calculation.fields.every((key) => typeof key === "string") ||
+          (field.calculation.expression !== undefined &&
+            (typeof field.calculation.expression !== "string" ||
+              field.calculation.expression.length > 500)) ||
           (field.calculation.precision !== undefined &&
             (!Number.isInteger(field.calculation.precision) ||
               Number(field.calculation.precision) < 0 ||

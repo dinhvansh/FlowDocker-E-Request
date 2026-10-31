@@ -91,6 +91,35 @@
   line-height: 18px;
 }
 
+.fd-calculation-formula-tools {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.fd-calculation-formula-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.fd-calculation-result {
+  min-height: 32px;
+  padding: 6px 8px;
+  border-left: 2px solid var(--fd-color-brand);
+  background: var(--fd-brand-soft);
+  color: var(--fd-text-primary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+@media (max-width: 720px) {
+  .fd-calculation-formula-tools {
+    grid-template-columns: 1fr;
+  }
+}
+
 .fd-numbering-editor {
   display: grid;
   gap: 12px;

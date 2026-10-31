@@ -125,7 +125,9 @@ export function calculate(
   values: PreviewValues,
 ): string | null {
   if (!field.calculation) return null;
-  const { operator, fields, precision = 2 } = field.calculation;
+  const { operator, fields, precision = 2, expression } = field.calculation;
+  if (expression?.trim())
+    return evaluateCalculationExpression(expression, values, precision);
   const entries = fields.flatMap((key) => {
     const value = readReference(values, key);
     return Array.isArray(value) ? value : [value];
@@ -161,6 +163,135 @@ export function calculate(
     return result.isFinite() && Math.abs(result.e) <= 1000
       ? result.toFixed(precision)
       : null;
+  } catch {
+    return null;
+  }
+}
+
+type FormulaToken =
+  | { kind: "number"; value: string }
+  | { kind: "name"; value: string }
+  | { kind: "operator"; value: string }
+  | { kind: "paren"; value: "(" | ")" }
+  | { kind: "comma"; value: "," };
+
+function tokenizeFormula(source: string): FormulaToken[] | null {
+  const tokens: FormulaToken[] = [];
+  let index = 0;
+  while (index < source.length) {
+    const char = source[index];
+    if (/\s/.test(char)) {
+      index += 1;
+      continue;
+    }
+    const number = source.slice(index).match(/^(?:\d+(?:\.\d*)?|\.\d+)/)?.[0];
+    if (number) {
+      tokens.push({ kind: "number", value: number });
+      index += number.length;
+      continue;
+    }
+    const name = source.slice(index).match(/^[A-Za-z_][A-Za-z0-9_.]*/)?.[0];
+    if (name) {
+      tokens.push({ kind: "name", value: name });
+      index += name.length;
+      continue;
+    }
+    if ("+-*/".includes(char)) tokens.push({ kind: "operator", value: char });
+    else if (char === "(" || char === ")")
+      tokens.push({ kind: "paren", value: char });
+    else if (char === ",") tokens.push({ kind: "comma", value: char });
+    else return null;
+    index += 1;
+  }
+  return tokens;
+}
+
+function evaluateCalculationExpression(
+  source: string,
+  values: PreviewValues,
+  precision: number,
+): string | null {
+  const tokens = tokenizeFormula(source);
+  if (!tokens?.length) return null;
+  let cursor = 0;
+  const peek = () => tokens[cursor];
+  const take = () => tokens[cursor++];
+  const asDecimal = (value: FormValue | undefined): Decimal => {
+    if (Array.isArray(value)) {
+      const first = value.find((item) => !emptyValue(item));
+      return first === undefined ? new Decimal(0) : asDecimal(first);
+    }
+    if (emptyValue(value)) return new Decimal(0);
+    if (typeof value !== "string" && typeof value !== "number")
+      throw new Error("Invalid operand");
+    const result = new Decimal(value);
+    if (!result.isFinite() || Math.abs(result.e) > 1000)
+      throw new Error("Invalid operand");
+    return result;
+  };
+  const parseExpression = (): Decimal => {
+    let result = parseTerm();
+    while (peek()?.kind === "operator" && ["+", "-"].includes(peek()!.value)) {
+      const operator = take()!.value;
+      const next = parseTerm();
+      result = operator === "+" ? result.add(next) : result.sub(next);
+    }
+    return result;
+  };
+  const parseTerm = (): Decimal => {
+    let result = parseFactor();
+    while (peek()?.kind === "operator" && ["*", "/"].includes(peek()!.value)) {
+      const operator = take()!.value;
+      const next = parseFactor();
+      result = operator === "*" ? result.mul(next) : result.div(next);
+    }
+    return result;
+  };
+  const parseFactor = (): Decimal => {
+    const token = take();
+    if (!token) throw new Error("Incomplete expression");
+    if (token.kind === "operator" && token.value === "-")
+      return parseFactor().neg();
+    if (token.kind === "number") return new Decimal(token.value);
+    if (token.kind === "paren" && token.value === "(") {
+      const value = parseExpression();
+      if (take()?.value !== ")") throw new Error("Missing parenthesis");
+      return value;
+    }
+    if (token.kind !== "name") throw new Error("Invalid expression");
+    if (peek()?.kind !== "paren" || peek()?.value !== "(")
+      return asDecimal(readReference(values, token.value));
+    take();
+    const args: Decimal[] = [];
+    if (peek()?.value !== ")") {
+      while (true) {
+        args.push(parseExpression());
+        if (peek()?.kind !== "comma") break;
+        take();
+      }
+    }
+    if (take()?.value !== ")") throw new Error("Missing parenthesis");
+    const name = token.value.toUpperCase();
+    if (name === "COUNT") return new Decimal(args.length);
+    if (!args.length) return new Decimal(0);
+    if (name === "SUM") return args.reduce((a, b) => a.add(b), new Decimal(0));
+    if (name === "AVG" || name === "AVERAGE")
+      return args.reduce((a, b) => a.add(b), new Decimal(0)).div(args.length);
+    if (name === "MIN") return Decimal.min(...args);
+    if (name === "MAX") return Decimal.max(...args);
+    if (name === "ROUND")
+      return args[0].toDecimalPlaces(args[1]?.toNumber() ?? precision);
+    throw new Error("Unknown function");
+  };
+  try {
+    const result = parseExpression();
+    if (
+      cursor !== tokens.length ||
+      !result.isFinite() ||
+      Math.abs(result.e) > 1000
+    )
+      return null;
+    return result.toFixed(precision);
   } catch {
     return null;
   }
