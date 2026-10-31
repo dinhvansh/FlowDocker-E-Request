@@ -75,6 +75,28 @@ export const creatorProfileLabels = {
 export type CreatorProfileAttribute = keyof typeof creatorProfileLabels;
 export type DefaultValueSource =
   "currentUser" | `currentUser.${CreatorProfileAttribute}`;
+export type NumberingTokenKind =
+  | "literal"
+  | "sequence"
+  | "year"
+  | "month"
+  | "day"
+  | "creator"
+  | "employeeCode"
+  | "department"
+  | "position"
+  | "managerId"
+  | "managerName"
+  | "typeCode";
+export interface NumberingToken {
+  kind: NumberingTokenKind;
+  value?: string;
+}
+export interface NumberingConfig {
+  segments: NumberingToken[];
+  sequenceDigits: number;
+  scope: "app" | "year";
+}
 export function defaultSourcesForType(
   type: FormFieldType,
 ): DefaultValueSource[] {
@@ -99,6 +121,8 @@ export interface FormField {
   defaultValue?: FormValue;
   /** Resolved from host context when no saved value exists; never an identity credential. */
   defaultValueSource?: DefaultValueSource;
+  /** Local numbering template; authoritative sequence allocation belongs to the host. */
+  numbering?: NumberingConfig;
   readOnly?: boolean;
   disabled?: boolean;
   min?: number;
@@ -283,6 +307,7 @@ const allowedKeys = new Set([
   "placeholder",
   "defaultValue",
   "defaultValueSource",
+  "numbering",
   "readOnly",
   "multiple",
   "disabled",
@@ -395,6 +420,37 @@ function fieldsShape(
           field.defaultValueSource as DefaultValueSource,
         ) ||
           field.defaultValue !== undefined)
+      )
+        return false;
+      if (
+        field.numbering !== undefined &&
+        (!isObject(field.numbering) ||
+          !Array.isArray(field.numbering.segments) ||
+          field.numbering.segments.length > 20 ||
+          !Number.isInteger(field.numbering.sequenceDigits) ||
+          Number(field.numbering.sequenceDigits) < 1 ||
+          Number(field.numbering.sequenceDigits) > 12 ||
+          !["app", "year"].includes(String(field.numbering.scope)) ||
+          !field.numbering.segments.every(
+            (segment) =>
+              isObject(segment) &&
+              [
+                "literal",
+                "sequence",
+                "year",
+                "month",
+                "day",
+                "creator",
+                "employeeCode",
+                "department",
+                "position",
+                "managerId",
+                "managerName",
+                "typeCode",
+              ].includes(String(segment.kind)) &&
+              (segment.value === undefined ||
+                typeof segment.value === "string"),
+          ))
       )
         return false;
       if (

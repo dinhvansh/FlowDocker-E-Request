@@ -7,6 +7,7 @@ import {
   type DefaultValueSource,
   type FormField,
 } from "../schema";
+import { NumberingEditor } from "./numbering-editor";
 
 /** Host-independent defaults; attributes are supplied through runtimeContext. */
 export function CreatorDefaultEditor({
@@ -37,7 +38,11 @@ export function CreatorDefaultEditor({
               ? "Giá trị mặc định"
               : "Nguồn giá trị mặc định",
           )}
-          value={field.defaultValueSource ?? "fixed"}
+          value={
+            field.numbering
+              ? "autoNumber"
+              : (field.defaultValueSource ?? "fixed")
+          }
           options={[
             {
               value: "fixed",
@@ -47,6 +52,9 @@ export function CreatorDefaultEditor({
                   : "Nhập giá trị cố định",
               ),
             },
+            ...(field.type === "text"
+              ? [{ value: "autoNumber", label: t("Cấp số tự động") }]
+              : []),
             ...sources.map((source) => ({
               value: source,
               label: t(
@@ -62,26 +70,48 @@ export function CreatorDefaultEditor({
           ]}
           onValueChange={(value) =>
             patch({
+              numbering:
+                value === "autoNumber"
+                  ? {
+                      segments: [
+                        { kind: "literal", value: "DNTT" },
+                        { kind: "literal", value: "-" },
+                        { kind: "year" },
+                        { kind: "literal", value: "-" },
+                        { kind: "sequence" },
+                      ],
+                      sequenceDigits: 4,
+                      scope: "year",
+                    }
+                  : undefined,
               defaultValueSource:
-                value === "fixed" ? undefined : (value as DefaultValueSource),
+                value === "fixed" || value === "autoNumber"
+                  ? undefined
+                  : (value as DefaultValueSource),
               defaultValue: undefined,
             })
           }
         />
       </Field>
-      {(field.type === "person" || field.defaultValueSource) && (
-        <Field
-          label={t(
-            field.type === "person"
-              ? "Cho phép đổi người"
-              : "Cho phép sửa giá trị",
-          )}
-        >
-          <Checkbox
-            checked={!field.readOnly}
-            onCheckedChange={(checked) => patch({ readOnly: checked !== true })}
-          />
-        </Field>
+      {field.numbering ? (
+        <NumberingEditor field={field} patch={patch} />
+      ) : (
+        (field.type === "person" || field.defaultValueSource) && (
+          <Field
+            label={t(
+              field.type === "person"
+                ? "Cho phép đổi người"
+                : "Cho phép sửa giá trị",
+            )}
+          >
+            <Checkbox
+              checked={!field.readOnly}
+              onCheckedChange={(checked) =>
+                patch({ readOnly: checked !== true })
+              }
+            />
+          </Field>
+        )
       )}
     </>
   );

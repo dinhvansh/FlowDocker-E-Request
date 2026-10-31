@@ -90,3 +90,40 @@
   font-size: 12px;
   line-height: 18px;
 }
+
+.fd-numbering-editor {
+  display: grid;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.fd-numbering-segments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fd-numbering-segment {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+  padding: 3px 4px 3px 8px;
+  border: 1px solid var(--fd-border);
+  border-radius: 5px;
+  background: var(--fd-surface-raised);
+  color: var(--fd-text-primary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.fd-numbering-segment button {
+  width: 22px;
+  min-height: 22px;
+  padding: 0;
+}
+
+.fd-numbering-segment button svg {
+  width: 13px;
+  height: 13px;
+}
