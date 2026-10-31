@@ -270,6 +270,38 @@ export function AdvancedProperties({
     () => fields.filter((item) => ["number", "currency"].includes(item.type)),
     [fields],
   );
+  const [formulaSuggestionIndex, setFormulaSuggestionIndex] = useState(0);
+  const formulaSuggestions = useMemo(
+    () => [
+      ...calculationFields.map((item) => ({
+        value: item.key,
+        label: `${item.label[locale]} · ${item.key}`,
+        kind: "field" as const,
+      })),
+      ...["IF(", "SUM(", "AVG(", "MIN(", "MAX(", "COUNT(", "ROUND("].map(
+        (value) => ({ value, label: value, kind: "function" as const }),
+      ),
+    ],
+    [calculationFields, locale],
+  );
+  const filteredFormulaSuggestions = formulaSuggestions.filter(
+    (suggestion) =>
+      !formulaQuery ||
+      suggestion.value.toLowerCase().includes(formulaQuery.toLowerCase()),
+  );
+  const insertFormulaSuggestion = (value: string) => {
+    setFormulaResult(null);
+    const expression = field.calculation?.expression ?? "";
+    const base = formulaQuery
+      ? expression.slice(0, expression.length - formulaQuery.length)
+      : expression;
+    patch({
+      calculation: {
+        ...field.calculation!,
+        expression: `${base}${value}`,
+      },
+    });
+  };
   const calculationPreview = field.calculation
     ? (() => {
         const labels = field.calculation.fields.map(
@@ -718,14 +750,44 @@ export function AdvancedProperties({
                   >
                     <Textarea
                       rows={2}
+                      className="fd-formula-textarea"
                       value={field.calculation.expression ?? ""}
                       placeholder={t("Ví dụ: amount * exchange_rate")}
                       onFocus={() => setFormulaFocused(true)}
                       onBlur={() =>
                         window.setTimeout(() => setFormulaFocused(false), 120)
                       }
+                      onKeyDown={(event) => {
+                        if (
+                          !formulaFocused ||
+                          !filteredFormulaSuggestions.length
+                        )
+                          return;
+                        if (
+                          event.key === "ArrowDown" ||
+                          event.key === "ArrowUp"
+                        ) {
+                          event.preventDefault();
+                          setFormulaSuggestionIndex((index) =>
+                            event.key === "ArrowDown"
+                              ? (index + 1) % filteredFormulaSuggestions.length
+                              : (index -
+                                  1 +
+                                  filteredFormulaSuggestions.length) %
+                                filteredFormulaSuggestions.length,
+                          );
+                        }
+                        if (event.key === "Tab" || event.key === "Enter") {
+                          event.preventDefault();
+                          insertFormulaSuggestion(
+                            filteredFormulaSuggestions[formulaSuggestionIndex]
+                              ?.value ?? filteredFormulaSuggestions[0].value,
+                          );
+                        }
+                      }}
                       onChange={(event) => {
                         setFormulaResult(null);
+                        setFormulaSuggestionIndex(0);
                         patch({
                           calculation: {
                             ...field.calculation!,
@@ -740,50 +802,29 @@ export function AdvancedProperties({
                         role="listbox"
                         aria-label={t("Gợi ý khi gõ")}
                       >
-                        {[
-                          ...calculationFields.map((item) => ({
-                            value: item.key,
-                            label: `${item.label[locale]} · ${item.key}`,
-                          })),
-                          ...[
-                            "IF(",
-                            "SUM(",
-                            "AVG(",
-                            "MIN(",
-                            "MAX(",
-                            "COUNT(",
-                            "ROUND(",
-                          ].map((value) => ({
-                            value,
-                            label: value,
-                          })),
-                        ]
-                          .filter(
-                            (suggestion) =>
-                              !formulaQuery ||
-                              suggestion.value
-                                .toLowerCase()
-                                .includes(formulaQuery.toLowerCase()),
-                          )
-                          .map((suggestion) => (
-                            <Button
-                              key={suggestion.value}
-                              type="button"
-                              variant="ghost"
-                              role="option"
-                              onMouseDown={(event) => event.preventDefault()}
-                              onClick={() => {
-                                patch({
-                                  calculation: {
-                                    ...field.calculation!,
-                                    expression: `${field.calculation?.expression ?? ""}${suggestion.value}`,
-                                  },
-                                });
-                              }}
-                            >
-                              {suggestion.label}
-                            </Button>
-                          ))}
+                        {filteredFormulaSuggestions.map((suggestion, index) => (
+                          <Button
+                            key={suggestion.value}
+                            type="button"
+                            variant="ghost"
+                            role="option"
+                            aria-selected={index === formulaSuggestionIndex}
+                            className={
+                              index === formulaSuggestionIndex
+                                ? "fd-formula-suggestion-active"
+                                : ""
+                            }
+                            onMouseDown={(event) => event.preventDefault()}
+                            onClick={() => {
+                              insertFormulaSuggestion(suggestion.value);
+                            }}
+                          >
+                            <code>{suggestion.label}</code>
+                            <span>
+                              {suggestion.kind === "function" ? "ƒ" : "#"}
+                            </span>
+                          </Button>
+                        ))}
                       </div>
                     )}
                   </Field>

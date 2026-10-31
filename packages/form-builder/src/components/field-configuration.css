@@ -116,12 +116,40 @@
   background: var(--fd-surface-raised);
 }
 
+.fd-formula-textarea {
+  border-color: color-mix(in srgb, var(--fd-color-brand) 45%, var(--fd-border));
+  background: color-mix(in srgb, var(--fd-brand-soft) 38%, var(--fd-surface));
+  color: var(--fd-text-primary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  line-height: 18px;
+  tab-size: 2;
+}
+
+.fd-formula-suggestions .fd-formula-suggestion-active,
+.fd-formula-suggestions button:hover {
+  background: var(--fd-brand-soft);
+  color: var(--fd-text-primary);
+}
+
 .fd-formula-suggestions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   min-height: 28px;
   padding: 3px 7px;
   color: var(--fd-text-secondary);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 11px;
+}
+
+.fd-formula-suggestions button code {
+  color: var(--fd-color-brand);
+}
+
+.fd-formula-suggestions button span {
+  color: var(--fd-text-muted);
+  font-size: 10px;
 }
 
 .fd-calculation-result {
