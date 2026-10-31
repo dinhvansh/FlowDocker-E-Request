@@ -17,12 +17,23 @@ import {
 import "./field-configuration.css";
 
 const indicators = {
-  data: { label: "Dữ liệu", icon: Database },
-  conditions: { label: "Điều kiện", icon: GitBranch },
-  calculation: { label: "Tính toán", icon: Calculator },
-  validation: { label: "Kiểm tra dữ liệu", icon: ShieldCheck },
-  advanced: { label: "Nâng cao", icon: Settings2 },
-} satisfies Record<ConfigurationKind, { label: string; icon: typeof Database }>;
+  data: { label: "Dữ liệu", icon: Database, tone: "info" },
+  conditions: { label: "Điều kiện", icon: GitBranch, tone: "warning" },
+  calculation: { label: "Tính toán", icon: Calculator, tone: "success" },
+  validation: {
+    label: "Kiểm tra dữ liệu",
+    icon: ShieldCheck,
+    tone: "warning",
+  },
+  advanced: { label: "Nâng cao", icon: Settings2, tone: "neutral" },
+} satisfies Record<
+  ConfigurationKind,
+  {
+    label: string;
+    icon: typeof Database;
+    tone: "neutral" | "success" | "warning" | "danger" | "info";
+  }
+>;
 
 export function FieldConfigurationBadges({
   field,
@@ -43,9 +54,9 @@ export function FieldConfigurationBadges({
       })}
     >
       {configured.map((kind) => {
-        const { label, icon: Icon } = indicators[kind];
+        const { label, icon: Icon, tone } = indicators[kind];
         const badge = (
-          <Badge>
+          <Badge tone={tone}>
             <Icon aria-hidden="true" />
             {t(label)}
           </Badge>
