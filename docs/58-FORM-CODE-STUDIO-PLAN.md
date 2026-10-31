@@ -41,3 +41,9 @@ Each finished slice is verified, committed and pushed before the next slice.
 - Invalid test JSON stays visible and retains previous valid engine inputs. Existing runtime size/depth/prototype-key bounds apply. Test values survive valid schema edits; activating a different form resets them.
 - Existing field inspector remains available for all configuration; no alternate engine or new schema. Synthetic calculation fixture verifies amount 3 → 6.00 and 7 → 14.00; malformed JSON retains 14.00. The engine intentionally serializes decimal results as strings.
 - Typecheck and lint/i18n PASS. Focused preview/host tests verified before commit. Backend and real submit remain outside this frontend slice.
+
+## Slice 5 evidence
+- AI assistance disclosure, editable requested change, copy/download context and expandable schema reference. Copy errors have a download fallback. No network/AI provider call.
+- Versioned authoring reference covers every FormDefinition/FormField configuration key and all 34 current types. Context preserves identity, dependencies, bilingual labels, scope/limit rules and safe formula constraints. It intentionally does not export host identities, provider rows, credentials or test values; defaults authored into schema remain authored configuration.
+- Export boundary: browser-local schema authoring only, no tenant/request API or backend authorization change. Authorization-design skill read; production export authorization remains unimplemented as before.
+- Unit test covers property/type contract coverage and synthetic context generation. Typecheck/lint and focused suite checked before commit. Remaining final slice covers browser download/clipboard paths, layout and reusable standalone harness.

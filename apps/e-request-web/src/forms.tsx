@@ -387,6 +387,9 @@ export function FormsPage({
                       <FormCodeStudio
                         value={codeText}
                         formId={draft.id}
+                        providerIds={availableSources.map(
+                          (source) => source.id,
+                        )}
                         selectedFieldId={selectedFieldId}
                         revealField={revealField}
                         onSelectField={setSelectedFieldId}

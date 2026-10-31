@@ -6,7 +6,8 @@
   "exports": {
     ".": "./src/index.tsx",
     "./code-studio": "./src/code-studio.tsx",
-    "./code-model": "./src/code-model.ts"
+    "./code-model": "./src/code-model.ts",
+    "./code-assistance": "./src/code-assistance.ts"
   },
   "dependencies": {
     "@codemirror/autocomplete": "6.20.4",

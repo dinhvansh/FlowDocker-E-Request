@@ -333,4 +333,14 @@ export const formMessages = {
   "Dữ liệu thử hợp lệ theo cấu hình biểu mẫu.":
     "Test values satisfy the form configuration.",
   "Đặt lại JSON": "Reset JSON",
+  "Dùng AI hỗ trợ thiết kế": "Design with AI assistance",
+  "Xuất ngữ cảnh rồi đưa cho AI bạn dùng. Dán JSON trả về vào editor để tiếp tục kéo thả. Chưa kết nối dịch vụ AI.":
+    "Export the context for your AI tool. Paste its JSON response into the editor and continue visual editing. No AI service is connected.",
+  "Yêu cầu thay đổi cho AI": "Requested changes for AI",
+  "Đã sao chép ngữ cảnh cho AI.": "AI context copied.",
+  "Không sao chép được. Hãy dùng tải ngữ cảnh.":
+    "Could not copy. Download the context instead.",
+  "Sao chép ngữ cảnh AI": "Copy AI context",
+  "Tải ngữ cảnh AI": "Download AI context",
+  "Tham chiếu schema cho AI": "Schema reference for AI",
 } as const;

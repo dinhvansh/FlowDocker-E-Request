@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useI18n } from "@flowdocker/i18n";
-import { Button, Notice } from "@flowdocker/ui";
+import { Button, Field, FieldGroup, Notice, Textarea } from "@flowdocker/ui";
+import { buildFormAIContext, formAuthoringSchema } from "./code-assistance";
 import { JsonCodeEditor } from "./json-code-editor";
 import { analyzeFormCode, codeFieldAt, fieldCodeRanges } from "./code-model";
 
@@ -11,6 +12,7 @@ export interface FormCodeStudioProps {
   selectedFieldId?: string;
   revealField?: { id: string; revision: number };
   onSelectField?(id: string): void;
+  providerIds?: readonly string[];
 }
 
 export default function FormCodeStudio({
@@ -20,8 +22,11 @@ export default function FormCodeStudio({
   selectedFieldId,
   revealField,
   onSelectField,
+  providerIds = [],
 }: FormCodeStudioProps) {
   const { t } = useI18n();
+  const [request, setRequest] = useState("");
+  const [copyStatus, setCopyStatus] = useState("");
   const analysis = useMemo(
     () => analyzeFormCode(value, formId),
     [value, formId],
@@ -75,6 +80,75 @@ export default function FormCodeStudio({
           </div>
         ))}
       </div>
+      <details className="fd-code-assistance">
+        <summary>{t("Dùng AI hỗ trợ thiết kế")}</summary>
+        <FieldGroup>
+          <p>
+            {t(
+              "Xuất ngữ cảnh rồi đưa cho AI bạn dùng. Dán JSON trả về vào editor để tiếp tục kéo thả. Chưa kết nối dịch vụ AI.",
+            )}
+          </p>
+          <Field label={t("Yêu cầu thay đổi cho AI")}>
+            <Textarea
+              rows={3}
+              value={request}
+              onChange={(event) => setRequest(event.target.value)}
+            />
+          </Field>
+          <div className="fd-toolbar-actions">
+            <Button
+              disabled={!analysis.definition}
+              onClick={async () => {
+                if (!analysis.definition) return;
+                try {
+                  await navigator.clipboard.writeText(
+                    buildFormAIContext(
+                      analysis.definition,
+                      providerIds,
+                      request,
+                    ),
+                  );
+                  setCopyStatus("Đã sao chép ngữ cảnh cho AI.");
+                } catch {
+                  setCopyStatus("Không sao chép được. Hãy dùng tải ngữ cảnh.");
+                }
+              }}
+            >
+              {t("Sao chép ngữ cảnh AI")}
+            </Button>
+            <Button
+              disabled={!analysis.definition}
+              onClick={() => {
+                if (!analysis.definition) return;
+                const url = URL.createObjectURL(
+                  new Blob(
+                    [
+                      buildFormAIContext(
+                        analysis.definition,
+                        providerIds,
+                        request,
+                      ),
+                    ],
+                    { type: "text/markdown;charset=utf-8" },
+                  ),
+                );
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "flowdocker-form-ai-context.md";
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+              }}
+            >
+              {t("Tải ngữ cảnh AI")}
+            </Button>
+          </div>
+          {copyStatus && <Notice>{t(copyStatus)}</Notice>}
+          <details>
+            <summary>{t("Tham chiếu schema cho AI")}</summary>
+            <pre>{JSON.stringify(formAuthoringSchema, null, 2)}</pre>
+          </details>
+        </FieldGroup>
+      </details>
     </section>
   );
 }
