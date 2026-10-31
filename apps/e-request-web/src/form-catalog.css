@@ -12,7 +12,8 @@
 .fd-forms-v2[data-view="catalog"] .fd-page-toolbar h1 {
   font-size: var(--fd-font-page-size);
   line-height: var(--fd-font-page-line-height);
-  letter-spacing: -0.5px;
+  letter-spacing: 0;
+  font-weight: var(--fd-font-heading-weight);
 }
 .fd-forms-v2[data-view="catalog"] .fd-page-toolbar p {
   display: block;
@@ -20,6 +21,7 @@
   color: var(--fd-text-muted);
   font-size: var(--fd-font-ui-size);
   line-height: var(--fd-font-ui-line-height);
+  font-weight: var(--fd-font-ui-weight);
 }
 .fd-forms-v2[data-view="catalog"] .fd-form-workbench {
   background: transparent;
