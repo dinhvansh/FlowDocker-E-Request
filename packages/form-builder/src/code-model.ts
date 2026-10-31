@@ -4,6 +4,8 @@ import {
   getLocation,
   getNodeValue,
   parseTree,
+  modify,
+  applyEdits,
   printParseErrorCode,
   type Node,
   type ParseError,
@@ -24,6 +26,61 @@ export interface CodeProblem {
 export interface CodeAnalysis {
   definition?: FormDefinition;
   problems: CodeProblem[];
+}
+
+/** Patch only changed JSON paths; retain unrelated whitespace and authored ordering. */
+export function reconcileFormCode(
+  source: string,
+  next: FormDefinition,
+): string {
+  let result = source;
+  let previous: unknown;
+  try {
+    previous = JSON.parse(source);
+  } catch {
+    return JSON.stringify(next, null, 2);
+  }
+  const patch = (
+    before: unknown,
+    after: unknown,
+    path: (string | number)[],
+  ) => {
+    if (JSON.stringify(before) === JSON.stringify(after)) return;
+    if (
+      before &&
+      after &&
+      typeof before === "object" &&
+      typeof after === "object" &&
+      !Array.isArray(before) &&
+      !Array.isArray(after)
+    ) {
+      const a = before as Record<string, unknown>,
+        b = after as Record<string, unknown>;
+      for (const key of new Set([...Object.keys(a), ...Object.keys(b)]))
+        patch(a[key], b[key], [...path, key]);
+    } else if (
+      Array.isArray(before) &&
+      Array.isArray(after) &&
+      before.length === after.length
+    ) {
+      after.forEach((value, index) =>
+        patch(before[index], value, [...path, index]),
+      );
+    } else {
+      result = applyEdits(
+        result,
+        modify(result, path, after, {
+          formattingOptions: {
+            insertSpaces: true,
+            tabSize: 2,
+            eol: source.includes("\r\n") ? "\r\n" : "\n",
+          },
+        }),
+      );
+    }
+  };
+  patch(previous, next, []);
+  return result;
 }
 export const codeProperties = {
   form: [

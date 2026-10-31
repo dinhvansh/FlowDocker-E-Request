@@ -107,6 +107,9 @@ import { FormCanvas } from "./canvas";
 import { defaultValues } from "./engine";
 import type { FormDataSource } from "./components/data-source-editor";
 export interface FormDesignerProps {
+  /** Optional controlled selection shared with code/outline integrations. */
+  selectedFieldId?: string;
+  onSelectField?(id: string): void;
   runtimeContext?: FormRendererProps["runtimeContext"];
   providers?: FormRendererProps["providers"];
   dataSources?: readonly FormDataSource[];
@@ -334,6 +337,8 @@ function OutlineRow({
   );
 }
 export function FormDesigner({
+  selectedFieldId,
+  onSelectField,
   definition,
   onChange,
   readOnly = false,
@@ -343,7 +348,12 @@ export function FormDesigner({
   runtimeContext,
 }: FormDesignerProps) {
   const { t, locale } = useI18n();
-  const [selectedId, setSelectedId] = useState("");
+  const [internalSelectedId, setInternalSelectedId] = useState("");
+  const selectedId = selectedFieldId ?? internalSelectedId;
+  const setSelectedId = (id: string) => {
+    setInternalSelectedId(id);
+    onSelectField?.(id);
+  };
   const [query, setQuery] = useState("");
   const [properties, setProperties] = useState<InspectorSection>("basic");
   useEffect(() => {

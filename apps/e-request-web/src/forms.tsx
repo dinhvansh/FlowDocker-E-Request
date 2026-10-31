@@ -49,7 +49,10 @@ import {
 const FormCodeStudio = lazy(
   () => import("@flowdocker/form-builder/code-studio"),
 );
-import { analyzeFormCode } from "@flowdocker/form-builder/code-model";
+import {
+  analyzeFormCode,
+  reconcileFormCode,
+} from "@flowdocker/form-builder/code-model";
 
 const demoProviders: Record<string, DataProvider> = {
   "demo.companies": async () => [
@@ -157,6 +160,11 @@ export function FormsPage({
   const [jsonError, setJsonError] = useState("");
   const [jsonText, setJsonText] = useState("");
   const [codeText, setCodeText] = useState("");
+  const [selectedFieldId, setSelectedFieldId] = useState("");
+  const [revealField, setRevealField] = useState<{
+    id: string;
+    revision: number;
+  }>();
   const [codeDirty, setCodeDirty] = useState(false);
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState("schema");
@@ -188,7 +196,7 @@ export function FormsPage({
   const issues = draft ? validateFormDefinition(draft) : [];
   useEffect(() => {
     if (!draft || tab !== "code" || codeDirty) return;
-    setCodeText(JSON.stringify(draft, null, 2));
+    setCodeText((current) => reconcileFormCode(current, draft));
   }, [draft, tab, codeDirty]);
   const activate = (next: FormDefinition) => {
     setCatalogOpen(false);
@@ -198,6 +206,8 @@ export function FormsPage({
     setTab("schema");
     setCodeDirty(false);
     setCodeText("");
+    setSelectedFieldId("");
+    setRevealField(undefined);
     setValues({});
     setShowIssues(false);
     setMessage("");
@@ -376,6 +386,9 @@ export function FormsPage({
                       <FormCodeStudio
                         value={codeText}
                         formId={draft.id}
+                        selectedFieldId={selectedFieldId}
+                        revealField={revealField}
+                        onSelectField={setSelectedFieldId}
                         onChange={(raw) => {
                           setCodeText(raw);
                           setCodeDirty(true);
@@ -427,10 +440,20 @@ export function FormsPage({
                     inspectorSection={tab === "logic" ? "logic" : "basic"}
                     key={draft.id}
                     definition={draft}
+                    selectedFieldId={selectedFieldId}
+                    onSelectField={(id) => {
+                      setSelectedFieldId(id);
+                      setRevealField((previous) => ({
+                        id,
+                        revision: (previous?.revision ?? 0) + 1,
+                      }));
+                    }}
                     readOnly={codeInvalid}
                     onChange={(next) => {
                       update(next);
-                      setCodeText(JSON.stringify(next, null, 2));
+                      setCodeText((current) =>
+                        reconcileFormCode(current, next),
+                      );
                       setCodeDirty(false);
                     }}
                   />

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { basicSetup } from "codemirror";
-import { EditorState, Transaction } from "@codemirror/state";
+import { Compartment, EditorState, Transaction } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
 import { json } from "@codemirror/lang-json";
 import {
@@ -8,7 +8,7 @@ import {
   acceptCompletion,
   type CompletionContext,
 } from "@codemirror/autocomplete";
-import { linter } from "@codemirror/lint";
+import { forceLinting, linter } from "@codemirror/lint";
 import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
 import { tags } from "@lezer/highlight";
 import { useI18n } from "@flowdocker/i18n";
@@ -30,6 +30,10 @@ export function JsonCodeEditor(props: JsonCodeEditorProps) {
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
   const current = useRef(props);
+  const translate = useRef(t);
+  translate.current = t;
+  const attributes = useRef(new Compartment());
+  const lastReveal = useRef<number | undefined>(undefined);
   current.current = props;
   useEffect(() => {
     const complete = (context: CompletionContext) => {
@@ -62,11 +66,13 @@ export function JsonCodeEditor(props: JsonCodeEditorProps) {
         extensions: [
           basicSetup,
           json(),
-          EditorView.contentAttributes.of({
-            "aria-label": current.current.label,
-            "aria-multiline": "true",
-            spellcheck: "false",
-          }),
+          attributes.current.of(
+            EditorView.contentAttributes.of({
+              "aria-label": current.current.label,
+              "aria-multiline": "true",
+              spellcheck: "false",
+            }),
+          ),
           keymap.of([{ key: "Tab", run: acceptCompletion }]),
           autocompletion({ override: [complete] }),
           linter(
@@ -78,7 +84,7 @@ export function JsonCodeEditor(props: JsonCodeEditorProps) {
                 from: Math.min(p.from, v.state.doc.length),
                 to: Math.min(p.to, v.state.doc.length),
                 severity: "error",
-                message: t(p.message, p.params),
+                message: translate.current(p.message, p.params),
               })),
             { delay: 250 },
           ),
@@ -141,8 +147,21 @@ export function JsonCodeEditor(props: JsonCodeEditorProps) {
       editor.destroy();
       view.current = null;
     };
-    // Locale changes refresh editor-owned diagnostics and accessible labels.
-  }, [locale, t]);
+  }, []);
+  useEffect(() => {
+    const editor = view.current;
+    if (!editor) return;
+    editor.dispatch({
+      effects: attributes.current.reconfigure(
+        EditorView.contentAttributes.of({
+          "aria-label": props.label,
+          "aria-multiline": "true",
+          spellcheck: "false",
+        }),
+      ),
+    });
+    forceLinting(editor);
+  }, [locale, props.label]);
   useEffect(() => {
     const editor = view.current;
     if (!editor) return;
@@ -172,7 +191,13 @@ export function JsonCodeEditor(props: JsonCodeEditorProps) {
     });
   }, [props.value]);
   useEffect(() => {
-    if (!props.reveal || !view.current) return;
+    if (
+      !props.reveal ||
+      !view.current ||
+      lastReveal.current === props.reveal.revision
+    )
+      return;
+    lastReveal.current = props.reveal.revision;
     const from = Math.min(props.reveal.from, view.current.state.doc.length);
     view.current.dispatch({
       selection: { anchor: from },

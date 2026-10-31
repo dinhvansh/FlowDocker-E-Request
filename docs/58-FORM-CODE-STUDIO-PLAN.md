@@ -29,3 +29,9 @@ Each finished slice is verified, committed and pushed before the next slice.
 - One persistent visual designer; dedicated lazy code editor alongside it, syntax colors, folding, search, undo/redo, JSON property/enum completion, format action and localized error list.
 - Syntax diagnostics point at the offending token; duplicate/unsupported keys and identity changes have exact ranges; semantic issues identify the field; generic shape errors identify the document.
 - Host test: 5 passed, including valid edit → title change, invalid raw draft preserved across tabs. Typecheck and lint/i18n passed. Additional source-model tests recorded in subsequent verification log.
+
+## Slice 3 evidence
+- Optional controlled FormDesigner selectedFieldId/onSelectField API; code cursor resolves deepest nested field, canvas/outline selection reveals source position without stealing editor focus.
+- Source reconciliation patches changed JSON paths and preserves unrelated formatting. Editor is retained across tab and language changes; external source patches map the cursor and preserve undo history.
+- Typecheck PASS; 8 focused tests PASS (host/source model). Real browser code date selection → inspector and canvas category selection → code PASS; script output/playwright/code-studio-selection-qa.cjs and screenshot code-studio-selection-1440.png.
+- Audit follow-up: code mode currently shows palette/canvas/inspector vertically inside the narrow half, causing excess scroll. Address panel presentation in slice 6; no visual acceptance claim yet.

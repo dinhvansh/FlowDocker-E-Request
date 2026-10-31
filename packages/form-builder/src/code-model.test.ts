@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   analyzeFormCode,
+  reconcileFormCode,
   codeCompletions,
   codeFieldAt,
   fieldCodeRanges,
@@ -61,4 +62,14 @@ describe("live schema source model", () => {
       ),
     ).toContain("operator");
   });
+});
+
+it("patches visual edits without replacing unrelated source formatting", () => {
+  const source = JSON.stringify(form, null, 4);
+  const next = structuredClone(form);
+  next.fields[0].children![0].label.vi = "Amount changed";
+  const patched = reconcileFormCode(source, next);
+  expect(JSON.parse(patched)).toEqual(next);
+  expect(patched).toContain('    "title": {');
+  expect(patched).toContain('"vi": "Amount changed"');
 });
