@@ -429,6 +429,7 @@ interface RuntimeFieldsProps extends Pick<
   | "readOnly"
   | "runtimeContext"
 > {
+  currency?: string;
   design?: { wrap(field: FormField, control: ReactNode): ReactNode };
   fields: FormField[];
   data: PreviewValues;
@@ -939,7 +940,9 @@ function RuntimeField({
       >
         {control}
       </Field>
-      {field.type === "currency" && <Badge>{field.currency ?? "VND"}</Badge>}
+      {field.type === "currency" && (
+        <Badge>{field.currency ?? props.currency ?? "VND"}</Badge>
+      )}
     </div>
   );
 }
@@ -1150,6 +1153,7 @@ export function FormRenderer({
             revealFieldId={revealFieldId}
             access={access}
             {...props}
+            currency={definition.currency}
             readOnly={props.readOnly || submitting}
             onOptions={(key, options) =>
               setOptionValues((current) =>

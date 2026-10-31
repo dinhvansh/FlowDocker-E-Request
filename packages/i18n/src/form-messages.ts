@@ -160,6 +160,7 @@ export const formMessages = {
   "Không thể tính với dữ liệu thử": "Could not calculate with sample data",
   "Ví dụ: amount * exchange_rate": "Example: amount * exchange_rate",
   "Tổng hợp cột": "Column summary",
+  "Tiền tệ mặc định": "Default currency",
   "Chọn cách hiển thị kết quả ở cuối bảng.":
     "Choose how the result appears at the bottom of the table.",
   "Không tổng hợp": "No summary",

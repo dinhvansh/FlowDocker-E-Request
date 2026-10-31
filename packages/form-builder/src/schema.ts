@@ -171,6 +171,8 @@ export interface FormDefinition {
   schemaVersion?: 1 | 2;
   display?: "form" | "wizard";
   orientation?: "portrait" | "landscape";
+  /** Currency used by currency fields that do not override it locally. */
+  currency?: string;
 }
 export interface FormIssue {
   fieldId?: string;
@@ -536,6 +538,7 @@ export function isFormDefinition(value: unknown): value is FormDefinition {
         "schemaVersion",
         "display",
         "orientation",
+        "currency",
       ].includes(key),
     ) &&
     typeof value.id === "string" &&
@@ -550,6 +553,8 @@ export function isFormDefinition(value: unknown): value is FormDefinition {
       ["form", "wizard"].includes(String(value.display))) &&
     (value.orientation === undefined ||
       ["portrait", "landscape"].includes(String(value.orientation))) &&
+    (value.currency === undefined ||
+      /^[A-Z]{3}$/.test(String(value.currency))) &&
     fieldsShape(value.fields)
   );
 }

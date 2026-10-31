@@ -591,6 +591,18 @@ export function FormDesigner({
             })
           }
         />
+        <Select
+          label={t("Tiền tệ mặc định")}
+          disabled={readOnly}
+          value={definition.currency ?? "VND"}
+          options={[
+            { value: "VND", label: "VND · Việt Nam đồng" },
+            { value: "USD", label: "USD · US Dollar" },
+            { value: "EUR", label: "EUR · Euro" },
+            { value: "CNY", label: "CNY · Nhân dân tệ" },
+          ]}
+          onValueChange={(currency) => commit({ ...definition, currency })}
+        />
         <details className="fd-designer-tools">
           <summary>
             <Settings2 aria-hidden="true" />
