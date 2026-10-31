@@ -47,7 +47,7 @@ const rule = object(["mode", "conditions"], {
 });
 const fieldProperties: Record<(typeof codeProperties.field)[number], object> = {
   id: { type: "string", minLength: 1 },
-  key: { type: "string", pattern: "^[A-Za-z_][A-Za-z0-9_]*$" },
+  key: { type: "string", pattern: "^[a-z][a-z0-9_]{0,63}$" },
   label: ref("Text"),
   type: enumOf(...formFieldTypes),
   required: bool,

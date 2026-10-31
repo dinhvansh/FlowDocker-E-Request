@@ -107,6 +107,8 @@ import { FormCanvas } from "./canvas";
 import { defaultValues } from "./engine";
 import type { FormDataSource } from "./components/data-source-editor";
 export interface FormDesignerProps {
+  /** Use one active designer pane when embedded beside a code editor. */
+  compact?: boolean;
   /** Optional controlled selection shared with code/outline integrations. */
   selectedFieldId?: string;
   onSelectField?(id: string): void;
@@ -337,6 +339,7 @@ function OutlineRow({
   );
 }
 export function FormDesigner({
+  compact = false,
   selectedFieldId,
   onSelectField,
   definition,
@@ -531,6 +534,7 @@ export function FormDesigner({
     <div
       style={{ "--fd-inspector-width": `${inspectorWidth}px` } as CSSProperties}
       className="fd-form-product fd-designer-v2"
+      data-compact={compact}
       data-pane={pane}
       data-toolbox={toolboxOpen}
       data-inspector={inspectorOpen}

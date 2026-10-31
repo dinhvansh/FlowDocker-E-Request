@@ -196,6 +196,21 @@ it("syncs code edits to canvas and retains the last valid form on invalid JSON",
   expect(
     screen.getByRole("heading", { name: "Code sync test", level: 1 }),
   ).toBeTruthy();
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Thiết kế trường" }), {
+    button: 0,
+    ctrlKey: false,
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Tùy chọn biểu mẫu" }));
+  fireEvent.click(screen.getByRole("button", { name: "Đổi tên biểu mẫu" }));
+  fireEvent.change(
+    screen.getByRole("textbox", { name: "Tên biểu mẫu · tiếng Anh" }),
+    { target: { value: "Visual rename" } },
+  );
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Code Studio" }), {
+    button: 0,
+    ctrlKey: false,
+  });
+  expect(JSON.parse(view.state.doc.toString()).title.en).toBe("Visual rename");
   edit("{");
   expect(
     screen.getByRole("heading", { name: "Code sync test", level: 1 }),

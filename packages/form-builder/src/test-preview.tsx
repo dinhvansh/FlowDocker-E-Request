@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import { Button, Field, FieldGroup, Notice, Textarea } from "@flowdocker/ui";
-import { prepareValues, validRuntimeValues, validatePreview } from "./engine";
+import { prepareValues, validRuntimeValues } from "./engine";
 import { FormPreview, type FormPreviewProps } from "./runtime";
 import type { PreviewValues } from "./schema";
 
@@ -31,17 +31,6 @@ export function FormTestPreview(props: FormPreviewProps) {
         props.definition,
         props.values,
         props.access,
-        props.runtimeContext,
-      ),
-    [props.definition, props.values, props.access, props.runtimeContext],
-  );
-  const issues = useMemo(
-    () =>
-      validatePreview(
-        props.definition,
-        props.values,
-        props.access,
-        {},
         props.runtimeContext,
       ),
     [props.definition, props.values, props.access, props.runtimeContext],
@@ -98,21 +87,6 @@ export function FormTestPreview(props: FormPreviewProps) {
               value={JSON.stringify(prepared, null, 2)}
             />
           </Field>
-          <div aria-live="polite">
-            {issues.length ? (
-              <Notice tone="warning">
-                <ul>
-                  {issues.map((issue, index) => (
-                    <li key={index}>{t(issue.message, issue.params)}</li>
-                  ))}
-                </ul>
-              </Notice>
-            ) : (
-              <Notice tone="success">
-                {t("Dữ liệu thử hợp lệ theo cấu hình biểu mẫu.")}
-              </Notice>
-            )}
-          </div>
         </FieldGroup>
       </details>
     </div>

@@ -47,3 +47,14 @@ Each finished slice is verified, committed and pushed before the next slice.
 - Versioned authoring reference covers every FormDefinition/FormField configuration key and all 34 current types. Context preserves identity, dependencies, bilingual labels, scope/limit rules and safe formula constraints. It intentionally does not export host identities, provider rows, credentials or test values; defaults authored into schema remain authored configuration.
 - Export boundary: browser-local schema authoring only, no tenant/request API or backend authorization change. Authorization-design skill read; production export authorization remains unimplemented as before.
 - Unit test covers property/type contract coverage and synthetic context generation. Typecheck/lint and focused suite checked before commit. Remaining final slice covers browser download/clipboard paths, layout and reusable standalone harness.
+
+## Slice 6 implementation and evidence
+- Compact split workbench, optional editor-owned CSS, localized CodeMirror search/fold/diagnostics phrases, accessible keyboard exit, exact partial-token Tab acceptance, mobile toolbar wrapping.
+- Independent forms example and standalone @flowdocker/forms 0.3.0 optional editor export with preserved dependency notices. No new engine/schema version or backend.
+- Browser script PASS at 1440x900,1366x768,390x844; VI/light, EN/dark and reduced-motion interaction. Clipboard/download and independent example host PASS. See docs/84-FORM-CODE-STUDIO-ACCEPTANCE.md for actual evidence and limits.
+- Pushed slices: foundation 0f6ab6c; editor 1f12b17; selection/source preservation 823d761; local test data 6f5d6b0; AI context f68e2aa. Final QA commit follows those slices on the existing PR #6 branch. All planned frontend slices are implemented; owner visual review remains pending.
+
+### Final checks
+- Full suite: 37 files / 148 tests PASS. Final host regression after adding visual-title→source synchronization: 5 host tests PASS. Typecheck, lint/i18n, formatting, application build and standalone forms build PASS.
+- Final host update centralizes all visual updates (including VI/EN form title) through source reconciliation and blocks title edits while source is invalid. Existing formatting survives reopening Code Studio.
+- Standalone package prepared at dist/flowdocker-forms-0.3.0.tgz; generated artifacts are local build outputs, not an npm publication. Dependency inventory contains 76 bundled upstream license entries. No merge/deployment/backend/AI service claim.

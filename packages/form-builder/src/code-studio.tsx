@@ -1,9 +1,17 @@
+import "./code-studio.css";
 import { useMemo, useState } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import { Button, Field, FieldGroup, Notice, Textarea } from "@flowdocker/ui";
 import { buildFormAIContext, formAuthoringSchema } from "./code-assistance";
 import { JsonCodeEditor } from "./json-code-editor";
 import { analyzeFormCode, codeFieldAt, fieldCodeRanges } from "./code-model";
+export {
+  analyzeFormCode,
+  reconcileFormCode,
+  codeFieldAt,
+  fieldCodeRanges,
+} from "./code-model";
+export { buildFormAIContext, formAuthoringSchema } from "./code-assistance";
 
 export interface FormCodeStudioProps {
   value: string;

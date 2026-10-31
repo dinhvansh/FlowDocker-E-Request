@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { basicSetup } from "codemirror";
-import { Compartment, EditorState, Transaction } from "@codemirror/state";
+import { Compartment, EditorState, Prec, Transaction } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
 import { json } from "@codemirror/lang-json";
 import {
@@ -14,6 +14,37 @@ import { tags } from "@lezer/highlight";
 import { useI18n } from "@flowdocker/i18n";
 import { analyzeFormCode, codeCompletions, codeNodeAt } from "./code-model";
 import { getLocation } from "jsonc-parser";
+
+const codePhraseKeys: Record<string, string> = {
+  Completions: "Gợi ý mã",
+  Diagnostics: "Chẩn đoán mã",
+  "No diagnostics": "Không có lỗi mã",
+  Find: "Tìm trong mã",
+  Replace: "Thay thế trong mã",
+  next: "Kết quả kế tiếp",
+  previous: "Kết quả trước",
+  all: "Chọn mọi kết quả",
+  "match case": "Phân biệt hoa thường",
+  regexp: "Biểu thức chính quy",
+  "by word": "Theo từ",
+  replace: "Thay kết quả",
+  "replace all": "Thay tất cả kết quả",
+  close: "Đóng bảng mã",
+  "Go to line": "Đến dòng",
+  go: "Đi đến",
+  "Control character": "Ký tự điều khiển",
+  "Folded lines": "Đã thu gọn các dòng",
+  "Unfolded lines": "Đã mở các dòng",
+  to: "đến",
+  "folded code": "Mã đã thu gọn",
+  unfold: "Mở mã thu gọn",
+  "Fold line": "Thu gọn dòng",
+  "Unfold line": "Mở dòng thu gọn",
+  "current match": "Kết quả hiện tại",
+  "on line": "tại dòng",
+  "replaced match on line $": "Đã thay kết quả tại dòng $",
+  "replaced $ matches": "Đã thay $ kết quả",
+};
 
 export interface JsonCodeEditorProps {
   value: string;
@@ -30,6 +61,15 @@ export function JsonCodeEditor(props: JsonCodeEditorProps) {
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
   const current = useRef(props);
+  const phrases = () =>
+    EditorState.phrases.of(
+      Object.fromEntries(
+        Object.entries(codePhraseKeys).map(([key, label]) => [
+          key,
+          translate.current(label),
+        ]),
+      ),
+    );
   const translate = useRef(t);
   translate.current = t;
   const attributes = useRef(new Compartment());
@@ -66,15 +106,16 @@ export function JsonCodeEditor(props: JsonCodeEditorProps) {
         extensions: [
           basicSetup,
           json(),
-          attributes.current.of(
+          attributes.current.of([
+            phrases(),
             EditorView.contentAttributes.of({
               "aria-label": current.current.label,
               "aria-multiline": "true",
               spellcheck: "false",
             }),
-          ),
-          keymap.of([{ key: "Tab", run: acceptCompletion }]),
-          autocompletion({ override: [complete] }),
+          ]),
+          Prec.highest(keymap.of([{ key: "Tab", run: acceptCompletion }])),
+          autocompletion({ override: [complete], interactionDelay: 0 }),
           linter(
             (v) =>
               analyzeFormCode(
@@ -152,13 +193,14 @@ export function JsonCodeEditor(props: JsonCodeEditorProps) {
     const editor = view.current;
     if (!editor) return;
     editor.dispatch({
-      effects: attributes.current.reconfigure(
+      effects: attributes.current.reconfigure([
+        phrases(),
         EditorView.contentAttributes.of({
           "aria-label": props.label,
           "aria-multiline": "true",
           spellcheck: "false",
         }),
-      ),
+      ]),
     });
     forceLinting(editor);
   }, [locale, props.label]);

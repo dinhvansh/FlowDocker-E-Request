@@ -227,8 +227,12 @@ export function FormsPage({
     if (next === "create") setCreateOpen(true);
     else activate(next);
   };
-  const update = (next: FormDefinition) => {
+  const update = (next: FormDefinition, fromCode = false) => {
     setDraft(next);
+    if (!fromCode) {
+      setCodeText((current) => reconcileFormCode(current, next));
+      setCodeDirty(false);
+    }
     setMessage("");
     setSaveError(false);
   };
@@ -360,7 +364,10 @@ export function FormsPage({
                     }
                   }
                   if (next === "code" && draft) {
-                    if (!codeDirty) setCodeText(JSON.stringify(draft, null, 2));
+                    if (!codeDirty)
+                      setCodeText((current) =>
+                        reconcileFormCode(current, draft),
+                      );
                     setJsonError("");
                   }
                 }}
@@ -397,7 +404,8 @@ export function FormsPage({
                           setCodeText(raw);
                           setCodeDirty(true);
                           const result = analyzeFormCode(raw, draft.id);
-                          if (result.definition) update(result.definition);
+                          if (result.definition)
+                            update(result.definition, true);
                         }}
                       />
                     </Suspense>
@@ -426,6 +434,7 @@ export function FormsPage({
                       <FieldGroup className="fd-form-titles">
                         <Field label={t("Tên biểu mẫu · tiếng Việt")}>
                           <Input
+                            disabled={codeInvalid}
                             value={draft.title.vi}
                             onChange={(event) =>
                               update({
@@ -440,6 +449,7 @@ export function FormsPage({
                         </Field>
                         <Field label={t("Tên biểu mẫu · tiếng Anh")}>
                           <Input
+                            disabled={codeInvalid}
                             value={draft.title.en}
                             onChange={(event) =>
                               update({
@@ -469,13 +479,10 @@ export function FormsPage({
                           revision: (previous?.revision ?? 0) + 1,
                         }));
                       }}
+                      compact={tab === "code"}
                       readOnly={codeInvalid}
                       onChange={(next) => {
                         update(next);
-                        setCodeText((current) =>
-                          reconcileFormCode(current, next),
-                        );
-                        setCodeDirty(false);
                       }}
                     />
                   </div>

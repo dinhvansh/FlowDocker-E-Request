@@ -73,3 +73,12 @@ it("patches visual edits without replacing unrelated source formatting", () => {
   expect(patched).toContain('    "title": {');
   expect(patched).toContain('"vi": "Amount changed"');
 });
+
+it("bounds deep authoring input and leaves default JSON keys as data", () => {
+  const next = structuredClone(form);
+  next.fields[0].children![0].defaultValue = { title: { custom: "data" } };
+  expect(analyzeFormCode(JSON.stringify(next), "test").definition).toBeTruthy();
+  const deep = '{"unknown":'.repeat(80) + "0" + "}".repeat(80);
+  expect(() => analyzeFormCode(deep, "test")).not.toThrow();
+  expect(analyzeFormCode(deep, "test").definition).toBeUndefined();
+});

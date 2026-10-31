@@ -102,3 +102,7 @@ The earlier UI-only Component Library is a **subset** of the new [FlowDocker App
 
 ## UX quality and extraction prerequisite
 Before any shared component is declared platform-ready, its parent screen must follow [5-stage UX/UI process](47-UX-RESEARCH-TO-DESIGN-TO-CODE.md), satisfy the [redesign brief](49-FLOWDOCKER-UI-REDESIGN-BRIEF.md), and pass interaction and accessibility prototype QA. Don't standardize an unreviewed generic dashboard template just because it contains reusable JSX. The UI/UX Pro Max source is an external reference; the project uses its own linked agent skill.
+
+
+## Forms Code Studio addition (2026-10-31)
+Implemented optional forms-domain code adapter, source reconciliation/selection helpers, AI context/reference and test-data preview in @flowdocker/form-builder 0.3.0. Hosts: E-Request plus independent synthetic forms example. Typed APIs, tokens, local interaction tests, standalone entry and browser evidence are recorded in docs/84-FORM-CODE-STUDIO-ACCEPTANCE.md. This proves frontend component reuse; no backend/authorization/production platform acceptance is implied.

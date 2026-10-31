@@ -119,7 +119,7 @@ fs.writeFileSync(
   JSON.stringify(
     {
       name: "@flowdocker/forms",
-      version: "0.2.0",
+      version: "0.3.0",
       type: "module",
       private: true,
       license: "UNLICENSED",
@@ -128,6 +128,7 @@ fs.writeFileSync(
       types: "./standalone.d.ts",
       exports: {
         ".": { types: "./standalone.d.ts", import: "./flowdocker-forms.js" },
+        "./code-studio": { types: "./code-studio.d.ts", import: "./code-studio.js" },
         "./styles.css": "./styles.css",
       },
       peerDependencies: { react: "^19.0.0", "react-dom": "^19.0.0" },
@@ -140,5 +141,5 @@ fs.writeFileSync(
 );
 fs.unlinkSync(path.join(output, "bundle-provenance.json"));
 process.stdout.write(
-  `Prepared @flowdocker/forms 0.2.0 with ${inventory.length} bundled license entries.\n`,
+  `Prepared @flowdocker/forms 0.3.0 with ${inventory.length} bundled license entries.\n`,
 );

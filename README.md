@@ -174,3 +174,7 @@ Form Studio's catalog uses responsive document tiles, illustrative field miniatu
 
 ### Navigation links
 Sidebar destinations, profile and workspace quick links use native anchors: right-click open in new tab, Ctrl/Meta-click and middle-click keep the current page. AppShell accepts optional `getPageHref(PageId)` for host routing (default `#page`); ordinary activation still uses `onPageChange`. Action buttons and local inspector tabs retain their existing behavior. See [navigation evidence](docs/78-NATIVE-NAVIGATION-LINKS.md).
+
+
+### Hybrid Form Code Studio
+Form Studio now supports live bidirectional visual/JSON authoring without replacing the existing designer. CodeMirror provides colors/completion/diagnostics; valid code updates the form immediately, invalid drafts retain the last valid canvas. Includes linked field selection, local JSON test values/results and AI-ready context copy/download. No AI service/backend is connected. Reusable Forms 0.3.0 includes an optional Code Studio entry. See [implementation and evidence](docs/84-FORM-CODE-STUDIO-ACCEPTANCE.md) and [slice plan](docs/58-FORM-CODE-STUDIO-PLAN.md).

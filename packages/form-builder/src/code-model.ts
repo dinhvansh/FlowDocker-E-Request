@@ -27,6 +27,17 @@ export interface CodeAnalysis {
   definition?: FormDefinition;
   problems: CodeProblem[];
 }
+function boundedTree(text: string, errors: ParseError[] = []) {
+  if (text.length > 1000000) return undefined;
+  try {
+    return parseTree(text, errors, {
+      disallowComments: true,
+      allowTrailingComma: false,
+    });
+  } catch {
+    return undefined;
+  }
+}
 
 /** Patch only changed JSON paths; retain unrelated whitespace and authored ordering. */
 export function reconcileFormCode(
@@ -244,7 +255,7 @@ export function codeCompletions(text: string, offset: number) {
 }
 export function fieldCodeRanges(text: string) {
   const ranges = new Map<string, { from: number; to: number }>();
-  const tree = parseTree(text);
+  const tree = boundedTree(text);
   const visit = (node: Node | undefined) => {
     for (const child of node?.children ?? []) {
       const id = findNodeAtLocation(child, ["id"]);
@@ -268,10 +279,7 @@ export function analyzeFormCode(text: string, formId: string): CodeAnalysis {
   if (text.length > 1000000)
     return { problems: [{ from: 0, to: 1, message: "Schema vượt quá 1 MB." }] };
   const errors: ParseError[] = [];
-  const tree = parseTree(text, errors, {
-    disallowComments: true,
-    allowTrailingComma: false,
-  });
+  const tree = boundedTree(text, errors);
   if (errors.length)
     return {
       problems: errors.map((e) => ({
@@ -286,7 +294,18 @@ export function analyzeFormCode(text: string, formId: string): CodeAnalysis {
       problems: [{ from: 0, to: 0, message: "Cấu trúc biểu mẫu chưa hợp lệ." }],
     };
   const problems: CodeProblem[] = [];
+  let visited = 0;
   const check = (node: Node, path: (string | number)[]) => {
+    if (++visited > 100000 || path.length > 30) {
+      if (!problems.length)
+        problems.push({
+          from: node.offset,
+          to: node.offset + 1,
+          message: "Dữ liệu biểu mẫu vượt giới hạn xử lý.",
+        });
+      return;
+    }
+    if (path.includes("defaultValue")) return;
     if (node.type === "object") {
       const keys = new Set<string>();
       for (const prop of node.children ?? []) {
@@ -354,7 +373,10 @@ export function analyzeFormCode(text: string, formId: string): CodeAnalysis {
 }
 
 /** Resolve the JSON node around the cursor for integrations without executing source. */
-export function codeNodeAt(text: string, offset: number) {
-  const tree = parseTree(text);
+export function codeNodeAt(
+  text: string,
+  offset: number,
+): { type: string; offset: number; length: number } | undefined {
+  const tree = boundedTree(text);
   return tree ? findNodeAtOffset(tree, offset, true) : undefined;
 }
