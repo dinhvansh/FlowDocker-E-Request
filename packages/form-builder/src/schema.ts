@@ -65,6 +65,8 @@ export interface Calculation {
   expression?: string;
   precision?: number;
 }
+export type ColumnAggregation =
+  "none" | "sum" | "average" | "min" | "max" | "count";
 export const creatorProfileLabels = {
   name: "Họ tên người tạo",
   email: "Email người tạo",
@@ -137,6 +139,7 @@ export interface FormField {
   requiredWhen?: FormRule;
   disabledWhen?: FormRule;
   calculation?: Calculation;
+  aggregation?: ColumnAggregation;
   children?: FormField[];
   columns?: 1 | 2 | 3;
   /** Hide the visual legend for a columns layout while keeping it accessible. */
@@ -323,6 +326,7 @@ const allowedKeys = new Set([
   "requiredWhen",
   "disabledWhen",
   "calculation",
+  "aggregation",
   "children",
   "columns",
   "minRows",
@@ -506,6 +510,13 @@ function fieldsShape(
             (!Number.isInteger(field.calculation.precision) ||
               Number(field.calculation.precision) < 0 ||
               Number(field.calculation.precision) > 8)))
+      )
+        return false;
+      if (
+        field.aggregation !== undefined &&
+        !["none", "sum", "average", "min", "max", "count"].includes(
+          String(field.aggregation),
+        )
       )
         return false;
       return true;

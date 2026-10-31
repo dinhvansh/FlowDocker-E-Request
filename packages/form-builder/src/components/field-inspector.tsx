@@ -25,6 +25,7 @@ import {
   type FormField,
   type FormFieldType,
   type FormIssue,
+  type ColumnAggregation,
 } from "../schema";
 
 export type InspectorSection =
@@ -194,6 +195,51 @@ export function FieldInspector({
             )}
           </FieldGroup>
           <p>{t("Chọn cột để sửa nhãn, kiểu dữ liệu và kiểm tra dữ liệu.")}</p>
+          <Field
+            label={t("Tổng hợp cột")}
+            hint={t("Chọn cách hiển thị kết quả ở cuối bảng.")}
+          >
+            <div className="fd-repeat-aggregation-list">
+              {(field.children ?? []).map((child) => {
+                const numeric = ["number", "currency"].includes(child.type);
+                const options = [
+                  { value: "none", label: t("Không tổng hợp") },
+                  ...(numeric
+                    ? [
+                        { value: "sum", label: t("Tổng") },
+                        { value: "average", label: t("Trung bình") },
+                        { value: "min", label: t("Nhỏ nhất") },
+                        { value: "max", label: t("Lớn nhất") },
+                      ]
+                    : []),
+                  { value: "count", label: t("Đếm") },
+                ];
+                return (
+                  <div className="fd-repeat-aggregation-row" key={child.id}>
+                    <span>{child.label[locale]}</span>
+                    <Select
+                      label={`${t("Tổng hợp cột")} · ${child.label[locale]}`}
+                      value={child.aggregation ?? "none"}
+                      disabled={readOnly}
+                      options={options}
+                      onValueChange={(value) =>
+                        patch({
+                          children: (field.children ?? []).map((item) =>
+                            item.id === child.id
+                              ? {
+                                  ...item,
+                                  aggregation: value as ColumnAggregation,
+                                }
+                              : item,
+                          ),
+                        })
+                      }
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </Field>
           {(field.children ?? []).map((child, index, children) => (
             <div className="fd-repeat-column-setting" key={child.id}>
               <Button

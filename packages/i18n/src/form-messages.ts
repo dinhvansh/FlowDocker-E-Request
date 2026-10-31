@@ -159,6 +159,15 @@ export const formMessages = {
   "Kết quả thử": "Preview result",
   "Không thể tính với dữ liệu thử": "Could not calculate with sample data",
   "Ví dụ: amount * exchange_rate": "Example: amount * exchange_rate",
+  "Tổng hợp cột": "Column summary",
+  "Chọn cách hiển thị kết quả ở cuối bảng.":
+    "Choose how the result appears at the bottom of the table.",
+  "Không tổng hợp": "No summary",
+  Tổng: "Total",
+  "Trung bình": "Average",
+  "Nhỏ nhất": "Minimum",
+  "Lớn nhất": "Maximum",
+  Đếm: "Count",
   "Chọn trường": "Choose a field",
   "Chọn trường số hoặc tiền tệ; có thể thêm nhiều trường.":
     "Choose number or currency fields; you can add multiple fields.",

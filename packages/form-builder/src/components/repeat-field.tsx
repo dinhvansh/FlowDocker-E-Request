@@ -1,4 +1,5 @@
 import { useRef, type FocusEvent, type ReactNode } from "react";
+import Decimal from "decimal.js";
 import { useI18n } from "@flowdocker/i18n";
 import { Trash2 } from "lucide-react";
 import { Button } from "@flowdocker/ui";
@@ -84,6 +85,35 @@ export function RepeatField({
           "hidden",
         ].includes(child.type),
     );
+  const aggregates = children.map((child) => {
+    const mode = child.aggregation ?? "none";
+    if (mode === "none") return null;
+    const values = rows
+      .map((row) => row[child.key])
+      .filter((value) => value !== undefined && value !== null && value !== "");
+    if (mode === "count") return String(values.length);
+    const numbers = values
+      .map((value) => {
+        try {
+          return new Decimal(String(value));
+        } catch {
+          return null;
+        }
+      })
+      .filter((value): value is Decimal => value !== null);
+    if (!numbers.length) return "0.00";
+    const total =
+      mode === "sum"
+        ? numbers.reduce((a, b) => a.add(b), new Decimal(0))
+        : mode === "average"
+          ? numbers
+              .reduce((a, b) => a.add(b), new Decimal(0))
+              .div(numbers.length)
+          : mode === "min"
+            ? Decimal.min(...numbers)
+            : Decimal.max(...numbers);
+    return total.toFixed(2);
+  });
   const update = (index: number, next: PreviewValues) =>
     onChange(
       design
@@ -159,6 +189,19 @@ export function RepeatField({
                 </tr>
               ))}
             </tbody>
+            {aggregates.some((value) => value !== null) && (
+              <tfoot>
+                <tr className="fd-repeat-total-row">
+                  <th scope="row">{t("Tổng")}</th>
+                  {children.map((child, index) => (
+                    <td key={child.id}>
+                      {aggregates[index] !== null ? aggregates[index] : ""}
+                    </td>
+                  ))}
+                  {!design && <td />}
+                </tr>
+              </tfoot>
+            )}
           </table>
         </div>
       ) : (
