@@ -289,12 +289,15 @@ export function AdvancedProperties({
       !formulaQuery ||
       suggestion.value.toLowerCase().includes(formulaQuery.toLowerCase()),
   );
-  const insertFormulaSuggestion = (value: string) => {
+  const insertFormulaSuggestion = (
+    value: string,
+    sourceExpression = field.calculation?.expression ?? "",
+  ) => {
     setFormulaResult(null);
-    const expression = field.calculation?.expression ?? "";
-    const base = formulaQuery
-      ? expression.slice(0, expression.length - formulaQuery.length)
-      : expression;
+    const query = sourceExpression.match(/[A-Za-z_][A-Za-z0-9_.]*$/)?.[0] ?? "";
+    const base = query
+      ? sourceExpression.slice(0, sourceExpression.length - query.length)
+      : sourceExpression;
     patch({
       calculation: {
         ...field.calculation!,
@@ -758,10 +761,19 @@ export function AdvancedProperties({
                         window.setTimeout(() => setFormulaFocused(false), 120)
                       }
                       onKeyDown={(event) => {
-                        if (
-                          !formulaFocused ||
-                          !filteredFormulaSuggestions.length
-                        )
+                        const currentExpression = event.currentTarget.value;
+                        const currentQuery =
+                          currentExpression.match(
+                            /[A-Za-z_][A-Za-z0-9_.]*$/,
+                          )?.[0] ?? "";
+                        const currentSuggestions = formulaSuggestions.filter(
+                          (suggestion) =>
+                            !currentQuery ||
+                            suggestion.value
+                              .toLowerCase()
+                              .includes(currentQuery.toLowerCase()),
+                        );
+                        if (!formulaFocused || !currentSuggestions.length)
                           return;
                         if (
                           event.key === "ArrowDown" ||
@@ -770,18 +782,17 @@ export function AdvancedProperties({
                           event.preventDefault();
                           setFormulaSuggestionIndex((index) =>
                             event.key === "ArrowDown"
-                              ? (index + 1) % filteredFormulaSuggestions.length
-                              : (index -
-                                  1 +
-                                  filteredFormulaSuggestions.length) %
-                                filteredFormulaSuggestions.length,
+                              ? (index + 1) % currentSuggestions.length
+                              : (index - 1 + currentSuggestions.length) %
+                                currentSuggestions.length,
                           );
                         }
                         if (event.key === "Tab" || event.key === "Enter") {
                           event.preventDefault();
                           insertFormulaSuggestion(
-                            filteredFormulaSuggestions[formulaSuggestionIndex]
-                              ?.value ?? filteredFormulaSuggestions[0].value,
+                            currentSuggestions[formulaSuggestionIndex]?.value ??
+                              currentSuggestions[0].value,
+                            currentExpression,
                           );
                         }
                       }}
