@@ -161,6 +161,16 @@ export const formMessages = {
   "Ví dụ: amount * exchange_rate": "Example: amount * exchange_rate",
   "Tổng hợp cột": "Column summary",
   "Tiền tệ mặc định": "Default currency",
+  "Code Studio": "Code Studio",
+  "Kéo thả và code đồng bộ hai chiều. Mã hợp lệ cập nhật ngay; khi mã lỗi, canvas giữ bản hợp lệ gần nhất.":
+    "Visual editing and code sync both ways. Valid code updates immediately; the canvas keeps the last valid version when code has errors.",
+  "Schema biểu mẫu · Code Studio": "Form schema · Code Studio",
+  "Code Studio là lớp bổ sung cho kéo thả. Mã hợp lệ có thể cập nhật lại canvas; mã đang gõ chưa làm thay đổi biểu mẫu.":
+    "Code Studio complements drag and drop. Valid code can update the canvas; code while typing does not change the form.",
+  "Đồng bộ từ giao diện": "Sync from visual editor",
+  "Áp dụng vào canvas": "Apply to canvas",
+  "Đã cập nhật biểu mẫu từ Code Studio.":
+    "The form was updated from Code Studio.",
   "Chọn cách hiển thị kết quả ở cuối bảng.":
     "Choose how the result appears at the bottom of the table.",
   "Không tổng hợp": "No summary",

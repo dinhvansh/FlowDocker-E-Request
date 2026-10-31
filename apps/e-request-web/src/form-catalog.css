@@ -26,6 +26,21 @@
 .fd-forms-v2[data-view="catalog"] .fd-form-workbench {
   background: transparent;
 }
+
+.fd-code-studio {
+  gap: 12px;
+}
+
+.fd-code-editor {
+  min-height: 520px;
+  border-color: color-mix(in srgb, var(--fd-color-brand) 45%, var(--fd-border));
+  background: color-mix(in srgb, var(--fd-brand-soft) 28%, var(--fd-surface));
+  color: var(--fd-text-primary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  line-height: 18px;
+  tab-size: 2;
+}
 .fd-forms-v2.fd-forms-focused[data-view="catalog"]
   .fd-form-workbench[data-catalog="true"]
   > .fd-form-catalog {

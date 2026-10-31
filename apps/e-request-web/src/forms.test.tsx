@@ -164,3 +164,41 @@ describe("Form Studio host journeys", () => {
     expect(screen.getByRole("button", { name: /Mẫu đã chỉnh/ })).toBeTruthy();
   });
 });
+
+it("syncs code edits to canvas and retains the last valid form on invalid JSON", () => {
+  render(
+    <I18nProvider>
+      <FormsPage />
+    </I18nProvider>,
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: /Đề nghị mua sắm · mẫu/ }),
+  );
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Code Studio" }), {
+    button: 0,
+    ctrlKey: false,
+  });
+  const editor = screen.getByRole("textbox", {
+    name: "Schema biểu mẫu · Code Studio",
+  }) as HTMLTextAreaElement;
+  const schema = JSON.parse(editor.value);
+  schema.title.vi = "Code sync test";
+  fireEvent.change(editor, { target: { value: JSON.stringify(schema) } });
+  expect(
+    screen.getByRole("heading", { name: "Code sync test", level: 1 }),
+  ).toBeTruthy();
+  fireEvent.change(editor, { target: { value: "{" } });
+  expect(
+    screen.getByRole("heading", { name: "Code sync test", level: 1 }),
+  ).toBeTruthy();
+  expect(editor.value).toBe("{");
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Thiết kế trường" }), {
+    button: 0,
+    ctrlKey: false,
+  });
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Code Studio" }), {
+    button: 0,
+    ctrlKey: false,
+  });
+  expect(editor.value).toBe("{");
+});

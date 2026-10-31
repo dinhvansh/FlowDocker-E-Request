@@ -22,6 +22,7 @@ import {
   type DataProvider,
   type FormDataSource,
   exportFormDefinition,
+  importFormDefinition,
   validateFormDefinition,
   type FormDefinition,
   type PreviewValues,
@@ -149,6 +150,8 @@ export function FormsPage({
   const [titlesOpen, setTitlesOpen] = useState(false);
   const [jsonError, setJsonError] = useState("");
   const [jsonText, setJsonText] = useState("");
+  const [codeText, setCodeText] = useState("");
+  const [codeDirty, setCodeDirty] = useState(false);
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState("schema");
   const [values, setValues] = useState<PreviewValues>({});
@@ -174,12 +177,18 @@ export function FormsPage({
     return () => window.removeEventListener("beforeunload", protectDraft);
   }, [dirty]);
   const issues = draft ? validateFormDefinition(draft) : [];
+  useEffect(() => {
+    if (!draft || tab !== "code" || codeDirty) return;
+    setCodeText(JSON.stringify(draft, null, 2));
+  }, [draft, tab, codeDirty]);
   const activate = (next: FormDefinition) => {
     setCatalogOpen(false);
     setTitlesOpen(false);
     setActionsOpen(false);
     setDraft(next);
     setTab("schema");
+    setCodeDirty(false);
+    setCodeText("");
     setValues({});
     setShowIssues(false);
     setMessage("");
@@ -328,11 +337,16 @@ export function FormsPage({
                       setJsonText(JSON.stringify(draft, null, 2));
                     }
                   }
+                  if (next === "code" && draft) {
+                    if (!codeDirty) setCodeText(JSON.stringify(draft, null, 2));
+                    setJsonError("");
+                  }
                 }}
                 tabs={[
                   { id: "schema", label: t("Thiết kế trường") },
                   { id: "preview", label: t("Xem thử biểu mẫu") },
                   { id: "logic", label: t("Điều kiện và tính toán") },
+                  { id: "code", label: t("Code Studio") },
                   { id: "json", label: t("Schema JSON") },
                 ]}
               />
@@ -416,6 +430,55 @@ export function FormsPage({
                   <Field label={t("Nội dung schema JSON")}>
                     <Textarea rows={24} readOnly value={jsonText} />
                   </Field>
+                </FieldGroup>
+              )}
+              {tab === "code" && (
+                <FieldGroup className="fd-code-studio">
+                  <Notice>
+                    {t(
+                      "Kéo thả và code đồng bộ hai chiều. Mã hợp lệ cập nhật ngay; khi mã lỗi, canvas giữ bản hợp lệ gần nhất.",
+                    )}
+                  </Notice>
+                  {jsonError && <Notice tone="danger">{t(jsonError)}</Notice>}
+                  <Field label={t("Schema biểu mẫu · Code Studio")}>
+                    <Textarea
+                      className="fd-code-editor"
+                      aria-label={t("Schema biểu mẫu · Code Studio")}
+                      rows={28}
+                      spellCheck={false}
+                      value={codeText}
+                      onChange={(event) => {
+                        setCodeText(event.target.value);
+                        setCodeDirty(true);
+                        try {
+                          const imported = importFormDefinition(
+                            event.target.value,
+                          );
+                          if (imported.id !== draft.id)
+                            throw new Error("identity");
+                          update(imported);
+                          setJsonError("");
+                        } catch {
+                          setJsonError(
+                            "Schema không hợp lệ hoặc có thuộc tính không được hỗ trợ.",
+                          );
+                        }
+                      }}
+                    />
+                  </Field>
+                  <FormDesigner
+                    runtimeContext={demoFormRuntimeContext}
+                    dataSources={availableSources}
+                    providers={providers}
+                    key={draft.id}
+                    definition={draft}
+                    onChange={(next) => {
+                      update(next);
+                      setCodeText(JSON.stringify(next, null, 2));
+                      setCodeDirty(false);
+                      setJsonError("");
+                    }}
+                  />
                 </FieldGroup>
               )}
             </>
