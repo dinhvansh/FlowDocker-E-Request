@@ -92,6 +92,12 @@ export function isBoundedJson(value: unknown): value is Json {
     if (typeof item === "string") return item.length <= maxLength;
     if (typeof item === "number") return Number.isFinite(item);
     if (typeof item !== "object" || seen.has(item)) return false;
+    if (Object.getOwnPropertySymbols(item).length) return false;
+    if (
+      Array.isArray(item) &&
+      (item.length > budget || Object.keys(item).length !== item.length)
+    )
+      return false;
     if (
       !Array.isArray(item) &&
       Object.getPrototypeOf(item) !== Object.prototype &&
@@ -104,6 +110,8 @@ export function isBoundedJson(value: unknown): value is Json {
       ([key, descriptor]) =>
         (Array.isArray(item) && key === "length") ||
         (!forbiddenKeys.has(key) &&
+          descriptor.enumerable === true &&
+          (!Array.isArray(item) || /^(0|[1-9][0-9]*)$/.test(key)) &&
           "value" in descriptor &&
           visit(descriptor.value, depth + 1)),
     );

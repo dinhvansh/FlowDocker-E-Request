@@ -203,6 +203,8 @@ describe("shared MCP foundation (not server authorization)", () => {
       new Date(),
       NaN,
       undefined,
+      new Array(100_000_000),
+      { [Symbol("private")]: "secret" },
       { fn: () => 1 },
       JSON.parse('{"__proto__":{}}'),
       Object.defineProperty({}, "private", { get: getter }),
