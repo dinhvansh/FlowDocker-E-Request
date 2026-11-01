@@ -1,4 +1,5 @@
 export const formMessages = {
+  "Hoàn tác khoảng cách": "Undo spacing",
   "{{value}} px": "{{value}} px",
   "Khoảng cách": "Spacing",
   "Kiểu khoảng cách": "Spacing preset",

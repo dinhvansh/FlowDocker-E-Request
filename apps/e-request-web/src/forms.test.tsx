@@ -167,6 +167,36 @@ describe("Form Studio host journeys", () => {
   });
 });
 
+it("edits spacing directly in preview, undoes a gesture and persists metadata", () => {
+  render(
+    <I18nProvider>
+      <FormsPage />
+    </I18nProvider>,
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: /Đề nghị mua sắm · mẫu/ }),
+  );
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Xem thử biểu mẫu" }), {
+    button: 0,
+    ctrlKey: false,
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Khoảng cách" }));
+  const slider = screen.getByRole("slider", { name: "Giữa các hàng" });
+  fireEvent.pointerDown(slider);
+  fireEvent.change(slider, { target: { value: "8" } });
+  fireEvent.change(slider, { target: { value: "10" } });
+  fireEvent.pointerUp(slider);
+  const preview = document.querySelector<HTMLElement>(".fd-form-preview")!;
+  expect(preview.style.getPropertyValue("--fd-form-row-gap")).toBe("10px");
+  fireEvent.click(screen.getByRole("button", { name: "Hoàn tác khoảng cách" }));
+  expect(preview.hasAttribute("data-form-spacing")).toBe(false);
+  fireEvent.change(slider, { target: { value: "9" } });
+  fireEvent.click(screen.getByRole("button", { name: "Lưu bản nháp" }));
+  expect(
+    JSON.parse(localStorage.getItem(formDraftStorageKey)!)[0].spacing.rowGap,
+  ).toBe(9);
+});
+
 it("syncs code edits to canvas and retains the last valid form on invalid JSON", async () => {
   render(
     <I18nProvider>

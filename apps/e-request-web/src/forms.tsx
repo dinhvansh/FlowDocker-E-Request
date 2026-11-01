@@ -21,12 +21,14 @@ import { ArrowLeft, MoreHorizontal, Plus, Save } from "lucide-react";
 import {
   FormDesigner,
   FormPreview,
+  FormSpacingEditor,
   FormTestPreview,
   type DataProvider,
   type FormDataSource,
   exportFormDefinition,
   validateFormDefinition,
   type FormDefinition,
+  type FormSpacing,
   type PreviewValues,
 } from "@flowdocker/form-builder";
 import {
@@ -200,7 +202,11 @@ export function FormsPage({
     if (!draft || tab !== "code" || codeDirty) return;
     setCodeText((current) => reconcileFormCode(current, draft));
   }, [draft, tab, codeDirty]);
+  const [previewSpacingPast, setPreviewSpacingPast] = useState<
+    (FormSpacing | undefined)[]
+  >([]);
   const activate = (next: FormDefinition) => {
+    setPreviewSpacingPast([]);
     setCatalogOpen(false);
     setTitlesOpen(false);
     setActionsOpen(false);
@@ -499,7 +505,7 @@ export function FormsPage({
               </div>
               {tab === "preview" && (
                 <div className="fd-preview-workspace">
-                  <div className="fd-toolbar-actions">
+                  <div className="fd-toolbar-actions fd-preview-controls">
                     <Button
                       aria-pressed={previewDevice === "desktop"}
                       onClick={() => setPreviewDevice("desktop")}
@@ -511,6 +517,31 @@ export function FormsPage({
                       onClick={() => setPreviewDevice("mobile")}
                     >
                       {t("Điện thoại")}
+                    </Button>
+                    <FormSpacingEditor
+                      value={draft.spacing}
+                      disabled={codeInvalid}
+                      onChange={(spacing, recordHistory) => {
+                        if (recordHistory)
+                          setPreviewSpacingPast((past) => [
+                            ...past.slice(-99),
+                            draft.spacing,
+                          ]);
+                        update({ ...draft, spacing });
+                      }}
+                    />
+                    <Button
+                      disabled={!previewSpacingPast.length}
+                      onClick={() => {
+                        update({
+                          ...draft,
+                          spacing:
+                            previewSpacingPast[previewSpacingPast.length - 1],
+                        });
+                        setPreviewSpacingPast((past) => past.slice(0, -1));
+                      }}
+                    >
+                      {t("Hoàn tác khoảng cách")}
                     </Button>
                   </div>
                   <div

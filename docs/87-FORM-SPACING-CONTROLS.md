@@ -31,3 +31,11 @@ The running designer is the interactive harness; see verification notes appended
 - Public `@flowdocker/ui` Popover exports reuse existing Radix primitives: outside click/Escape, focus restoration, collision handling and theme-scoped portal. No added dependency.
 
 Usage: open a form → Field designer → **Spacing / Khoảng cách**, beside the currency selector. Choose Compact or drag a range, then save the draft. Settings are optional bounded form metadata; no migration or engine rewrite.
+
+## Preview access correction — 2026-11-01
+
+Owner feedback: the control was hard to find because it appeared only in Field designer while the owner was viewing Form preview. The host now reuses the same editor beside Desktop/Mobile in Preview. Its toolbar stays visible when scrolling. Preview provides grouped Undo spacing (one checkpoint per drag); save uses the existing draft action. No additional schema, storage, engine or backend changes.
+
+Usage: open a form → **Form preview / Xem thử biểu mẫu → Spacing / Khoảng cách** → Compact or drag a slider → Save draft. The original Designer entry remains available.
+
+Verification for this correction: 18 affected tests in forms.test.tsx and spacing.test.tsx PASS; typecheck, lint and application build PASS. Browser QA covers real pointer dragging, grouped undo, saving, sticky positioning while scrolled, VI/light desktop and EN/dark desktop/mobile. Screenshots and script: output/playwright/preview-spacing-access-*. The browser uses synthetic local templates and restores its original preferences/storage; owner acceptance remains pending.

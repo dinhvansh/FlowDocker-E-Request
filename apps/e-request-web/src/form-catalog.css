@@ -1,4 +1,14 @@
 /* Host catalog presentation. Deliberately scoped away from the form designer. */
+.fd-preview-controls {
+  position: sticky;
+  top: 8px;
+  z-index: 5;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0;
+  background: var(--fd-surface-raised);
+  border-bottom: 1px solid var(--fd-border);
+}
 .fd-forms-v2[data-view="catalog"] {
   background: var(--fd-surface-canvas);
 }
