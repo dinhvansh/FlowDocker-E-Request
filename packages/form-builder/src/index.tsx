@@ -1,4 +1,7 @@
 export * from "./schema";
+export { spacingStyle, compactSpacing, standardSpacing } from "./spacing";
+export { FormSpacingEditor } from "./components/form-spacing-editor";
+export type { FormSpacingEditorProps } from "./components/form-spacing-editor";
 export * from "./engine";
 export { fieldConfiguration } from "./field-configuration";
 export type {

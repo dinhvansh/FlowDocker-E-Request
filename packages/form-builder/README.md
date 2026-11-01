@@ -2,6 +2,27 @@
 
 Original React form designer and renderer, extracted from E-Request. Vietnamese/English, shadcn/Radix, light/dark. Workspace source: @flowdocker/form-builder; portable package: @flowdocker/forms. No Form.io source is bundled. Not a drop-in Form.io schema adapter.
 
+## Per-form spacing
+
+In the designer toolbar, open **Spacing / Khoảng cách**. Choose Compact or Standard,
+or drag the four ranges for row gap (0–48px), column gap (0–64px), section gap
+(0–64px), and section padding (0–40px). Arrow keys allow precise adjustment.
+One pointer drag creates one undo checkpoint. Presets/reset also support undo.
+
+The optional `FormDefinition.spacing` object stores all four integer values:
+
+```json
+{ "spacing": { "rowGap": 8, "columnGap": 12, "sectionGap": 16, "sectionPadding": 12 } }
+```
+
+It stays synchronized with Code Studio and is reused by FormCanvas and FormRenderer.
+Existing schemas without spacing retain their previous rendering. Inspector density,
+control heights, fonts and repeating-table cell padding are separate concerns.
+Public exports: `FormSpacing`, `FormSpacingEditor`, `FormSpacingEditorProps`,
+`spacingStyle`, `standardSpacing`, `compactSpacing`. The editor's `onChange` second
+argument requests a history checkpoint; subsequent updates within a gesture are live
+updates until pointer/key release or blur.
+
 ## Install and use
 
 Requires React/React DOM 19 (tested 19.2.0). Install: `npm install ./flowdocker-forms-0.2.0.tgz`.

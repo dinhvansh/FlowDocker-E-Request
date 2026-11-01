@@ -180,9 +180,14 @@ it("syncs code edits to canvas and retains the last valid form on invalid JSON",
     button: 0,
     ctrlKey: false,
   });
-  const editor = await screen.findByRole("textbox", {
-    name: "Schema biểu mẫu · Code Studio",
-  });
+  // Code Studio is a lazy chunk; allow its actual cold import to finish on CI.
+  const editor = await screen.findByRole(
+    "textbox",
+    {
+      name: "Schema biểu mẫu · Code Studio",
+    },
+    { timeout: 10000 },
+  );
   const view = EditorView.findFromDOM(editor.closest(".cm-editor")!)!;
   const edit = (value: string) =>
     act(() =>

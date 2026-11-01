@@ -17,6 +17,11 @@ export { PeoplePicker } from "./people-picker";
 export type { PeoplePickerProps } from "./people-picker";
 export type { ComboboxProps, ComboboxOption } from "./combobox";
 export { Input } from "./components/ui/input";
+export {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "./components/ui/popover";
 export { CurrencyInput } from "./currency-input";
 export type { CurrencyInputProps } from "./currency-input";
 export { Textarea } from "./components/ui/textarea";

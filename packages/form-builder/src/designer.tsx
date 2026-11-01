@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useI18n } from "@flowdocker/i18n";
+import { FormSpacingEditor } from "./components/form-spacing-editor";
 import {
   DndContext,
   DragOverlay,
@@ -616,6 +617,16 @@ export function FormDesigner({
             { value: "CNY", label: "CNY · Nhân dân tệ" },
           ]}
           onValueChange={(currency) => commit({ ...definition, currency })}
+        />
+        <FormSpacingEditor
+          value={definition.spacing}
+          disabled={readOnly}
+          onChange={(spacing, recordHistory) => {
+            if (readOnly) return;
+            const next = { ...definition, spacing, schemaVersion: 2 as const };
+            if (recordHistory) commit(next);
+            else onChange(next);
+          }}
         />
         <details className="fd-designer-tools">
           <summary>

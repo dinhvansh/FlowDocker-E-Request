@@ -158,6 +158,12 @@ export const formAuthoringSchema = {
     display: enumOf("form", "wizard"),
     orientation: enumOf("portrait", "landscape"),
     currency: { type: "string", pattern: "^[A-Z]{3}$" },
+    spacing: object(["rowGap", "columnGap", "sectionGap", "sectionPadding"], {
+      rowGap: { type: "integer", minimum: 0, maximum: 48 },
+      columnGap: { type: "integer", minimum: 0, maximum: 64 },
+      sectionGap: { type: "integer", minimum: 0, maximum: 64 },
+      sectionPadding: { type: "integer", minimum: 0, maximum: 40 },
+    }),
   }),
   $defs: {
     Text: text,

@@ -1,4 +1,5 @@
 import { useChoices } from "./use-choices";
+import { spacingStyle } from "./spacing";
 import { RepeatField } from "./components/repeat-field";
 import {
   useEffect,
@@ -547,6 +548,7 @@ function RuntimeField({
         id={id}
         className="fd-runtime-section"
         data-field-type={field.type}
+        data-spacing-section={field.type === "section" || undefined}
       >
         <FieldLegend
           className={
@@ -638,7 +640,7 @@ function RuntimeField({
             className={
               field.type === "columns"
                 ? `fd-runtime-columns fd-runtime-columns-${field.columns ?? 2}`
-                : ""
+                : "fd-runtime-stack"
             }
           >
             <RuntimeFields {...nextProps} fields={children} />
@@ -1027,6 +1029,8 @@ export function FormRenderer({
   return (
     <div
       className="fd-form-preview"
+      data-form-spacing={definition.spacing ? "custom" : undefined}
+      style={spacingStyle(definition.spacing)}
       data-orientation={definition.orientation ?? "portrait"}
     >
       <h2>{definition.title[locale]}</h2>

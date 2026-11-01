@@ -1,4 +1,15 @@
 export const formMessages = {
+  "{{value}} px": "{{value}} px",
+  "Khoảng cách": "Spacing",
+  "Kiểu khoảng cách": "Spacing preset",
+  Gọn: "Compact",
+  "Tiêu chuẩn": "Standard",
+  "Tùy chỉnh": "Custom",
+  "Giữa các hàng": "Between rows",
+  "Giữa các cột": "Between columns",
+  "Giữa các nhóm": "Between sections",
+  "Lề trong nhóm": "Section padding",
+  "Đặt lại khoảng cách": "Reset spacing",
   "Chọn biểu mẫu để chỉnh sửa hoặc tạo biểu mẫu mới.":
     "Choose a form to edit or create a new one.",
   "Mở mẫu chi phí theo PDF": "Open PDF expense template",

@@ -162,6 +162,12 @@ export interface FormField {
   buttonAction?: "submit" | "reset";
   tone?: "info" | "warning" | "danger" | "success";
 }
+export interface FormSpacing {
+  rowGap: number;
+  columnGap: number;
+  sectionGap: number;
+  sectionPadding: number;
+}
 export interface FormDefinition {
   id: string;
   title: BilingualText;
@@ -173,6 +179,8 @@ export interface FormDefinition {
   orientation?: "portrait" | "landscape";
   /** Currency used by currency fields that do not override it locally. */
   currency?: string;
+  /** Optional per-form layout, in integer CSS pixels. */
+  spacing?: FormSpacing;
 }
 export interface FormIssue {
   fieldId?: string;
@@ -539,6 +547,7 @@ export function isFormDefinition(value: unknown): value is FormDefinition {
         "display",
         "orientation",
         "currency",
+        "spacing",
       ].includes(key),
     ) &&
     typeof value.id === "string" &&
@@ -555,7 +564,26 @@ export function isFormDefinition(value: unknown): value is FormDefinition {
       ["portrait", "landscape"].includes(String(value.orientation))) &&
     (value.currency === undefined ||
       /^[A-Z]{3}$/.test(String(value.currency))) &&
+    (value.spacing === undefined || validFormSpacing(value.spacing)) &&
     fieldsShape(value.fields)
+  );
+}
+export function validFormSpacing(value: unknown): value is FormSpacing {
+  if (!isObject(value)) return false;
+  const bounds = {
+    rowGap: 48,
+    columnGap: 64,
+    sectionGap: 64,
+    sectionPadding: 40,
+  };
+  return (
+    Object.keys(value).length === 4 &&
+    Object.entries(bounds).every(
+      ([key, max]) =>
+        Number.isInteger(value[key]) &&
+        Number(value[key]) >= 0 &&
+        Number(value[key]) <= max,
+    )
   );
 }
 export function validateFormDefinition(form: FormDefinition): FormIssue[] {

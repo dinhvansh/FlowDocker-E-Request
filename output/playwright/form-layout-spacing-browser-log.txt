@@ -1,0 +1,184 @@
+### Result
+{"status":"PASS","metrics":{"padding":"12px","rowGap":"9px","columnGap":"28px"}}
+### Ran Playwright code
+```js
+await (/* eslint-disable @typescript-eslint/no-unused-expressions -- Playwright CLI entry. */
+async (page) => {
+  const accept = dialog => dialog.accept(); page.on("dialog", accept);
+  const keys = [
+    "flowdocker.form-drafts.v1",
+    "flowdocker.locale",
+    "flowdocker.theme",
+  ];
+  const saved = await page.evaluate(
+    (keys) => keys.map((k) => localStorage.getItem(k)),
+    keys,
+  );
+  const check = (ok, message) => {
+    if (!ok) throw new Error(message);
+  };
+  const openForm = async (name) => {
+    await page.getByRole("button", { name, exact: true }).click();
+  };
+  try {
+    await page.evaluate(() => {
+      localStorage.setItem("flowdocker.locale", "vi");
+      localStorage.setItem("flowdocker.theme", "light");
+    });
+    await page.evaluate(() => window.addEventListener("beforeunload", e => e.stopImmediatePropagation(), {capture:true,once:true})); await page.reload();
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openForm("Đề nghị thanh toán · mẫu chi phí VND");
+    await page
+      .getByRole("button", { name: "Khoảng cách", exact: true })
+      .click();
+    await page
+      .getByRole("combobox", { name: "Kiểu khoảng cách", exact: true })
+      .click();
+    await page.getByRole("option", { name: "Gọn", exact: true }).click();
+    const row = page.getByRole("slider", {
+      name: "Giữa các hàng",
+      exact: true,
+    });
+    check((await row.inputValue()) === "8", "Compact preset");
+    const surface = page.locator(".fd-live-form");
+    check(
+      (await surface.evaluate((el) =>
+        getComputedStyle(el).getPropertyValue("--fd-form-row-gap").trim(),
+      )) === "8px",
+      "Canvas spacing",
+    );
+    const box = await row.boundingBox();
+    check(!!box, "Slider geometry");
+    await page.mouse.move(box.x + box.width * 0.2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width * 0.7, box.y + box.height / 2, {
+      steps: 8,
+    });
+    await page.mouse.up();
+    check((await row.inputValue()) !== "8", "Pointer drag changed spacing");
+    await page.keyboard.press("Escape");
+    await page.getByRole("button", { name: "Hoàn tác", exact: true }).click();
+    check(
+      (await surface.evaluate((el) =>
+        el.style.getPropertyValue("--fd-form-row-gap"),
+      )) === "8px",
+      "One undo restores entire drag",
+    );
+    await page
+      .getByRole("button", { name: "Khoảng cách", exact: true })
+      .click();
+    await row.focus();
+    await page.keyboard.press("ArrowRight");
+    check((await row.inputValue()) === "9", "Keyboard range");
+    await page.screenshot({
+      path: "output/playwright/form-spacing-controls-light.png",
+      fullPage: true,
+    });
+    await page.keyboard.press("Escape");
+    await page.getByRole("button", {name:"Lưu bản nháp",exact:true}).click();
+    await page.getByRole("tab", { name: "Code Studio", exact: true }).click();
+    const editor = page.getByRole("textbox", {
+      name: "Schema biểu mẫu · Code Studio",
+      exact: true,
+    });
+    let code = await page.evaluate(()=>JSON.parse(localStorage.getItem("flowdocker.form-drafts.v1")).find(form=>form.title.vi==="Đề nghị thanh toán · mẫu chi phí VND"));
+    await editor.press("ControlOrMeta+End");
+    check((await editor.textContent()).includes("rowGap"),"Spacing appears in live code");
+    check(code.spacing.rowGap === 9, "Visual to code");
+    code.spacing.columnGap = 28;
+    await editor.click();await editor.press("ControlOrMeta+A");await page.keyboard.insertText(JSON.stringify(code,null,2));
+    await page
+      .getByRole("tab", { name: "Thiết kế trường", exact: true })
+      .click();
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector(".fd-live-form")
+          ?.style.getPropertyValue("--fd-form-column-gap") === "28px",
+    );
+    await page
+      .getByRole("button", { name: "Lưu bản nháp", exact: true })
+      .click();
+    await page.evaluate(() => window.addEventListener("beforeunload", e => e.stopImmediatePropagation(), {capture:true,once:true})); await page.reload();
+    await openForm("Đề nghị thanh toán · mẫu chi phí VND");
+    check(
+      (await surface.evaluate((el) =>
+        el.style.getPropertyValue("--fd-form-column-gap"),
+      )) === "28px",
+      "Save/reload",
+    );
+    await page
+      .getByRole("tab", { name: "Xem thử biểu mẫu", exact: true })
+      .click();
+    const preview = page.locator(".fd-form-preview");
+    await preview.waitFor();
+    check(
+      (await preview.evaluate((el) =>
+        el.style.getPropertyValue("--fd-form-row-gap"),
+      )) === "9px",
+      "Runtime preview",
+    );
+    const metrics = await preview.evaluate((el) => ({
+      padding: getComputedStyle(el.querySelector(".fd-runtime-section"))
+        .padding,
+      rowGap: getComputedStyle(el.querySelector(".fd-runtime-columns")).rowGap,
+      columnGap: getComputedStyle(el.querySelector(".fd-runtime-columns"))
+        .columnGap,
+    }));
+    check(
+      metrics.padding === "12px" &&
+        metrics.rowGap === "9px" &&
+        metrics.columnGap === "28px",
+      "Scoped runtime styles " + JSON.stringify(metrics),
+    );
+    await page.screenshot({
+      path: "output/playwright/form-spacing-preview-light.png",
+      fullPage: true,
+    });
+    await page.evaluate(() => {
+      localStorage.setItem("flowdocker.locale", "en");
+      localStorage.setItem("flowdocker.theme", "dark");
+    });
+    await page.evaluate(() => window.addEventListener("beforeunload", e => e.stopImmediatePropagation(), {capture:true,once:true})); await page.reload();
+    await openForm("Expense request · VND template");
+    for (const [width, height] of [
+      [1366, 768],
+      [390, 844],
+    ]) {
+      await page.setViewportSize({ width, height });
+      await page.getByRole("button", { name: "Spacing", exact: true }).click();
+      await page
+        .getByRole("slider", { name: "Between rows", exact: true })
+        .waitFor();
+      check(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+        "No page overflow " + width,
+      );
+      await page.screenshot({
+        path: `output/playwright/form-spacing-en-dark-${width}.png`,
+        fullPage: true,
+      });
+      await page.keyboard.press("Escape");
+    }
+    console.log(JSON.stringify({ status: "PASS", metrics })); return { status: "PASS", metrics };
+  } finally {
+    await page.evaluate(
+      ({ keys, saved }) =>
+        keys.forEach((k, i) =>
+          saved[i] === null
+            ? localStorage.removeItem(k)
+            : localStorage.setItem(k, saved[i]),
+        ),
+      { keys, saved },
+    );
+    page.off("dialog", accept);
+  }
+})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:5174/#forms
+- Page Title: FlowDocker · Platform Console
+### Events
+- New console entries: .playwright-cli\console-2026-11-01T06-50-16-099Z.log#L2-L4

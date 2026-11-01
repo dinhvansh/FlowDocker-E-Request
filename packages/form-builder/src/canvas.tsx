@@ -1,5 +1,6 @@
 import { useId, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "@flowdocker/i18n";
+import { spacingStyle } from "./spacing";
 import { useDndContext, useDroppable } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -79,6 +80,7 @@ function FieldOverlay({
       data-drop-active={!!sortable.isOver && !!validDrop}
       data-dragging={sortable.isDragging || undefined}
       className="fd-canvas-field"
+      data-spacing-section={field.type === "section" || undefined}
       style={{
         transform: CSS.Transform.toString(sortable.transform),
         transition: sortable.transition,
@@ -294,6 +296,8 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
     <div
       ref={drop.setNodeRef}
       className="fd-live-form"
+      data-form-spacing={definition.spacing ? "custom" : undefined}
+      style={spacingStyle(definition.spacing)}
       data-drop-active={drop.isOver}
       aria-label={t("Canvas biểu mẫu trực tiếp")}
     >

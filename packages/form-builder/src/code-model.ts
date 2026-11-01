@@ -104,6 +104,7 @@ export const codeProperties = {
     "display",
     "orientation",
     "currency",
+    "spacing",
   ],
   field: [
     "id",
@@ -148,6 +149,7 @@ export const codeProperties = {
     "tone",
   ],
   text: ["vi", "en"],
+  spacing: ["rowGap", "columnGap", "sectionGap", "sectionPadding"],
   calculation: ["operator", "fields", "expression", "precision"],
   rule: ["mode", "conditions"],
   condition: ["field", "operator", "value"],
