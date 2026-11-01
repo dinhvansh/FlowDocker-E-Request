@@ -238,7 +238,7 @@
 @media (hover: hover) and (pointer: fine) {
   .fd-form-template:hover {
     transform: translateY(-3px);
-    border-color: var(--fd-color-brand);
+    border-color: var(--fd-border-hover);
   }
   .fd-form-template:hover .fd-form-template-paper {
     transform: rotate(0deg) translateY(-2px);
