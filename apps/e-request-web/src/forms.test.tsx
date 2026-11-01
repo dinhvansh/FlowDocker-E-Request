@@ -7,6 +7,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { createRef } from "react";
 import { I18nProvider, useI18n } from "@flowdocker/i18n";
@@ -180,7 +181,10 @@ it("edits spacing directly in preview, undoes a gesture and persists metadata", 
     button: 0,
     ctrlKey: false,
   });
-  fireEvent.click(screen.getByRole("button", { name: "Khoảng cách" }));
+  const inlineControls = within(
+    document.querySelector<HTMLElement>(".fd-preview-inline-controls")!,
+  );
+  fireEvent.click(inlineControls.getByRole("button", { name: "Khoảng cách" }));
   const slider = screen.getByRole("slider", { name: "Giữa các hàng" });
   fireEvent.pointerDown(slider);
   fireEvent.change(slider, { target: { value: "8" } });
@@ -188,7 +192,9 @@ it("edits spacing directly in preview, undoes a gesture and persists metadata", 
   fireEvent.pointerUp(slider);
   const preview = document.querySelector<HTMLElement>(".fd-form-preview")!;
   expect(preview.style.getPropertyValue("--fd-form-row-gap")).toBe("10px");
-  fireEvent.click(screen.getByRole("button", { name: "Hoàn tác khoảng cách" }));
+  fireEvent.click(
+    inlineControls.getByRole("button", { name: "Hoàn tác khoảng cách" }),
+  );
   expect(preview.hasAttribute("data-form-spacing")).toBe(false);
   fireEvent.change(slider, { target: { value: "9" } });
   fireEvent.click(screen.getByRole("button", { name: "Lưu bản nháp" }));

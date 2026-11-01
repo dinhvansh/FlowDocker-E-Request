@@ -39,3 +39,9 @@ Owner feedback: the control was hard to find because it appeared only in Field d
 Usage: open a form → **Form preview / Xem thử biểu mẫu → Spacing / Khoảng cách** → Compact or drag a slider → Save draft. The original Designer entry remains available.
 
 Verification for this correction: 18 affected tests in forms.test.tsx and spacing.test.tsx PASS; typecheck, lint and application build PASS. Browser QA covers real pointer dragging, grouped undo, saving, sticky positioning while scrolled, VI/light desktop and EN/dark desktop/mobile. Screenshots and script: output/playwright/preview-spacing-access-*. The browser uses synthetic local templates and restores its original preferences/storage; owner acceptance remains pending.
+
+## Inline preview controls — 2026-11-01
+
+Owner requests another entry inside the previewed page itself. Add the shared spacing editor and undo at the top of the preview paper, retaining the sticky toolbar entry. Both operate on the same draft and grouped undo history; controls stay outside the rendered form content and exported schema. UI-only host placement: no new schema/API/storage/backend behavior. Unit coverage now uses the inline entry; browser QA checks inline range adjustment and undo as well as the existing desktop/mobile sticky controls.
+
+Verification: typecheck, lint/i18n, format:check, 6 host journey tests and application build PASS (existing chunk-size warning). Real browser inline adjustment + undo PASS; desktop VI/light and desktop/mobile EN/dark screenshots refreshed. Inline placement screenshot: output/playwright/inline-preview-spacing-1440.png.

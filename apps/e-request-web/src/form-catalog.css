@@ -311,3 +311,10 @@
     transform: none;
   }
 }
+
+.fd-preview-inline-controls {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: var(--fd-field-gap, 16px);
+}

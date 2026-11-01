@@ -260,6 +260,35 @@ export function FormsPage({
       setMessage("");
     }
   };
+  const previewSpacingControls = draft && (
+    <>
+      <FormSpacingEditor
+        value={draft.spacing}
+        disabled={codeInvalid}
+        onChange={(spacing, recordHistory) => {
+          if (recordHistory)
+            setPreviewSpacingPast((past) => [
+              ...past.slice(-99),
+              draft.spacing,
+            ]);
+          update({ ...draft, spacing });
+        }}
+      />
+      <Button
+        disabled={!previewSpacingPast.length}
+        onClick={() => {
+          update({
+            ...draft,
+            spacing: previewSpacingPast[previewSpacingPast.length - 1],
+          });
+          setPreviewSpacingPast((past) => past.slice(0, -1));
+        }}
+      >
+        {t("Hoàn tác khoảng cách")}
+      </Button>
+    </>
+  );
+
   return (
     <section
       className="fd-screen fd-forms-v2 fd-forms-focused"
@@ -518,37 +547,16 @@ export function FormsPage({
                     >
                       {t("Điện thoại")}
                     </Button>
-                    <FormSpacingEditor
-                      value={draft.spacing}
-                      disabled={codeInvalid}
-                      onChange={(spacing, recordHistory) => {
-                        if (recordHistory)
-                          setPreviewSpacingPast((past) => [
-                            ...past.slice(-99),
-                            draft.spacing,
-                          ]);
-                        update({ ...draft, spacing });
-                      }}
-                    />
-                    <Button
-                      disabled={!previewSpacingPast.length}
-                      onClick={() => {
-                        update({
-                          ...draft,
-                          spacing:
-                            previewSpacingPast[previewSpacingPast.length - 1],
-                        });
-                        setPreviewSpacingPast((past) => past.slice(0, -1));
-                      }}
-                    >
-                      {t("Hoàn tác khoảng cách")}
-                    </Button>
+                    {previewSpacingControls}
                   </div>
                   <div
                     className="fd-preview-paper"
                     data-device={previewDevice}
                     data-orientation={draft.orientation ?? "portrait"}
                   >
+                    <div className="fd-toolbar-actions fd-preview-inline-controls">
+                      {previewSpacingControls}
+                    </div>
                     <FormPreview
                       runtimeContext={demoFormRuntimeContext}
                       key={draft.id}
