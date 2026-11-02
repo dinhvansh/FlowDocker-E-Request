@@ -170,6 +170,8 @@ FormTestPreview is exported from the main library and accepts FormPreviewProps. 
 
 ### 0.4.0 header and footer design
 
+0.4.1 adds optional `FormDecorationEditor.entry` (`header`/`footer`) for a compact, labelled entry point that opens that tab. `FormCanvas.onDecorationChange` enables these authoring actions beside each band, including a disabled footer. FormDesigner wires them to its existing undo/redo. Read-only entries are disabled; runtime/preview documents contain no edit controls. Existing public consumers remain compatible.
+
 Optional `FormDefinition.decoration` configures `header` and `footer`: enabled/divider flags, 1–3 visible columns, and three retained cell slots. Cells support a live form title, bilingual plain text or an embedded raster image; left/center/right alignment, body/subtitle/title size and bold. Hidden column slots retain their content. `FormDecorationEditor`, `FormBandView`, `defaultDecoration` and related types are public exports. Existing FormDesigner integrates the editor with its undo/redo and controlled onChange; FormCanvas and FormRenderer share the band renderer. Existing independent examples inherit this behavior without E-Request imports.
 
 Raster upload resizes PNG/JPEG/WebP locally (5 MB source limit, 640×320 bound and 140,000-character encoded limit); no remote URLs, SVG, HTML or custom CSS. Code Studio supports the same metadata, completion and validation. Old forms omit this property and retain their normal title; no migration required. Signature presets are visual text areas, not a signing service. No backend/PDF/publishing service is included. See docs/91 in the repository for verified scope.

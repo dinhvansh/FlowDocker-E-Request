@@ -38,6 +38,50 @@ function Host() {
   );
 }
 describe("live authoring canvas", () => {
+  it("edits a hidden footer from the canvas and preserves designer undo/redo", () => {
+    function DecorationHost() {
+      const [definition, setDefinition] = useState<FormDefinition>({
+        id: "inline-decoration",
+        title: { vi: "Mẫu thử", en: "Sample" },
+        version: 1,
+        status: "DRAFT",
+        fields: [],
+      });
+      return (
+        <I18nProvider>
+          <FormDesigner definition={definition} onChange={setDefinition} />
+          <output data-testid="decoration-schema">
+            {JSON.stringify(definition)}
+          </output>
+        </I18nProvider>
+      );
+    }
+    render(<DecorationHost />);
+    fireEvent.click(screen.getByRole("button", { name: "Chỉnh chân trang" }));
+    expect(
+      screen
+        .getByRole("tab", { name: "Chân trang" })
+        .getAttribute("aria-selected"),
+    ).toBe("true");
+    fireEvent.click(screen.getByRole("button", { name: "Mẫu khu vực chữ ký" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Đóng" })[0]);
+    const snapshot = () =>
+      JSON.parse(screen.getByTestId("decoration-schema").textContent!);
+    expect(snapshot().decoration.footer.enabled).toBe(true);
+    expect(
+      document.querySelector('.fd-live-form [data-placement="footer"]'),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Hoàn tác" }));
+    expect(snapshot().decoration).toBeUndefined();
+    fireEvent.click(screen.getByRole("button", { name: "Làm lại" }));
+    expect(snapshot().decoration.footer.columns).toBe(3);
+    fireEvent.click(screen.getByRole("button", { name: "Chỉnh đầu trang" }));
+    expect(
+      screen
+        .getByRole("tab", { name: "Đầu trang" })
+        .getAttribute("aria-selected"),
+    ).toBe("true");
+  }, 60000);
   it("opens configured field groups directly from indicators without mutating the schema", () => {
     render(<Host />);
     const original = screen.getByTestId("schema").textContent;

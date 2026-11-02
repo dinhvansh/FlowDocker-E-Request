@@ -432,4 +432,6 @@ export const formMessages = {
   "Tiêu đề lớn": "Large title",
   "Tên biểu mẫu": "Form name",
   "In đậm": "Bold",
+  "Chỉnh đầu trang": "Edit header",
+  "Chỉnh chân trang": "Edit footer",
 } as const;

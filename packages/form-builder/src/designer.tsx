@@ -1007,6 +1007,9 @@ export function FormDesigner({
                 data-orientation={definition.orientation ?? "portrait"}
               >
                 <FormCanvas
+                  onDecorationChange={(decoration) =>
+                    commit({ ...definition, decoration })
+                  }
                   runtimeContext={runtimeContext}
                   dropAfter={dropAfter}
                   definition={definition}

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Pencil } from "lucide-react";
 import { useI18n } from "@flowdocker/i18n";
 import {
   Button,
@@ -28,17 +29,22 @@ export interface FormDecorationEditorProps {
   value?: FormDecoration;
   title: BilingualText;
   disabled?: boolean;
+  /** Compact canvas entry point; opens the corresponding band initially. */
+  entry?: "header" | "footer";
   onChange(value: FormDecoration): void;
 }
 export function FormDecorationEditor({
   value,
   title,
   disabled,
+  entry,
   onChange,
 }: FormDecorationEditorProps) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
-  const [placement, setPlacement] = useState<"header" | "footer">("header");
+  const [placement, setPlacement] = useState<"header" | "footer">(
+    entry ?? "header",
+  );
   const [selectedColumn, setColumn] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -70,8 +76,21 @@ export function FormDecorationEditor({
   };
   return (
     <>
-      <Button disabled={disabled} onClick={() => setOpen(true)}>
-        {t("Đầu trang / Chân trang")}
+      <Button
+        variant={entry ? "ghost" : "secondary"}
+        disabled={disabled}
+        onClick={() => {
+          if (entry) {
+            setPlacement(entry);
+            setColumn(0);
+          }
+          setOpen(true);
+        }}
+      >
+        {entry && <Pencil aria-hidden="true" />}
+        {entry
+          ? t(entry === "header" ? "Chỉnh đầu trang" : "Chỉnh chân trang")
+          : t("Đầu trang / Chân trang")}
       </Button>
       {open && (
         <Modal

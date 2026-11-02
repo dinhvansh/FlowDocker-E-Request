@@ -104,6 +104,13 @@
   padding: 8px 12px;
   color: var(--fd-text-muted);
 }
+.fd-canvas-band-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.fd-canvas-band-actions button {
+  min-height: var(--fd-control-height, 36px);
+}
 @media (max-width: 600px) {
   .fd-form-band {
     gap: 8px;

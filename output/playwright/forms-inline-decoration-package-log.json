@@ -1,0 +1,531 @@
+[
+  {
+    "id": "@flowdocker/forms@0.4.1",
+    "name": "@flowdocker/forms",
+    "version": "0.4.1",
+    "size": 738091,
+    "unpackedSize": 2193109,
+    "shasum": "f15c1fefc6efa59eda41f0071d1c75ed0e3f4871",
+    "integrity": "sha512-VdnhoDob9vht33LEPo8yOyEYPWTG8JXtDGQtP04ABV3AVuLV9snCziem4xNQu5rWjAnnFpddNoukD0Rn9Ph/Og==",
+    "filename": "flowdocker-forms-0.4.1.tgz",
+    "files": [
+      {
+        "path": "OWNERSHIP.md",
+        "size": 806,
+        "mode": 420
+      },
+      {
+        "path": "README.md",
+        "size": 25236,
+        "mode": 420
+      },
+      {
+        "path": "THIRD_PARTY_NOTICES.md",
+        "size": 2806,
+        "mode": 420
+      },
+      {
+        "path": "canvas.d.ts",
+        "size": 1038,
+        "mode": 420
+      },
+      {
+        "path": "code-assistance.d.ts",
+        "size": 1509,
+        "mode": 420
+      },
+      {
+        "path": "code-model.d.ts",
+        "size": 2721,
+        "mode": 420
+      },
+      {
+        "path": "code-studio.d.ts",
+        "size": 646,
+        "mode": 420
+      },
+      {
+        "path": "code-studio.js",
+        "size": 715031,
+        "mode": 420
+      },
+      {
+        "path": "decoration.d.ts",
+        "size": 1098,
+        "mode": 420
+      },
+      {
+        "path": "dependency-inventory.json",
+        "size": 12185,
+        "mode": 420
+      },
+      {
+        "path": "designer.d.ts",
+        "size": 1087,
+        "mode": 420
+      },
+      {
+        "path": "editors.d.ts",
+        "size": 959,
+        "mode": 420
+      },
+      {
+        "path": "engine.d.ts",
+        "size": 2327,
+        "mode": 420
+      },
+      {
+        "path": "field-configuration.d.ts",
+        "size": 473,
+        "mode": 420
+      },
+      {
+        "path": "flowdocker-forms.js",
+        "size": 521662,
+        "mode": 420
+      },
+      {
+        "path": "index.d.ts",
+        "size": 1664,
+        "mode": 420
+      },
+      {
+        "path": "json-code-editor.d.ts",
+        "size": 455,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_codemirror_autocomplete/LICENSE",
+        "size": 1118,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_codemirror_commands/LICENSE",
+        "size": 1118,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_codemirror_lang-json/LICENSE",
+        "size": 1118,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_codemirror_language/LICENSE",
+        "size": 1118,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_codemirror_lint/LICENSE",
+        "size": 1118,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_codemirror_search/LICENSE",
+        "size": 1118,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_codemirror_state/LICENSE",
+        "size": 1118,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_codemirror_view/LICENSE",
+        "size": 1118,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_date-fns_tz/LICENSE.md",
+        "size": 1074,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_dnd-kit_accessibility/LICENSE",
+        "size": 1075,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_dnd-kit_core/LICENSE",
+        "size": 1075,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_dnd-kit_sortable/LICENSE",
+        "size": 1075,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_dnd-kit_utilities/LICENSE",
+        "size": 1075,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_floating-ui_core/LICENSE",
+        "size": 1089,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_floating-ui_dom/LICENSE",
+        "size": 1089,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_floating-ui_react-dom/LICENSE",
+        "size": 1089,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_floating-ui_utils/LICENSE",
+        "size": 1089,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_fontsource_inter/LICENSE",
+        "size": 4477,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_lezer_common/LICENSE",
+        "size": 1113,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_lezer_highlight/LICENSE",
+        "size": 1113,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_lezer_json/LICENSE",
+        "size": 1150,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_lezer_lr/LICENSE",
+        "size": 1113,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_marijn_find-cluster-break/LICENSE",
+        "size": 1102,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_number/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_primitive/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-checkbox/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-collection/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-compose-refs/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-context/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-dialog/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-direction/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-dismissable-layer/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-focus-guards/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-focus-scope/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-id/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-label/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-popover/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-popper/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-portal/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-presence/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-primitive/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-radio-group/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-roving-focus/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-select/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-slot/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-tabs/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-use-callback-ref/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-use-controllable-state/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-use-effect-event/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-use-is-hydrated/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-use-layout-effect/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-use-size/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/_radix-ui_react-visually-hidden/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/aria-hidden/LICENSE",
+        "size": 1071,
+        "mode": 420
+      },
+      {
+        "path": "licenses/class-variance-authority/LICENSE",
+        "size": 10753,
+        "mode": 420
+      },
+      {
+        "path": "licenses/clsx/license",
+        "size": 1104,
+        "mode": 420
+      },
+      {
+        "path": "licenses/cn/LICENSE",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/codemirror/LICENSE",
+        "size": 1118,
+        "mode": 420
+      },
+      {
+        "path": "licenses/crelt/LICENSE",
+        "size": 1089,
+        "mode": 420
+      },
+      {
+        "path": "licenses/date-fns/LICENSE.md",
+        "size": 1117,
+        "mode": 420
+      },
+      {
+        "path": "licenses/decimal.js/LICENCE.md",
+        "size": 1104,
+        "mode": 420
+      },
+      {
+        "path": "licenses/get-nonce/LICENSE",
+        "size": 1071,
+        "mode": 420
+      },
+      {
+        "path": "licenses/jsonc-parser/LICENSE.md",
+        "size": 1092,
+        "mode": 420
+      },
+      {
+        "path": "licenses/lucide-react/LICENSE",
+        "size": 880,
+        "mode": 420
+      },
+      {
+        "path": "licenses/react-day-picker/LICENSE",
+        "size": 1122,
+        "mode": 420
+      },
+      {
+        "path": "licenses/react-remove-scroll-bar-LICENSE.txt",
+        "size": 1093,
+        "mode": 420
+      },
+      {
+        "path": "licenses/react-remove-scroll/LICENSE",
+        "size": 1071,
+        "mode": 420
+      },
+      {
+        "path": "licenses/react-style-singleton/LICENSE",
+        "size": 1071,
+        "mode": 420
+      },
+      {
+        "path": "licenses/shadcn-LICENSE.txt",
+        "size": 1063,
+        "mode": 420
+      },
+      {
+        "path": "licenses/style-mod/LICENSE",
+        "size": 1100,
+        "mode": 420
+      },
+      {
+        "path": "licenses/tslib/LICENSE.txt",
+        "size": 655,
+        "mode": 420
+      },
+      {
+        "path": "licenses/tw-animate-css/LICENSE",
+        "size": 1068,
+        "mode": 420
+      },
+      {
+        "path": "licenses/use-callback-ref/LICENSE",
+        "size": 1071,
+        "mode": 420
+      },
+      {
+        "path": "licenses/use-sidecar/LICENSE",
+        "size": 1071,
+        "mode": 420
+      },
+      {
+        "path": "licenses/w3c-keyname/LICENSE",
+        "size": 1100,
+        "mode": 420
+      },
+      {
+        "path": "package.json",
+        "size": 690,
+        "mode": 420
+      },
+      {
+        "path": "payment-example.d.ts",
+        "size": 201,
+        "mode": 420
+      },
+      {
+        "path": "runtime.d.ts",
+        "size": 2519,
+        "mode": 420
+      },
+      {
+        "path": "schema-CRvIqTS3.js",
+        "size": 294683,
+        "mode": 420
+      },
+      {
+        "path": "schema.d.ts",
+        "size": 6129,
+        "mode": 420
+      },
+      {
+        "path": "showcase.d.ts",
+        "size": 195,
+        "mode": 420
+      },
+      {
+        "path": "spacing.d.ts",
+        "size": 286,
+        "mode": 420
+      },
+      {
+        "path": "standalone.d.ts",
+        "size": 969,
+        "mode": 420
+      },
+      {
+        "path": "styles.css",
+        "size": 501351,
+        "mode": 420
+      },
+      {
+        "path": "test-preview.d.ts",
+        "size": 362,
+        "mode": 420
+      },
+      {
+        "path": "use-choices.d.ts",
+        "size": 442,
+        "mode": 420
+      }
+    ],
+    "entryCount": 103,
+    "bundled": []
+  }
+]

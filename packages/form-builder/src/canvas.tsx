@@ -2,6 +2,8 @@ import { useId, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import { spacingStyle } from "./spacing";
 import { FormBandView } from "./components/form-band";
+import { FormDecorationEditor } from "./components/form-decoration-editor";
+import type { FormDecoration } from "./decoration";
 import { useDndContext, useDroppable } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -42,6 +44,7 @@ export interface FormCanvasProps {
   onDelete(field: FormField): void;
   onPatch?(id: string, changes: Partial<FormField>): void;
   onInspect?(id: string, section: ConfigurationSection): void;
+  onDecorationChange?(decoration: FormDecoration): void;
 }
 function FieldOverlay({
   field,
@@ -302,6 +305,17 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
       data-drop-active={drop.isOver}
       aria-label={t("Canvas biểu mẫu trực tiếp")}
     >
+      {props.onDecorationChange && (
+        <div className="fd-canvas-band-actions">
+          <FormDecorationEditor
+            value={definition.decoration}
+            title={definition.title}
+            disabled={props.readOnly}
+            entry="header"
+            onChange={props.onDecorationChange}
+          />
+        </div>
+      )}
       <FormBandView
         decoration={definition.decoration}
         placement="header"
@@ -334,6 +348,17 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
           }}
         />
       </FieldGroup>
+      {props.onDecorationChange && (
+        <div className="fd-canvas-band-actions">
+          <FormDecorationEditor
+            value={definition.decoration}
+            title={definition.title}
+            disabled={props.readOnly}
+            entry="footer"
+            onChange={props.onDecorationChange}
+          />
+        </div>
+      )}
       <FormBandView
         decoration={definition.decoration}
         placement="footer"

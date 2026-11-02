@@ -1,0 +1,61 @@
+### Result
+{"status":"PASS","metrics":[{"width":1366,"scroll":1366},{"width":390,"scroll":390}],"checks":["inline header and hidden-footer entries","correct initial tabs","undo/redo","existing text limit","preview has no authoring actions","VI/light and EN/dark","mobile dialog"],"errors":[]}
+### Ran Playwright code
+```js
+await (/* eslint-disable @typescript-eslint/no-unused-expressions -- Playwright CLI entry. */
+async page => {
+  const keys=['flowdocker.form-drafts.v1','flowdocker.locale','flowdocker.theme'];
+  const original=await page.evaluate(keys=>keys.map(k=>localStorage.getItem(k)),keys);
+  const recovery=await page.evaluate(()=>sessionStorage.getItem('flowdocker.form-recovery.v1'));
+  const errors=[];const onError=e=>errors.push(e.message);page.on('pageerror',onError);
+  const check=(ok,message)=>{if(!ok)throw Error(message);};
+  const form={id:'qa-inline-bands',title:{vi:'Mẫu chỉnh trực tiếp',en:'Inline editing sample'},version:1,status:'DRAFT',fields:[{id:'note',key:'note',label:{vi:'Nội dung',en:'Details'},type:'text',required:false,options:[]}]};
+  try {
+    await page.addInitScript(()=>{window.addEventListener('beforeunload',e=>e.stopImmediatePropagation(),{capture:true});if(sessionStorage.getItem('flowdocker.qa.inline-reset')==='1'){sessionStorage.removeItem('flowdocker.form-recovery.v1');sessionStorage.removeItem('flowdocker.qa.inline-reset');}});
+    await page.evaluate(form=>{sessionStorage.setItem('flowdocker.qa.inline-reset','1');localStorage.setItem('flowdocker.form-drafts.v1',JSON.stringify([form]));localStorage.setItem('flowdocker.locale','vi');localStorage.setItem('flowdocker.theme','light');},form);
+    await page.reload();await page.setViewportSize({width:1440,height:900});
+    await page.getByRole('button',{name:form.title.vi,exact:true}).click();
+    const canvas=page.locator('.fd-live-form');
+    check(await canvas.locator('[data-placement=footer]').count()===0,'Footer should start hidden');
+    await canvas.getByRole('button',{name:'Chỉnh chân trang',exact:true}).click();
+    check(await page.getByRole('tab',{name:'Chân trang',exact:true}).getAttribute('aria-selected')==='true','Wrong footer tab');
+    await page.getByRole('button',{name:'Mẫu khu vực chữ ký',exact:true}).click();
+    check(await page.getByRole('textbox',{name:'Nội dung · tiếng Việt',exact:true}).getAttribute('maxlength')==='4000','Text limit missing');
+    await page.getByRole('button',{name:'Đóng',exact:true}).first().click();
+    check(await canvas.locator('[data-placement=footer]').count()===1,'Footer edit did not update canvas');
+    await page.getByRole('button',{name:'Hoàn tác',exact:true}).click();
+    check(await canvas.locator('[data-placement=footer]').count()===0,'Undo did not restore hidden footer');
+    await page.getByRole('button',{name:'Làm lại',exact:true}).click();
+    await canvas.getByRole('button',{name:'Chỉnh đầu trang',exact:true}).click();
+    check(await page.getByRole('tab',{name:'Đầu trang',exact:true}).getAttribute('aria-selected')==='true','Wrong header tab');
+    await page.keyboard.press('Escape');
+    await page.screenshot({path:'output/playwright/forms-inline-decoration-1440-vi-light.png',animations:'disabled'});
+    await page.getByRole('tab',{name:'Xem thử biểu mẫu',exact:true}).click();
+    check(await page.locator('.fd-form-preview .fd-canvas-band-actions').count()===0,'Authoring controls leaked into preview');
+    await page.evaluate(()=>{localStorage.setItem('flowdocker.locale','en');localStorage.setItem('flowdocker.theme','dark');});
+    const metrics=[];
+    for(const [width,height] of [[1366,768],[390,844]]) {
+      await page.setViewportSize({width,height});await page.reload();
+      const restored=page.getByRole('heading',{name:form.title.en,exact:true});
+      const catalogEntry=page.getByRole('button',{name:form.title.en,exact:true});
+      await restored.or(catalogEntry).first().waitFor();
+      if(await catalogEntry.isVisible())await catalogEntry.click();
+      await page.getByRole('tab',{name:'Field designer',exact:true}).click();
+      await canvas.getByRole('button',{name:'Edit footer',exact:true}).click();
+      check(await page.getByRole('tab',{name:'Footer',exact:true}).getAttribute('aria-selected')==='true','Wrong EN tab');
+      const modal=await page.getByRole('dialog').boundingBox();check(modal.width<=width,'Modal overflow');
+      const m=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));metrics.push(m);check(m.width===m.scroll,'Page overflow');
+      await page.screenshot({path:`output/playwright/forms-inline-decoration-${width}-en-dark.png`,animations:'disabled'});
+      await page.keyboard.press('Escape');
+    }
+    check(errors.length===0,'Browser errors: '+errors.join(', '));
+    return {status:'PASS',metrics,checks:['inline header and hidden-footer entries','correct initial tabs','undo/redo','existing text limit','preview has no authoring actions','VI/light and EN/dark','mobile dialog'],errors};
+  } finally {
+    page.off('pageerror',onError);
+    await page.evaluate(({keys,original,recovery})=>{keys.forEach((k,i)=>original[i]===null?localStorage.removeItem(k):localStorage.setItem(k,original[i]));if(recovery===null)sessionStorage.removeItem('flowdocker.form-recovery.v1');else sessionStorage.setItem('flowdocker.form-recovery.v1',recovery);},{keys,original,recovery});
+  }
+}
+)(page);
+```
+### Events
+- New console entries: .playwright-cli\console-2026-11-02T15-20-54-264Z.log#L9-L11
