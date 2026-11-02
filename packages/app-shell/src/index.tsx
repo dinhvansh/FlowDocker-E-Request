@@ -19,7 +19,8 @@ export type PageId =
   | "permissions"
   | "applications"
   | "connections"
-  | "flows";
+  | "flows"
+  | "profile";
 const groups: {
   label: string;
   pages: { id: PageId; label: string; icon: typeof LayoutGrid }[];
@@ -46,12 +47,14 @@ const groups: {
 ];
 export function AppShell({
   page,
+  account,
   onPageChange,
   theme,
   onThemeChange,
   children,
 }: {
   page: PageId;
+  account: { displayName: string; initials: string; subtitle: string };
   onPageChange(page: PageId): void;
   theme: "light" | "dark";
   onThemeChange(): void;
@@ -129,11 +132,7 @@ export function AppShell({
               <p className="fd-nav-heading">{group.label}</p>
               {group.pages.map((item) => {
                 const Icon = item.icon;
-                const planned = [
-                  "applications",
-                  "connections",
-                  "flows",
-                ].includes(item.id);
+                const planned = item.id === "applications";
                 return (
                   <button
                     type="button"
@@ -152,13 +151,20 @@ export function AppShell({
             </nav>
           ))}
         </div>
-        <div className="fd-sidebar-bottom">
-          <span className="fd-avatar">VA</span>
+        <button
+          type="button"
+          className="fd-sidebar-bottom fd-profile-link"
+          data-active={page === "profile"}
+          aria-current={page === "profile" ? "page" : undefined}
+          onClick={() => navigate("profile")}
+          aria-label="Mở hồ sơ cá nhân"
+        >
+          <span className="fd-avatar">{account.initials}</span>
           <div>
-            <strong>Platform Admin</strong>
-            <small>Vai trò demo</small>
+            <strong>{account.displayName}</strong>
+            <small>{account.subtitle}</small>
           </div>
-        </div>
+        </button>
       </aside>
       <div className="fd-main-wrap">
         <header className="fd-topbar">
@@ -172,7 +178,10 @@ export function AppShell({
             <Menu size={20} aria-hidden="true" />
           </button>
           <div className="fd-breadcrumb">
-            Workspace <span>/</span> <strong>{selected?.label}</strong>
+            Workspace <span>/</span>{" "}
+            <strong>
+              {page === "profile" ? "Hồ sơ cá nhân" : selected?.label}
+            </strong>
           </div>
           <div className="fd-top-actions">
             <label className="fd-global-search">
@@ -208,7 +217,6 @@ export function AppShell({
             >
               {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
             </Button>
-            <span className="fd-top-avatar">VA</span>
           </div>
         </header>
         <main id="main-content" className="fd-main">

@@ -1,9 +1,22 @@
 {
-  "name": "@flowdocker/e-request-web", "private": true, "version": "0.1.0", "type": "module",
-  "scripts": { "dev": "vite --host 0.0.0.0", "build": "vite build" },
+  "name": "@flowdocker/e-request-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build"
+  },
   "dependencies": {
-    "@flowdocker/ui": "*", "@flowdocker/app-shell": "*", "@flowdocker/app-contracts": "*",
-    "@flowdocker/master-builder": "*", "@flowdocker/permission-builder": "*",
-    "lucide-react": "^0.468.0", "react": "^19.2.0", "react-dom": "^19.2.0"
+    "@flowdocker/app-contracts": "*",
+    "@flowdocker/app-shell": "*",
+    "@flowdocker/master-builder": "*",
+    "@flowdocker/flow-canvas": "*",
+    "@flowdocker/permission-builder": "*",
+    "@flowdocker/ui": "*",
+    "@xyflow/react": "^12.9.2",
+    "lucide-react": "^0.468.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   }
 }
