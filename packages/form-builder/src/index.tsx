@@ -46,3 +46,7 @@ export {
   type ContentBlockEditorProps,
 } from "./components/content-block-editor";
 export { type FormBlockPresentation } from "./decoration";
+export {
+  EditableFormTitle,
+  type EditableFormTitleProps,
+} from "./components/editable-form-title";

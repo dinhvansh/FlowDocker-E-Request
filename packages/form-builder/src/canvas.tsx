@@ -2,6 +2,7 @@ import { useId, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import { spacingStyle } from "./spacing";
 import { FormBandView } from "./components/form-band";
+import { EditableFormTitle } from "./components/editable-form-title";
 import { InsertionDropZone } from "./components/insertion-drop-zone";
 import { FormDecorationEditor } from "./components/form-decoration-editor";
 import type { FormDecoration } from "./decoration";
@@ -25,6 +26,7 @@ import {
   flattenFields,
   type FormDefinition,
   type FormField,
+  type BilingualText,
   type PreviewValues,
 } from "./schema";
 import { InlineLabelEditor } from "./components/inline-label-editor";
@@ -46,6 +48,7 @@ export interface FormCanvasProps {
   onPatch?(id: string, changes: Partial<FormField>): void;
   onInspect?(id: string, section: ConfigurationSection): void;
   onDecorationChange?(decoration: FormDecoration): void;
+  onTitleChange?(title: BilingualText): void;
 }
 function FieldOverlay({
   field,
@@ -286,7 +289,7 @@ function FieldOverlay({
 }
 /** Same field rendering path as FormRenderer; authoring reveals conditional fields. */
 export function FormCanvas({ definition, ...props }: FormCanvasProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const id = useId();
   const [values, setValues] = useState<PreviewValues>(() =>
     defaultValues(definition.fields, undefined, props.runtimeContext),
@@ -329,6 +332,18 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
         decoration={definition.decoration}
         placement="header"
         title={definition.title}
+        renderTitle={
+          props.onTitleChange
+            ? () => (
+                <EditableFormTitle
+                  key={locale}
+                  title={definition.title}
+                  disabled={props.readOnly}
+                  onChange={props.onTitleChange!}
+                />
+              )
+            : undefined
+        }
       />
       <FieldGroup>
         <RuntimeFields
@@ -373,6 +388,18 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
         decoration={definition.decoration}
         placement="footer"
         title={definition.title}
+        renderTitle={
+          props.onTitleChange
+            ? () => (
+                <EditableFormTitle
+                  key={locale}
+                  title={definition.title}
+                  disabled={props.readOnly}
+                  onChange={props.onTitleChange!}
+                />
+              )
+            : undefined
+        }
       />
       <Button
         className="fd-canvas-add"

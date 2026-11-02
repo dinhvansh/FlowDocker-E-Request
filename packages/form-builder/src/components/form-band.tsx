@@ -1,4 +1,5 @@
 import { useI18n } from "@flowdocker/i18n";
+import type { ReactNode } from "react";
 import type { BilingualText } from "../schema";
 import { validFormDecoration, type FormDecoration } from "../decoration";
 import "../decoration.css";
@@ -7,14 +8,22 @@ export function FormBandView({
   decoration,
   placement,
   title,
+  renderTitle,
 }: {
   decoration?: FormDecoration;
   placement: "header" | "footer";
   title: BilingualText;
+  renderTitle?: () => ReactNode;
 }) {
   const { locale } = useI18n();
   if (!decoration)
-    return placement === "header" ? <h2>{title[locale]}</h2> : null;
+    return placement === "header" ? (
+      renderTitle ? (
+        renderTitle()
+      ) : (
+        <h2>{title[locale]}</h2>
+      )
+    ) : null;
   if (!validFormDecoration(decoration)) return null;
   const band = decoration[placement];
   if (!band.enabled) return null;
@@ -42,7 +51,11 @@ export function FormBandView({
               />
             )
           ) : cell.kind === "title" ? (
-            <h2>{title[locale]}</h2>
+            renderTitle ? (
+              renderTitle()
+            ) : (
+              <h2>{title[locale]}</h2>
+            )
           ) : (
             <p>{cell.text[locale]}</p>
           )}

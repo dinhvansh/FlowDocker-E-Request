@@ -222,3 +222,21 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+.fd-canvas-form-title h2 {
+  margin: 0;
+}
+.fd-canvas-form-title h2 > button {
+  font: inherit;
+  color: inherit;
+  padding: 0;
+  min-height: var(--fd-control-height, 36px);
+  height: auto;
+  max-width: 100%;
+  white-space: normal;
+  text-align: inherit;
+  gap: 8px;
+}
+.fd-canvas-form-title button span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

@@ -4,10 +4,15 @@ import { Input } from "@flowdocker/ui";
 
 export interface InlineLabelEditorProps {
   value: string;
+  label?: string;
   onFinish(value: string | null, restoreFocus: boolean): void;
 }
 /** A label edit becomes one history operation; Escape never changes the schema. */
-export function InlineLabelEditor({ value, onFinish }: InlineLabelEditorProps) {
+export function InlineLabelEditor({
+  value,
+  label,
+  onFinish,
+}: InlineLabelEditorProps) {
   const { t } = useI18n();
   const [text, setText] = useState(value);
   const finished = useRef(false);
@@ -20,7 +25,7 @@ export function InlineLabelEditor({ value, onFinish }: InlineLabelEditorProps) {
     <div className="fd-inline-label-editor">
       <Input
         autoFocus
-        aria-label={t("Nhãn trên canvas")}
+        aria-label={label ?? t("Nhãn trên canvas")}
         value={text}
         onChange={(event) => setText(event.target.value)}
         onBlur={() => finish(true, false)}

@@ -1,0 +1,37 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions -- Playwright CLI entry. */
+async page => {
+  const keys=['flowdocker.form-drafts.v1','flowdocker.locale','flowdocker.theme'];
+  const original=await page.evaluate(keys=>keys.map(k=>localStorage.getItem(k)),keys),recovery=await page.evaluate(()=>sessionStorage.getItem('flowdocker.form-recovery.v1'));
+  const errors=[];const onError=e=>errors.push(e.message);page.on('pageerror',onError);
+  const check=(ok,m)=>{if(!ok)throw Error(m);};
+  const form={id:'qa-title',schemaVersion:2,title:{vi:'Đề nghị thanh toán · mẫu',en:'Payment request · sample'},version:1,status:'DRAFT',fields:[{id:'reason',key:'reason',label:{vi:'Nội dung',en:'Details'},type:'text',required:false,options:[]}]};
+  const title='Đề nghị thanh toán nội bộ';
+  try {
+    await page.addInitScript(()=>{window.addEventListener('beforeunload',e=>e.stopImmediatePropagation(),{capture:true});if(sessionStorage.getItem('flowdocker.qa.title-reset')==='1'){sessionStorage.removeItem('flowdocker.form-recovery.v1');sessionStorage.removeItem('flowdocker.qa.title-reset');}});
+    await page.evaluate(form=>{sessionStorage.setItem('flowdocker.qa.title-reset','1');localStorage.setItem('flowdocker.form-drafts.v1',JSON.stringify([form]));localStorage.setItem('flowdocker.locale','vi');localStorage.setItem('flowdocker.theme','light');},form);
+    await page.reload();await page.setViewportSize({width:1440,height:900});await page.getByRole('button',{name:form.title.vi,exact:true}).first().click();
+    const canvas=page.locator('.fd-live-form');
+    const edit=async(text,key='Enter')=>{await canvas.getByRole('button',{name:'Sửa tiêu đề biểu mẫu',exact:true}).click();const input=canvas.getByRole('textbox',{name:'Tên biểu mẫu trên canvas',exact:true});await input.fill(text);await input.press(key);};
+    await edit(title);await page.getByRole('heading',{name:title,level:1,exact:true}).waitFor();
+    await page.getByRole('button',{name:'Hoàn tác',exact:true}).click();await page.getByRole('heading',{name:form.title.vi,level:1,exact:true}).waitFor();
+    await page.getByRole('button',{name:'Làm lại',exact:true}).click();await edit('Hủy tên này','Escape');await page.getByRole('heading',{name:title,level:1,exact:true}).waitFor();
+    await edit('');check(await page.getByRole('button',{name:'Lưu bản nháp',exact:true}).isDisabled(),'Empty title can be saved');
+    await edit(title,'Tab');
+    const source=await page.evaluate(()=>JSON.parse(JSON.parse(sessionStorage.getItem('flowdocker.form-recovery.v1')).source));check(source.title.vi===title&&source.title.en===form.title.en,'Title/code or locale synchronization failed');
+    await page.screenshot({path:'output/playwright/form-title-1440-vi-light.png',animations:'disabled'});
+    await page.getByRole('button',{name:'Lưu bản nháp',exact:true}).click();await page.reload();if(await page.getByRole('button',{name:title,exact:true}).count())await page.getByRole('button',{name:title,exact:true}).first().click();
+    await page.getByRole('tab',{name:'Xem thử biểu mẫu',exact:true}).click();const preview=page.locator('.fd-form-preview');check(await preview.getByRole('button',{name:'Sửa tiêu đề biểu mẫu',exact:true}).count()===0,'Preview has edit trigger');await preview.getByRole('heading',{name:title,exact:true}).waitFor();
+    await page.evaluate(()=>{localStorage.setItem('flowdocker.locale','en');localStorage.setItem('flowdocker.theme','dark');});
+    const metrics=[];
+    for(const [width,height] of [[1366,768],[390,844]]) {
+      await page.setViewportSize({width,height});await page.reload();const heading=page.getByRole('heading',{name:form.title.en,level:1,exact:true}),entry=page.getByRole('button',{name:form.title.en,exact:true}).first();await heading.or(entry).first().waitFor();if(await entry.isVisible())await entry.click();
+      await page.getByRole('tab',{name:'Field designer',exact:true}).click();await canvas.getByRole('button',{name:'Edit form title',exact:true}).click();
+      await canvas.getByRole('textbox',{name:'Form title on canvas',exact:true}).fill('Payment request — title editing');
+      const m=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));metrics.push(m);check(m.width===m.scroll,'Title editor overflow');
+      await page.screenshot({path:`output/playwright/form-title-${width}-en-dark.png`,animations:'disabled'});await page.keyboard.press('Escape');
+    }
+    check(errors.length===0,'Browser errors: '+errors.join(', '));return {status:'PASS',checks:['click title','Enter and blur commit','Escape cancel','undo/redo','empty title blocks save','code and locale synchronization','save/reload','plain preview','VI/light EN/dark mobile'],metrics,errors};
+  } finally {
+    page.off('pageerror',onError);await page.evaluate(({keys,original,recovery})=>{keys.forEach((k,i)=>original[i]===null?localStorage.removeItem(k):localStorage.setItem(k,original[i]));if(recovery===null)sessionStorage.removeItem('flowdocker.form-recovery.v1');else sessionStorage.setItem('flowdocker.form-recovery.v1',recovery);},{keys,original,recovery});
+  }
+}

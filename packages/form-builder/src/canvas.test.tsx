@@ -57,6 +57,36 @@ describe("live authoring canvas", () => {
       );
     }
     render(<BlockHost />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Sửa tiêu đề biểu mẫu" }),
+    );
+    const titleInput = screen.getByRole("textbox", {
+      name: "Tên biểu mẫu trên canvas",
+    });
+    fireEvent.change(titleInput, { target: { value: "Tên mới" } });
+    fireEvent.keyDown(titleInput, { key: "Enter" });
+    expect(
+      JSON.parse(screen.getByTestId("block-schema").textContent!).title,
+    ).toEqual({ vi: "Tên mới", en: "Sample" });
+    fireEvent.click(screen.getByRole("button", { name: "Hoàn tác" }));
+    expect(
+      JSON.parse(screen.getByTestId("block-schema").textContent!).title.vi,
+    ).toBe("Mẫu thử");
+    fireEvent.click(screen.getByRole("button", { name: "Làm lại" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Sửa tiêu đề biểu mẫu" }),
+    );
+    fireEvent.change(
+      screen.getByRole("textbox", { name: "Tên biểu mẫu trên canvas" }),
+      { target: { value: "Hủy tên này" } },
+    );
+    fireEvent.keyDown(
+      screen.getByRole("textbox", { name: "Tên biểu mẫu trên canvas" }),
+      { key: "Escape" },
+    );
+    expect(
+      JSON.parse(screen.getByTestId("block-schema").textContent!).title.vi,
+    ).toBe("Tên mới");
     expect(
       screen.queryByRole("button", { name: "Đầu trang / Chân trang" }),
     ).toBeNull();

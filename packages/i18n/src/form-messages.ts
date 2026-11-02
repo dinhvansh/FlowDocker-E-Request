@@ -436,6 +436,8 @@ export const formMessages = {
   "Chỉnh chân trang": "Edit footer",
   "Nhãn / Văn bản": "Label / Text",
   "Hình ảnh": "Image",
+  "Tên biểu mẫu trên canvas": "Form title on canvas",
+  "Sửa tiêu đề biểu mẫu": "Edit form title",
   "Chưa chọn hình ảnh": "No image selected",
   "Nội dung bổ sung · tiếng Việt": "Additional content · Vietnamese",
   "Nội dung bổ sung · tiếng Anh": "Additional content · English",

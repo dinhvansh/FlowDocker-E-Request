@@ -170,6 +170,8 @@ FormTestPreview is exported from the main library and accepts FormPreviewProps. 
 
 ### 0.5.0 content blocks and insertion targets
 
+0.5.1 makes the displayed title editable in FormDesigner: click the title/pencil, Enter or blur to commit, Escape to cancel. The active language changes through normal designer history. Optional `FormCanvas.onTitleChange`, `FormBandView.renderTitle`, `InlineLabelEditor.label` and exported `EditableFormTitle` preserve existing callers. Read-only and runtime/preview titles remain plain text. Empty titles still fail the existing form validation.
+
 FormDesigner now offers Label / Text (`content`), Image (`image`) and Divider (`divider`) in the layout toolbox. These use ordinary field selection, nested layouts, undo/redo, code editing and save/export. Optional `FormField.presentation` supports alignment, text size/bold and bounded embedded raster images (32–640px authored width). `ContentBlock` and `ContentBlockEditor` are public reusable exports. Images use the same local resizing/format limits as decoration uploads. Presentation blocks do not collect, validate required input or submit values.
 
 Explicit canvas start/end and field before/after targets distinguish inserting beside a container from inserting inside it. Existing click/move/parent controls remain available. Column hideLabel metadata now passes strict import/export guards. The specialized header/footer toolbar/canvas actions are removed from FormDesigner by owner direction; existing decoration rendering and public editor APIs are retained for compatibility. New field kinds require clients to upgrade; existing schemas need no migration. No backend, remote image upload or PDF service is added. See docs/93 for actual verification.
