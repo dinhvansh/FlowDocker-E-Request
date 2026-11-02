@@ -91,6 +91,7 @@ export interface FormRendererProps {
   onChange(values: PreviewValues): void;
   onSubmit?(values: PreviewValues): Promise<void> | void;
   onInvalid?(issues: FormIssue[]): void;
+  onEditSchemaIssue?(issue: FormIssue): void;
   readOnly?: boolean;
   access?: FieldAccess;
   providers?: Record<string, DataProvider>;
@@ -1012,7 +1013,23 @@ export function FormRenderer({
   if (schemaIssues.length)
     return (
       <Notice tone="warning">
-        {t("Sửa lỗi cấu trúc trước khi xem thử biểu mẫu.")}
+        <p>{t("Sửa lỗi cấu trúc trước khi xem thử biểu mẫu.")}</p>
+        <ul>
+          {schemaIssues.map((issue, index) => (
+            <li key={index}>
+              {props.onEditSchemaIssue ? (
+                <Button
+                  variant="ghost"
+                  onClick={() => props.onEditSchemaIssue?.(issue)}
+                >
+                  {t(issue.message, issue.params)}
+                </Button>
+              ) : (
+                t(issue.message, issue.params)
+              )}
+            </li>
+          ))}
+        </ul>
       </Notice>
     );
   const update = (next: PreviewValues) => {

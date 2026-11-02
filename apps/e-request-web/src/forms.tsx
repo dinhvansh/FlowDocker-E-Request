@@ -632,6 +632,22 @@ export function FormsPage({
                       runtimeContext={demoFormRuntimeContext}
                       key={draft.id}
                       definition={draft}
+                      onEditSchemaIssue={(issue) => {
+                        setTab("schema");
+                        setShowIssues(true);
+                        if (issue.fieldId) {
+                          setSelectedFieldId(issue.fieldId);
+                          setRevealField((previous) => ({
+                            id: issue.fieldId!,
+                            revision: (previous?.revision ?? 0) + 1,
+                          }));
+                        } else if (
+                          !draft.title.vi.trim() ||
+                          !draft.title.en.trim()
+                        ) {
+                          setTitlesOpen(true);
+                        }
+                      }}
                       providers={providers}
                       values={values}
                       onChange={setValues}

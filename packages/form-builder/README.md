@@ -194,3 +194,7 @@ The form name no longer appears automatically inside the canvas or runtime/previ
 ## 0.5.3 — Legacy automatic title removal
 
 Also suppress legacy decoration cells with `kind: title` in designer and runtime, including their empty band/divider. Existing custom text and images remain rendered; stored metadata is preserved. Use content blocks for document headings. `title`/`renderTitle` props remain accepted for compatibility but no longer inject a form name.
+
+## 0.5.4 — Preview schema diagnostics
+
+FormRenderer/FormPreview now list translated schema validation issues when preview is blocked. Optional `onEditSchemaIssue(issue: FormIssue)` lets an authoring host open the matching field/settings without changing or discarding the draft. E-Request wires the callback to its designer.

@@ -1,7 +1,8 @@
-import { afterEach, expect, it } from "vitest";
+import { afterEach, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
 import { I18nProvider } from "@flowdocker/i18n";
+import { FormPreview } from "./runtime";
 import { FormTestPreview, parseTestValues } from "./test-preview";
 import { createField, type FormDefinition, type PreviewValues } from "./schema";
 const definition: FormDefinition = {
@@ -61,4 +62,38 @@ it("rejects arrays, prototype keys and oversized test values", () => {
   expect(parseTestValues("[]")).toBeUndefined();
   expect(parseTestValues('{"__proto__":{"x":1}}')).toBeUndefined();
   expect(parseTestValues(" ".repeat(1000001))).toBeUndefined();
+});
+
+it("shows actionable schema errors and recovers preview after a definition is repaired", () => {
+  const edit = vi.fn();
+  const invalid = {
+    ...definition,
+    fields: [{ ...definition.fields[0], key: "bad key" }],
+  };
+  const result = render(
+    <I18nProvider>
+      <FormPreview
+        definition={invalid}
+        values={{}}
+        onChange={() => {}}
+        onEditSchemaIssue={edit}
+      />
+    </I18nProvider>,
+  );
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Mã trường bad key không hợp lệ hoặc được dành riêng.",
+    }),
+  );
+  expect(edit).toHaveBeenCalledWith(
+    expect.objectContaining({ fieldId: "amount" }),
+  );
+  result.rerender(
+    <I18nProvider>
+      <FormPreview definition={definition} values={{}} onChange={() => {}} />
+    </I18nProvider>,
+  );
+  expect(
+    screen.queryByText("Sửa lỗi cấu trúc trước khi xem thử biểu mẫu."),
+  ).toBeNull();
 });
