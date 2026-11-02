@@ -525,14 +525,6 @@ export function AdvancedProperties({
               {numberInput("maxLength", "Độ dài tối đa")}
             </>
           )}
-          {field.type === "currency" && (
-            <Field label={t("Mã tiền tệ ISO")}>
-              <Input
-                value={field.currency ?? "VND"}
-                onChange={(event) => patch({ currency: event.target.value })}
-              />
-            </Field>
-          )}
           {field.type === "repeat" && (
             <>
               {numberInput("minRows", "Số dòng tối thiểu")}
