@@ -7,8 +7,6 @@ import "../decoration.css";
 export function FormBandView({
   decoration,
   placement,
-  title,
-  renderTitle,
 }: {
   decoration?: FormDecoration;
   placement: "header" | "footer";
@@ -21,6 +19,15 @@ export function FormBandView({
   if (!validFormDecoration(decoration)) return null;
   const band = decoration[placement];
   if (!band.enabled) return null;
+  const cells = band.cells
+    .slice(0, band.columns)
+    .filter((cell) => cell.kind !== "title");
+  if (
+    !cells.some((cell) =>
+      cell.kind === "image" ? !!cell.image : !!cell.text[locale].trim(),
+    )
+  )
+    return null;
   return (
     <div
       className="fd-form-band"
@@ -28,7 +35,7 @@ export function FormBandView({
       data-divider={band.divider}
       data-columns={band.columns}
     >
-      {band.cells.slice(0, band.columns).map((cell, index) => (
+      {cells.map((cell, index) => (
         <div
           key={index}
           className="fd-form-band-cell"
@@ -43,12 +50,6 @@ export function FormBandView({
                 alt={cell.text[locale]}
                 style={{ width: cell.imageWidth ?? 96 }}
               />
-            )
-          ) : cell.kind === "title" ? (
-            renderTitle ? (
-              renderTitle()
-            ) : (
-              <h2>{title[locale]}</h2>
             )
           ) : (
             <p>{cell.text[locale]}</p>

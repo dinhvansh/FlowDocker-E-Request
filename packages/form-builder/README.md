@@ -190,3 +190,7 @@ Additive editor/controlled-selection/test-harness APIs. Existing FormDefinition 
 ## 0.5.2 — Authored document headings
 
 The form name no longer appears automatically inside the canvas or runtime/preview. Add a `content` (Nhãn / Văn bản) block and choose its heading size/alignment instead. Catalog names and rename actions remain available. Explicit legacy decoration title cells still render; no stored content is deleted. Public title-editing contracts from 0.5.1 remain compatible.
+
+## 0.5.3 — Legacy automatic title removal
+
+Also suppress legacy decoration cells with `kind: title` in designer and runtime, including their empty band/divider. Existing custom text and images remain rendered; stored metadata is preserved. Use content blocks for document headings. `title`/`renderTitle` props remain accepted for compatibility but no longer inject a form name.

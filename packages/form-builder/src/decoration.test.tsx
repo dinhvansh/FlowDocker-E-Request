@@ -116,6 +116,18 @@ describe("form header/footer contracts and UI", () => {
       </I18nProvider>,
     );
     expect(screen.queryByRole("heading", { name: "Mẫu thử" })).toBeNull();
+    result.rerender(
+      <I18nProvider>
+        <FormBandView
+          title={form.title}
+          decoration={defaultDecoration()}
+          placement="header"
+          renderTitle={() => <h2>{form.title.vi}</h2>}
+        />
+      </I18nProvider>,
+    );
+    expect(screen.queryByRole("heading", { name: "Mẫu thử" })).toBeNull();
+    expect(result.container.querySelector(".fd-form-band")).toBeNull();
   });
   it("edits live using the signature preset and keeps read-only controls disabled", () => {
     const changed = vi.fn();
