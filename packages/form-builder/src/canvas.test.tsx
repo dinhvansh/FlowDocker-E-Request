@@ -38,10 +38,10 @@ function Host() {
   );
 }
 describe("live authoring canvas", () => {
-  it("edits a hidden footer from the canvas and preserves designer undo/redo", () => {
-    function DecorationHost() {
+  it("adds content blocks from the toolbox with undo and no separate band controls", () => {
+    function BlockHost() {
       const [definition, setDefinition] = useState<FormDefinition>({
-        id: "inline-decoration",
+        id: "blocks",
         title: { vi: "Mẫu thử", en: "Sample" },
         version: 1,
         status: "DRAFT",
@@ -50,37 +50,31 @@ describe("live authoring canvas", () => {
       return (
         <I18nProvider>
           <FormDesigner definition={definition} onChange={setDefinition} />
-          <output data-testid="decoration-schema">
+          <output data-testid="block-schema">
             {JSON.stringify(definition)}
           </output>
         </I18nProvider>
       );
     }
-    render(<DecorationHost />);
-    fireEvent.click(screen.getByRole("button", { name: "Chỉnh chân trang" }));
+    render(<BlockHost />);
     expect(
-      screen
-        .getByRole("tab", { name: "Chân trang" })
-        .getAttribute("aria-selected"),
-    ).toBe("true");
-    fireEvent.click(screen.getByRole("button", { name: "Mẫu khu vực chữ ký" }));
-    fireEvent.click(screen.getAllByRole("button", { name: "Đóng" })[0]);
+      screen.queryByRole("button", { name: "Đầu trang / Chân trang" }),
+    ).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Thêm Hình ảnh" }));
     const snapshot = () =>
-      JSON.parse(screen.getByTestId("decoration-schema").textContent!);
-    expect(snapshot().decoration.footer.enabled).toBe(true);
-    expect(
-      document.querySelector('.fd-live-form [data-placement="footer"]'),
-    ).toBeTruthy();
+      JSON.parse(screen.getByTestId("block-schema").textContent!);
+    expect(snapshot().fields[0].type).toBe("image");
+    expect(screen.getByLabelText("Tải ảnh / Logo")).toBeTruthy();
+    expect(screen.queryByRole("checkbox", { name: "Bắt buộc" })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Hoàn tác" }));
-    expect(snapshot().decoration).toBeUndefined();
+    expect(snapshot().fields).toHaveLength(0);
     fireEvent.click(screen.getByRole("button", { name: "Làm lại" }));
-    expect(snapshot().decoration.footer.columns).toBe(3);
-    fireEvent.click(screen.getByRole("button", { name: "Chỉnh đầu trang" }));
-    expect(
-      screen
-        .getByRole("tab", { name: "Đầu trang" })
-        .getAttribute("aria-selected"),
-    ).toBe("true");
+    expect(snapshot().fields[0].type).toBe("image");
+    fireEvent.click(
+      screen.getByRole("button", { name: "Thêm Nhãn / Văn bản" }),
+    );
+    expect(snapshot().fields[1].type).toBe("content");
+    expect(screen.getByRole("combobox", { name: "Căn nội dung" })).toBeTruthy();
   }, 60000);
   it("opens configured field groups directly from indicators without mutating the schema", () => {
     render(<Host />);

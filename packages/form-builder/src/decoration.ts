@@ -20,6 +20,29 @@ export interface FormDecoration {
   header: FormBand;
   footer: FormBand;
 }
+export type FormBlockPresentation = Pick<
+  FormBandCell,
+  "align" | "size" | "bold" | "image" | "imageWidth"
+>;
+export function validBlockPresentation(
+  value: unknown,
+): value is FormBlockPresentation {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const p = value as Record<string, unknown>;
+  return (
+    Object.keys(p).every((key) =>
+      ["align", "size", "bold", "image", "imageWidth"].includes(key),
+    ) &&
+    ["left", "center", "right"].includes(String(p.align)) &&
+    ["body", "subtitle", "title"].includes(String(p.size)) &&
+    typeof p.bold === "boolean" &&
+    (p.image === undefined || safeBandImage(p.image)) &&
+    (p.imageWidth === undefined ||
+      (Number.isInteger(p.imageWidth) &&
+        Number(p.imageWidth) >= 32 &&
+        Number(p.imageWidth) <= 640))
+  );
+}
 
 export const emptyBandCell = (): FormBandCell => ({
   kind: "text",

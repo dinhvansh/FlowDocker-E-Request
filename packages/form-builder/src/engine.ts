@@ -374,6 +374,8 @@ export function defaultValues(
   const result: PreviewValues = {};
   for (const field of fields) {
     if (++budget.count > 10000) break;
+    if (["content", "image", "divider", "alert", "button"].includes(field.type))
+      continue;
     if (field.type === "repeat")
       result[field.key] = Array.from(
         { length: Math.min(field.minRows ?? 0, 100) },
@@ -420,6 +422,12 @@ export function prepareValues(
     let next = { ...local };
     for (const field of fields) {
       if (++budget.count > 10000) continue;
+      if (
+        ["content", "image", "divider", "alert", "button"].includes(field.type)
+      ) {
+        delete next[field.key];
+        continue;
+      }
       const context = { ...root, ...next };
       const path = prefix + field.key;
       const policy = access[path] ?? access[field.key];
@@ -544,6 +552,8 @@ export function validatePreview(
         !evaluateRule(field.visibleWhen, context) ||
         field.type === "hidden" ||
         field.type === "content" ||
+        field.type === "image" ||
+        field.type === "divider" ||
         field.type === "alert" ||
         field.type === "button"
       )
@@ -870,7 +880,9 @@ export function submissionValues(
         policy?.read === "deny" ||
         policy?.read === "mask" ||
         policy?.write === false ||
-        ["content", "alert", "button"].includes(field.type) ||
+        ["content", "image", "divider", "alert", "button"].includes(
+          field.type,
+        ) ||
         field.disabled ||
         evaluateRule(field.disabledWhen, { ...prepared, ...data }, false) ||
         !evaluateRule(field.visibleWhen, { ...prepared, ...data })

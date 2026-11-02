@@ -1,4 +1,9 @@
-import { validFormDecoration, type FormDecoration } from "./decoration";
+import {
+  validFormDecoration,
+  validBlockPresentation,
+  type FormDecoration,
+  type FormBlockPresentation,
+} from "./decoration";
 export type BilingualText = { vi: string; en: string };
 export const formFieldTypes = [
   "person",
@@ -23,6 +28,8 @@ export const formFieldTypes = [
   "signature",
   "hidden",
   "content",
+  "image",
+  "divider",
   "section",
   "columns",
   "tabs",
@@ -145,6 +152,7 @@ export interface FormField {
   columns?: 1 | 2 | 3;
   /** Hide the visual legend for a columns layout while keeping it accessible. */
   hideLabel?: boolean;
+  presentation?: FormBlockPresentation;
   minRows?: number;
   maxRows?: number;
   autoRows?: boolean;
@@ -228,7 +236,9 @@ export const fieldTypeLabels: Record<FormFieldType, string> = {
   file: "Tệp đính kèm",
   signature: "Chữ ký",
   hidden: "Trường ẩn",
-  content: "Nội dung hướng dẫn",
+  content: "Nhãn / Văn bản",
+  image: "Hình ảnh",
+  divider: "Đường phân cách",
   section: "Nhóm trường",
   columns: "Bố cục cột",
   tabs: "Bố cục tab",
@@ -342,6 +352,7 @@ const allowedKeys = new Set([
   "children",
   "columns",
   "minRows",
+  "hideLabel",
   "maxRows",
   "autoRows",
   "uniqueBy",
@@ -353,6 +364,7 @@ const allowedKeys = new Set([
   "customRenderer",
   "buttonAction",
   "tone",
+  "presentation",
 ]);
 function fieldsShape(
   value: unknown,
@@ -386,6 +398,13 @@ function fieldsShape(
         return false;
       for (const key of ["help", "placeholder"])
         if (field[key] !== undefined && !textShape(field[key])) return false;
+      if (
+        field.presentation !== undefined &&
+        !validBlockPresentation(field.presentation)
+      )
+        return false;
+      if (field.hideLabel !== undefined && typeof field.hideLabel !== "boolean")
+        return false;
       for (const key of [
         "min",
         "max",
@@ -814,7 +833,16 @@ export function createField(
     key: `${type}_${count}`,
     label: {
       vi: fieldTypeLabels[type],
-      en: type === "person" ? "People picker" : type,
+      en:
+        type === "person"
+          ? "People picker"
+          : type === "content"
+            ? "Label / Text"
+            : type === "image"
+              ? "Image"
+              : type === "divider"
+                ? "Divider"
+                : type,
     },
     type,
     required: false,

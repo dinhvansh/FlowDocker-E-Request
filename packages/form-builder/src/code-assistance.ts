@@ -126,6 +126,13 @@ const fieldProperties: Record<(typeof codeProperties.field)[number], object> = {
   children: { type: "array", maxItems: 100, items: ref("Field") },
   columns: enumOf(1, 2, 3),
   hideLabel: bool,
+  presentation: object(["align", "size", "bold"], {
+    align: enumOf("left", "center", "right"),
+    size: enumOf("body", "subtitle", "title"),
+    bold: bool,
+    image: { type: "string", pattern: bandImagePattern, maxLength: 140000 },
+    imageWidth: { type: "integer", minimum: 32, maximum: 640 },
+  }),
   minRows: number,
   maxRows: number,
   autoRows: bool,

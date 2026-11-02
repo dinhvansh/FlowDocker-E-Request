@@ -1,0 +1,11 @@
+
+ RUN  v5.0.5 D:/Andros portal/FlowDocker-E-Request
+
+
+ Test Files  2 passed (2)
+      Tests  12 passed (12)
+   Start at  23:06:10
+   Duration  37.66s (tests 68%, import 20%, environment 10%, transform 2%)
+
+    Isolate  2 workers spawned · ~2.10s startup each (spawn + environment, per file)
+             at least ~2.10s faster with isolate: false — reuses workers across files instead of one per file

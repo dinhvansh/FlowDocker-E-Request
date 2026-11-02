@@ -434,4 +434,11 @@ export const formMessages = {
   "In đậm": "Bold",
   "Chỉnh đầu trang": "Edit header",
   "Chỉnh chân trang": "Edit footer",
+  "Nhãn / Văn bản": "Label / Text",
+  "Hình ảnh": "Image",
+  "Chưa chọn hình ảnh": "No image selected",
+  "Nội dung bổ sung · tiếng Việt": "Additional content · Vietnamese",
+  "Nội dung bổ sung · tiếng Anh": "Additional content · English",
+  "Thả vào đầu biểu mẫu": "Drop at the start of the form",
+  "Thả vào cuối biểu mẫu": "Drop at the end of the form",
 } as const;

@@ -2,6 +2,7 @@ import { useId, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import { spacingStyle } from "./spacing";
 import { FormBandView } from "./components/form-band";
+import { InsertionDropZone } from "./components/insertion-drop-zone";
 import { FormDecorationEditor } from "./components/form-decoration-editor";
 import type { FormDecoration } from "./decoration";
 import { useDndContext, useDroppable } from "@dnd-kit/core";
@@ -124,6 +125,14 @@ function FieldOverlay({
           setEditing(true);
       }}
     >
+      <InsertionDropZone
+        target={{ fieldId: field.id, edge: "before" }}
+        disabled={props.readOnly}
+      />
+      <InsertionDropZone
+        target={{ fieldId: field.id, edge: "after" }}
+        disabled={props.readOnly}
+      />
       {sortable.isOver && validDrop && (
         <div
           className="fd-canvas-drop-indicator"
@@ -294,7 +303,6 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
     {},
     props.runtimeContext,
   );
-  const { active } = useDndContext();
   const drop = useDroppable({ id: "canvas-root", disabled: props.readOnly });
   return (
     <div
@@ -305,6 +313,7 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
       data-drop-active={drop.isOver}
       aria-label={t("Canvas biểu mẫu trực tiếp")}
     >
+      <InsertionDropZone target={{ edge: "start" }} disabled={props.readOnly} />
       {props.onDecorationChange && (
         <div className="fd-canvas-band-actions">
           <FormDecorationEditor
@@ -348,6 +357,7 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
           }}
         />
       </FieldGroup>
+      <InsertionDropZone target={{ edge: "end" }} disabled={props.readOnly} />
       {props.onDecorationChange && (
         <div className="fd-canvas-band-actions">
           <FormDecorationEditor
@@ -364,11 +374,6 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
         placement="footer"
         title={definition.title}
       />
-      {active && !props.readOnly && (
-        <div className="fd-canvas-root-drop" data-drop-active={drop.isOver}>
-          {t("Thả vào đây để thêm cuối mẫu")}
-        </div>
-      )}
       <Button
         className="fd-canvas-add"
         disabled={props.readOnly}

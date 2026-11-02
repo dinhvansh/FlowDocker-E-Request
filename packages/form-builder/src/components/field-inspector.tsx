@@ -1,4 +1,5 @@
 import { defaultSourcesForType } from "../schema";
+import { ContentBlockEditor } from "./content-block-editor";
 import { useI18n } from "@flowdocker/i18n";
 import { ArrowDown, ArrowUp, Copy, Trash2 } from "lucide-react";
 import {
@@ -86,6 +87,11 @@ export function FieldInspector({
   onAddColumn,
 }: FieldInspectorProps) {
   const { t, locale } = useI18n();
+  const staticBlock = ["content", "image", "divider"].includes(field.type);
+  const activeSection =
+    staticBlock && !["basic", "appearance", "logic"].includes(section)
+      ? "basic"
+      : section;
   const required = (
     <Field label={t("Bắt buộc")}>
       <Checkbox
@@ -106,7 +112,7 @@ export function FieldInspector({
       </header>
       <Select
         label={t("Nhóm thuộc tính")}
-        value={section}
+        value={activeSection}
         onValueChange={(next) => onSectionChange(next as InspectorSection)}
         options={[
           { value: "basic", label: t("Cơ bản") },
@@ -115,7 +121,11 @@ export function FieldInspector({
           { value: "data", label: t("Dữ liệu") },
           { value: "appearance", label: t("Hiển thị") },
           { value: "advanced", label: t("Nâng cao") },
-        ]}
+        ].filter(
+          (option) =>
+            !staticBlock ||
+            ["basic", "appearance", "logic"].includes(option.value),
+        )}
       />
       {field.type === "repeat" && (
         <section
@@ -320,6 +330,7 @@ export function FieldInspector({
               >
                 <Checkbox
                   checked={field.hideLabel === false}
+                  disabled={readOnly}
                   onCheckedChange={(value) =>
                     patch({ hideLabel: value !== true })
                   }
@@ -330,6 +341,7 @@ export function FieldInspector({
               <Select
                 label={t("Trường trên mỗi hàng")}
                 value={String(field.columns ?? 2)}
+                disabled={readOnly}
                 options={[1, 2, 3].map((number) => ({
                   value: String(number),
                   label: t("{{count}} trường", { count: number }),
@@ -361,7 +373,7 @@ export function FieldInspector({
         </div>
       </div>
       <fieldset disabled={readOnly} className="fd-form-property-fieldset">
-        {section === "basic" ? (
+        {activeSection === "basic" ? (
           <FieldGroup>
             <Field label={t("Nhãn tiếng Việt")}>
               <Input
@@ -379,7 +391,7 @@ export function FieldInspector({
                 }
               />
             </Field>
-            {required}
+            {!staticBlock && required}
             {field.type === "person" && (
               <Field label={t("Cho phép chọn nhiều người")}>
                 <Checkbox
@@ -441,29 +453,47 @@ export function FieldInspector({
                 }}
               />
             </Field>
-            <AdvancedProperties
-              providers={providers}
-              sourceDefaults={sourceDefaults}
-              field={field}
-              fields={references}
-              patch={patch}
-              section="general"
-            />
+            {staticBlock ? (
+              <ContentBlockEditor
+                key={`${field.id}-${historyRevision}`}
+                field={field}
+                disabled={readOnly}
+                onChange={patch}
+              />
+            ) : (
+              <AdvancedProperties
+                providers={providers}
+                sourceDefaults={sourceDefaults}
+                field={field}
+                fields={references}
+                patch={patch}
+                section="general"
+              />
+            )}
           </FieldGroup>
         ) : (
           <FieldGroup>
-            {section === "validation" && required}
-            <AdvancedProperties
-              providers={providers}
-              sourceDefaults={sourceDefaults}
-              dataSources={dataSources}
-              key={field.id}
-              field={field}
-              fields={references}
-              patch={patch}
-              section={section}
-            />
-            {section === "data" &&
+            {activeSection === "validation" && !staticBlock && required}
+            {staticBlock && activeSection === "appearance" ? (
+              <ContentBlockEditor
+                key={`${field.id}-${historyRevision}`}
+                field={field}
+                disabled={readOnly}
+                onChange={patch}
+              />
+            ) : (
+              <AdvancedProperties
+                providers={providers}
+                sourceDefaults={sourceDefaults}
+                dataSources={dataSources}
+                key={field.id}
+                field={field}
+                fields={references}
+                patch={patch}
+                section={activeSection}
+              />
+            )}
+            {activeSection === "data" &&
               choiceTypes.includes(field.type) &&
               !field.dataSource && (
                 <OptionsEditor

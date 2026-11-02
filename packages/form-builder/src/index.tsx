@@ -40,3 +40,9 @@ export type {
 } from "./components/field-inspector";
 
 export { FormTestPreview, parseTestValues } from "./test-preview";
+export { ContentBlock } from "./components/content-block";
+export {
+  ContentBlockEditor,
+  type ContentBlockEditorProps,
+} from "./components/content-block-editor";
+export { type FormBlockPresentation } from "./decoration";

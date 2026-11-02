@@ -1,6 +1,7 @@
 import { useChoices } from "./use-choices";
 import { spacingStyle } from "./spacing";
 import { FormBandView } from "./components/form-band";
+import { ContentBlock } from "./components/content-block";
 import { RepeatField } from "./components/repeat-field";
 import {
   useEffect,
@@ -522,13 +523,8 @@ function RuntimeField({
   const setValue = (next: FormValue) =>
     onChange({ ...data, [field.key]: next });
   const nextProps = { ...props, readOnly: disabled, prefix, data };
-  if (field.type === "content")
-    return (
-      <section className="fd-form-content">
-        <h3>{field.label[locale]}</h3>
-        <p>{field.help?.[locale]}</p>
-      </section>
-    );
+  if (["content", "image", "divider"].includes(field.type))
+    return <ContentBlock field={field} />;
   if (field.type === "alert")
     return (
       <Notice tone={field.tone ?? "info"}>

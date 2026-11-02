@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import { FormSpacingEditor } from "./components/form-spacing-editor";
-import { FormDecorationEditor } from "./components/form-decoration-editor";
 import {
   DndContext,
   DragOverlay,
@@ -63,6 +62,8 @@ import {
   Clock3,
   Box,
   Users,
+  Image,
+  Minus,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -106,6 +107,7 @@ import {
 } from "./components/field-inspector";
 import type { FormRendererProps } from "./runtime";
 import { FormCanvas } from "./canvas";
+import { resolveFormInsertion, type FormInsertionTarget } from "./insertion";
 import { defaultValues } from "./engine";
 import type { FormDataSource } from "./components/data-source-editor";
 export interface FormDesignerProps {
@@ -215,7 +217,10 @@ function PaletteItem({
 /** Pointer release outside the canvas must never insert into the nearest field. */
 const formDropCollision: CollisionDetection = (args) => {
   if (!args.pointerCoordinates) return closestCenter(args);
-  return pointerWithin(args).sort((a, b) => {
+  const hits = pointerWithin(args);
+  // Explicit boundaries take precedence over overlapping container interiors.
+  const boundaries = hits.filter((hit) => String(hit.id).startsWith("insert:"));
+  return (boundaries.length ? boundaries : hits).sort((a, b) => {
     const first = args.droppableRects.get(a.id);
     const second = args.droppableRects.get(b.id);
     return (
@@ -261,6 +266,8 @@ const fieldTypeIcons: Partial<Record<FormFieldType, LucideIcon>> = {
   signature: PenLine,
   hidden: EyeOff,
   content: Text,
+  image: Image,
+  divider: Minus,
   section: LayoutPanelTop,
   columns: Columns3,
   tabs: PanelsTopLeft,
@@ -629,12 +636,6 @@ export function FormDesigner({
             else onChange(next);
           }}
         />
-        <FormDecorationEditor
-          value={definition.decoration}
-          title={definition.title}
-          disabled={readOnly}
-          onChange={(decoration) => commit({ ...definition, decoration })}
-        />
         <details className="fd-designer-tools">
           <summary>
             <Settings2 aria-hidden="true" />
@@ -748,6 +749,34 @@ export function FormDesigner({
           setActiveDrag(null);
           if (!over || readOnly) return;
           const overId = String(over.id);
+          const insertion = over.data.current?.insertion as
+            FormInsertionTarget | undefined;
+          if (insertion) {
+            const palette = String(active.id).startsWith("palette:");
+            const position = resolveFormInsertion(
+              definition.fields,
+              insertion,
+              palette ? undefined : String(active.id),
+            );
+            if (!position) return;
+            if (palette)
+              add(
+                String(active.id).slice(8) as FormFieldType,
+                position.parentId,
+                position.index,
+              );
+            else
+              commit({
+                ...definition,
+                fields: moveField(
+                  definition.fields,
+                  String(active.id),
+                  position.parentId,
+                  position.index,
+                ),
+              });
+            return;
+          }
           if (overId.startsWith("container:")) {
             const parentId = overId.slice("container:".length);
             const list =
@@ -910,6 +939,8 @@ export function FormDesigner({
                   "container",
                   "table",
                   "content",
+                  "image",
+                  "divider",
                   "alert",
                 ],
               },
@@ -1007,9 +1038,6 @@ export function FormDesigner({
                 data-orientation={definition.orientation ?? "portrait"}
               >
                 <FormCanvas
-                  onDecorationChange={(decoration) =>
-                    commit({ ...definition, decoration })
-                  }
                   runtimeContext={runtimeContext}
                   dropAfter={dropAfter}
                   definition={definition}

@@ -80,6 +80,8 @@ export function RepeatField({
           "address",
           "keyvalue",
           "content",
+          "image",
+          "divider",
           "alert",
           "button",
           "hidden",

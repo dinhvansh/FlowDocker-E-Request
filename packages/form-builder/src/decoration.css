@@ -111,6 +111,109 @@
 .fd-canvas-band-actions button {
   min-height: var(--fd-control-height, 36px);
 }
+.fd-content-block {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  text-align: left;
+  font-size: var(--fd-font-ui-size, 12px);
+  line-height: 1.5;
+}
+.fd-content-block[data-align="center"] {
+  text-align: center;
+}
+.fd-content-block[data-align="right"] {
+  text-align: right;
+}
+.fd-content-block[data-size="subtitle"] {
+  font-size: 14px;
+}
+.fd-content-block[data-size="title"] {
+  font-size: 18px;
+}
+.fd-content-block[data-bold="true"] {
+  font-weight: 600;
+}
+.fd-content-block :is(h3, p) {
+  font: inherit;
+  margin: 0;
+  color: inherit;
+}
+.fd-content-block p + p,
+.fd-content-block h3 + p {
+  margin-top: 6px;
+}
+.fd-content-block img {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+.fd-content-image-empty {
+  padding: 16px;
+  background: var(--fd-surface-default);
+  color: var(--fd-text-muted);
+}
+.fd-content-divider {
+  border: 0;
+  border-top: 1px solid var(--fd-border);
+  margin: 12px 0;
+}
+.fd-insertion-zone {
+  position: relative;
+  height: 24px;
+  min-width: 0;
+  pointer-events: none;
+}
+.fd-insertion-zone[data-edge="before"],
+.fd-insertion-zone[data-edge="after"] {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+.fd-insertion-zone[data-edge="before"] {
+  top: -14px;
+}
+.fd-insertion-zone[data-edge="after"] {
+  bottom: -14px;
+}
+.fd-insertion-zone[data-enabled="true"] {
+  pointer-events: auto;
+}
+.fd-insertion-zone span {
+  display: none;
+  position: absolute;
+  left: 8px;
+  top: 2px;
+  padding: 0 6px;
+  color: var(--fd-text-muted);
+  background: var(--fd-surface-default);
+  font-size: var(--fd-font-ui-size, 12px);
+  line-height: 18px;
+}
+.fd-insertion-zone[data-enabled="true"]::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed var(--fd-border);
+}
+.fd-insertion-zone[data-over="true"]::before {
+  border-top: 2px solid var(--fd-text);
+}
+.fd-insertion-zone[data-over="true"] span {
+  display: block;
+}
+.fd-canvas-field > .fd-container-drop-zone {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  margin: 0;
+  z-index: 1;
+}
 @media (max-width: 600px) {
   .fd-form-band {
     gap: 8px;
