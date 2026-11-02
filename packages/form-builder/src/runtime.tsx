@@ -942,9 +942,6 @@ function RuntimeField({
       >
         {control}
       </Field>
-      {field.type === "currency" && (
-        <Badge>{field.currency ?? props.currency ?? "VND"}</Badge>
-      )}
     </div>
   );
 }
