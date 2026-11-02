@@ -1,6 +1,7 @@
 import { useId, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import { spacingStyle } from "./spacing";
+import { FormBandView } from "./components/form-band";
 import { useDndContext, useDroppable } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -273,7 +274,7 @@ function FieldOverlay({
 }
 /** Same field rendering path as FormRenderer; authoring reveals conditional fields. */
 export function FormCanvas({ definition, ...props }: FormCanvasProps) {
-  const { locale, t } = useI18n();
+  const { t } = useI18n();
   const id = useId();
   const [values, setValues] = useState<PreviewValues>(() =>
     defaultValues(definition.fields, undefined, props.runtimeContext),
@@ -301,16 +302,11 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
       data-drop-active={drop.isOver}
       aria-label={t("Canvas biểu mẫu trực tiếp")}
     >
-      <header className="fd-live-form-header">
-        <Badge>
-          {t("Bản nháp")} ·{" "}
-          {t("Phiên bản {{version}}", { version: definition.version })}
-        </Badge>
-        <h2>{definition.title[locale] || t("Biểu mẫu chưa đặt tên")}</h2>
-        <p>
-          {t("Chọn trường để chỉnh sửa. Dữ liệu trên canvas chỉ dùng để thử.")}
-        </p>
-      </header>
+      <FormBandView
+        decoration={definition.decoration}
+        placement="header"
+        title={definition.title}
+      />
       <FieldGroup>
         <RuntimeFields
           fields={definition.fields}
@@ -338,6 +334,11 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
           }}
         />
       </FieldGroup>
+      <FormBandView
+        decoration={definition.decoration}
+        placement="footer"
+        title={definition.title}
+      />
       {active && !props.readOnly && (
         <div className="fd-canvas-root-drop" data-drop-active={drop.isOver}>
           {t("Thả vào đây để thêm cuối mẫu")}

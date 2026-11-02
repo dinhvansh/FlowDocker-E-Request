@@ -1,4 +1,5 @@
 import { codeProperties } from "./code-model";
+import { bandImagePattern } from "./decoration";
 import {
   creatorProfileLabels,
   formFieldTypes,
@@ -158,6 +159,10 @@ export const formAuthoringSchema = {
     display: enumOf("form", "wizard"),
     orientation: enumOf("portrait", "landscape"),
     currency: { type: "string", pattern: "^[A-Z]{3}$" },
+    decoration: object(["header", "footer"], {
+      header: ref("Band"),
+      footer: ref("Band"),
+    }),
     spacing: object(["rowGap", "columnGap", "sectionGap", "sectionPadding"], {
       rowGap: { type: "integer", minimum: 0, maximum: 48 },
       columnGap: { type: "integer", minimum: 0, maximum: 64 },
@@ -166,6 +171,29 @@ export const formAuthoringSchema = {
     }),
   }),
   $defs: {
+    Band: object(["enabled", "columns", "divider", "cells"], {
+      enabled: bool,
+      columns: enumOf(1, 2, 3),
+      divider: bool,
+      cells: {
+        type: "array",
+        minItems: 3,
+        maxItems: 3,
+        items: ref("BandCell"),
+      },
+    }),
+    BandCell: object(["kind", "align", "text", "size", "bold"], {
+      kind: enumOf("title", "text", "image"),
+      align: enumOf("left", "center", "right"),
+      text: object(["vi", "en"], {
+        vi: { type: "string", maxLength: 4000 },
+        en: { type: "string", maxLength: 4000 },
+      }),
+      size: enumOf("body", "subtitle", "title"),
+      bold: bool,
+      image: { type: "string", maxLength: 140000, pattern: bandImagePattern },
+      imageWidth: { type: "integer", minimum: 32, maximum: 320 },
+    }),
     Text: text,
     Rule: rule,
     Field: object(

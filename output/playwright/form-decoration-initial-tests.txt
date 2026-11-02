@@ -1,0 +1,26 @@
+
+ RUN  v5.0.5 D:/Andros portal/FlowDocker-E-Request
+
+ ❯ packages/form-builder/src/decoration.test.tsx (5 tests | 1 failed) 2774ms
+   ❯ form header/footer contracts and UI (5)
+     × preserves old definitions and round-trips presentation through code and import/export 59ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/form-builder/src/decoration.test.tsx > form header/footer contracts and UI > preserves old definitions and round-trips presentation through code and import/export
+AssertionError: expected [ 'id', 'title', 'version', …(8) ] to include 'align'
+ ❯ packages/form-builder/src/decoration.test.tsx:60:7
+     58|     expect(
+     59|       codeCompletions('{"decoration":{"header":{"cells":[{"al', 48),
+     60|     ).toContain("align");
+       |       ^
+     61|     expect(
+     62|       codeCompletions('{"decoration":{"header":{"cells":[{"kind":"', 4…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 14 passed (15)
+   Start at  16:24:47
+   Duration  130.73s (tests 64%, import 29%, environment 6%, transform 1%)

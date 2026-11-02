@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import { FormSpacingEditor } from "./components/form-spacing-editor";
+import { FormDecorationEditor } from "./components/form-decoration-editor";
 import {
   DndContext,
   DragOverlay,
@@ -628,6 +629,12 @@ export function FormDesigner({
             else onChange(next);
           }}
         />
+        <FormDecorationEditor
+          value={definition.decoration}
+          title={definition.title}
+          disabled={readOnly}
+          onChange={(decoration) => commit({ ...definition, decoration })}
+        />
         <details className="fd-designer-tools">
           <summary>
             <Settings2 aria-hidden="true" />
@@ -983,6 +990,17 @@ export function FormDesigner({
               items={rows.map((row) => row.field.id)}
               strategy={verticalListSortingStrategy}
             >
+              <div className="fd-canvas-authoring-note">
+                <Badge>
+                  {t("Bản nháp")} ·{" "}
+                  {t("Phiên bản {{version}}", { version: definition.version })}
+                </Badge>
+                <span>
+                  {t(
+                    "Chọn trường để chỉnh sửa. Dữ liệu trên canvas chỉ dùng để thử.",
+                  )}
+                </span>
+              </div>
               <div
                 className="fd-canvas-paper"
                 data-device={device}

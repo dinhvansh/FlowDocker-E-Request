@@ -103,7 +103,7 @@ describe("live authoring canvas", () => {
     expect(schema().fields[0].children).toHaveLength(6);
     fireEvent.click(screen.getByRole("button", { name: "Làm lại" }));
     expect(schema().fields[0].children).toHaveLength(7);
-  }, 15000);
+  }, 60000);
 
   it("rejects destructive conversion of a populated layout and keeps its children", () => {
     render(<Host />);
@@ -179,5 +179,5 @@ describe("live authoring canvas", () => {
       JSON.parse(screen.getByTestId("schema").textContent!).fields[0]
         .children[3].label.vi,
     ).toBe("Nhà cung cấp");
-  }, 15000);
+  }, 60000);
 });

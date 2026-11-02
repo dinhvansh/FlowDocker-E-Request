@@ -1,4 +1,9 @@
 export * from "./schema";
+export { defaultDecoration, validFormDecoration } from "./decoration";
+export type { FormDecoration, FormBand, FormBandCell } from "./decoration";
+export { FormBandView } from "./components/form-band";
+export { FormDecorationEditor } from "./components/form-decoration-editor";
+export type { FormDecorationEditorProps } from "./components/form-decoration-editor";
 export { spacingStyle, compactSpacing, standardSpacing } from "./spacing";
 export { FormSpacingEditor } from "./components/form-spacing-editor";
 export type { FormSpacingEditorProps } from "./components/form-spacing-editor";

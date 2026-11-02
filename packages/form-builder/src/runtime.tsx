@@ -1,5 +1,6 @@
 import { useChoices } from "./use-choices";
 import { spacingStyle } from "./spacing";
+import { FormBandView } from "./components/form-band";
 import { RepeatField } from "./components/repeat-field";
 import {
   useEffect,
@@ -1030,7 +1031,11 @@ export function FormRenderer({
       style={spacingStyle(definition.spacing)}
       data-orientation={definition.orientation ?? "portrait"}
     >
-      <h2>{definition.title[locale]}</h2>
+      <FormBandView
+        decoration={definition.decoration}
+        placement="header"
+        title={definition.title}
+      />
       {props.preview && (
         <Notice>
           {t("Xem thử cục bộ. Giá trị nhập không được gửi hoặc lưu.")}
@@ -1240,6 +1245,11 @@ export function FormRenderer({
           </Button>
         </div>
       </form>
+      <FormBandView
+        decoration={definition.decoration}
+        placement="footer"
+        title={definition.title}
+      />
       {result && (
         <Notice tone={failed ? "danger" : "success"}>{t(result)}</Notice>
       )}

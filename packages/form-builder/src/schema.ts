@@ -1,3 +1,4 @@
+import { validFormDecoration, type FormDecoration } from "./decoration";
 export type BilingualText = { vi: string; en: string };
 export const formFieldTypes = [
   "person",
@@ -181,6 +182,7 @@ export interface FormDefinition {
   currency?: string;
   /** Optional per-form layout, in integer CSS pixels. */
   spacing?: FormSpacing;
+  decoration?: FormDecoration;
 }
 export interface FormIssue {
   fieldId?: string;
@@ -548,6 +550,7 @@ export function isFormDefinition(value: unknown): value is FormDefinition {
         "orientation",
         "currency",
         "spacing",
+        "decoration",
       ].includes(key),
     ) &&
     typeof value.id === "string" &&
@@ -565,6 +568,7 @@ export function isFormDefinition(value: unknown): value is FormDefinition {
     (value.currency === undefined ||
       /^[A-Z]{3}$/.test(String(value.currency))) &&
     (value.spacing === undefined || validFormSpacing(value.spacing)) &&
+    (value.decoration === undefined || validFormDecoration(value.decoration)) &&
     fieldsShape(value.fields)
   );
 }

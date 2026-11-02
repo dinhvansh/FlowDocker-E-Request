@@ -119,7 +119,7 @@ fs.writeFileSync(
   JSON.stringify(
     {
       name: "@flowdocker/forms",
-      version: "0.3.0",
+      version: "0.4.0",
       type: "module",
       private: true,
       license: "UNLICENSED",
@@ -141,5 +141,5 @@ fs.writeFileSync(
 );
 fs.unlinkSync(path.join(output, "bundle-provenance.json"));
 process.stdout.write(
-  `Prepared @flowdocker/forms 0.3.0 with ${inventory.length} bundled license entries.\n`,
+  `Prepared @flowdocker/forms 0.4.0 with ${inventory.length} bundled license entries.\n`,
 );

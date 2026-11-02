@@ -105,6 +105,7 @@ export const codeProperties = {
     "orientation",
     "currency",
     "spacing",
+    "decoration",
   ],
   field: [
     "id",
@@ -150,6 +151,10 @@ export const codeProperties = {
   ],
   text: ["vi", "en"],
   spacing: ["rowGap", "columnGap", "sectionGap", "sectionPadding"],
+  decoration: ["header", "footer"],
+  header: ["enabled", "columns", "divider", "cells"],
+  footer: ["enabled", "columns", "divider", "cells"],
+  bandCell: ["kind", "align", "text", "size", "bold", "image", "imageWidth"],
   calculation: ["operator", "fields", "expression", "precision"],
   rule: ["mode", "conditions"],
   condition: ["field", "operator", "value"],
@@ -165,6 +170,7 @@ function objectKeys(path: (string | number)[]): readonly string[] {
   const parent = path.at(-2);
   if (!path.length) return codeProperties.form;
   if (typeof last === "number") {
+    if (parent === "cells") return codeProperties.bandCell;
     if (parent === "fields" || parent === "children")
       return codeProperties.field;
     if (parent === "conditions") return codeProperties.condition;
@@ -183,6 +189,10 @@ export function codeCompletions(text: string, offset: number) {
   const property = path.at(-1);
   if (location.isAtPropertyKey) return objectKeys(path.slice(0, -1));
   switch (property) {
+    case "align":
+      return ["left", "center", "right"];
+    case "size":
+      return ["body", "subtitle", "title"];
     case "type":
       return formFieldTypes;
     case "status":
@@ -233,6 +243,7 @@ export function codeCompletions(text: string, offset: number) {
     case "scope":
       return ["app", "year"];
     case "kind":
+      if (path.includes("decoration")) return ["title", "text", "image"];
       return [
         "literal",
         "sequence",
