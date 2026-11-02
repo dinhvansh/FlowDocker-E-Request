@@ -48,6 +48,11 @@ import {
   formDraftStorageKey,
   readFormDrafts,
 } from "./form-drafts";
+import {
+  formRecoveryKey,
+  readFormRecovery,
+  writeFormRecovery,
+} from "./form-recovery";
 
 const FormCodeStudio = lazy(
   () => import("@flowdocker/form-builder/code-studio"),
@@ -140,9 +145,21 @@ export function FormsPage({
   );
   const { t, locale } = useI18n();
   const [initial] = useState(load);
+  const [initialRecovery] = useState(() => {
+    try {
+      return { entry: readFormRecovery(sessionStorage), failed: false };
+    } catch {
+      return { entry: null, failed: true };
+    }
+  });
   const [forms, setForms] = useState(initial.forms);
-  const [draft, setDraft] = useState<FormDefinition | null>(null);
-  const [catalogOpen, setCatalogOpen] = useState(true);
+  const [draft, setDraft] = useState<FormDefinition | null>(
+    initialRecovery.entry?.definition ?? null,
+  );
+  const [catalogOpen, setCatalogOpen] = useState(!initialRecovery.entry);
+  const [recovered, setRecovered] = useState(!!initialRecovery.entry);
+  const [recoveryError, setRecoveryError] = useState(initialRecovery.failed);
+  const [discardRecoveryOpen, setDiscardRecoveryOpen] = useState(false);
   useImperativeHandle(
     ref,
     () => ({
@@ -162,15 +179,19 @@ export function FormsPage({
   const [titlesOpen, setTitlesOpen] = useState(false);
   const [jsonError, setJsonError] = useState("");
   const [jsonText, setJsonText] = useState("");
-  const [codeText, setCodeText] = useState("");
+  const [codeText, setCodeText] = useState(initialRecovery.entry?.source ?? "");
   const [selectedFieldId, setSelectedFieldId] = useState("");
   const [revealField, setRevealField] = useState<{
     id: string;
     revision: number;
   }>();
-  const [codeDirty, setCodeDirty] = useState(false);
+  const [codeDirty, setCodeDirty] = useState(
+    initialRecovery.entry?.codeDirty ?? false,
+  );
   const [query, setQuery] = useState("");
-  const [tab, setTab] = useState("schema");
+  const [tab, setTab] = useState(
+    initialRecovery.entry?.codeDirty ? "code" : "schema",
+  );
   const [codeView, setCodeView] = useState("canvas");
   const [values, setValues] = useState<PreviewValues>({});
   const [message, setMessage] = useState("");
@@ -187,7 +208,35 @@ export function FormsPage({
   const codeInvalid =
     !!draft && codeDirty && !analyzeFormCode(codeText, draft.id).definition;
   const dirty =
-    !!draft && (JSON.stringify(draft) !== JSON.stringify(saved) || codeInvalid);
+    !!draft && (JSON.stringify(draft) !== JSON.stringify(saved) || codeDirty);
+  useEffect(() => {
+    if (!draft || !dirty) return;
+    const persist = () => {
+      try {
+        writeFormRecovery(sessionStorage, {
+          version: 1,
+          definition: draft,
+          source: codeText,
+          codeDirty,
+        });
+        setRecoveryError(false);
+      } catch {
+        setRecoveryError(true);
+      }
+    };
+    persist();
+    window.addEventListener("pagehide", persist);
+    return () => window.removeEventListener("pagehide", persist);
+  }, [draft, dirty, codeText, codeDirty]);
+  const clearRecovery = () => {
+    try {
+      sessionStorage.removeItem(formRecoveryKey);
+      setRecoveryError(false);
+    } catch {
+      setRecoveryError(true);
+    }
+    setRecovered(false);
+  };
   useEffect(() => {
     if (!dirty) return;
     const protectDraft = (event: BeforeUnloadEvent) => {
@@ -206,6 +255,7 @@ export function FormsPage({
     (FormSpacing | undefined)[]
   >([]);
   const activate = (next: FormDefinition) => {
+    clearRecovery();
     setPreviewSpacingPast([]);
     setCatalogOpen(false);
     setTitlesOpen(false);
@@ -252,6 +302,8 @@ export function FormsPage({
     try {
       localStorage.setItem(formDraftStorageKey, JSON.stringify(next));
       setForms(next);
+      setCodeDirty(false);
+      clearRecovery();
       setTitlesOpen(false);
       setMessage("Đã lưu bản nháp biểu mẫu trên máy này.");
       setSaveError(false);
@@ -324,6 +376,13 @@ export function FormsPage({
           )}
         </Notice>
       )}
+      {recoveryError && (
+        <Notice tone="danger">
+          {t(
+            "Không dùng được bản khôi phục trong tab này. Hãy lưu bản nháp hợp lệ trước khi tải lại hoặc rời trang.",
+          )}
+        </Notice>
+      )}
       <div className="fd-form-workbench" data-catalog={catalogOpen || !draft}>
         <FormCatalog
           forms={catalog}
@@ -369,6 +428,18 @@ export function FormsPage({
                 </Button>
               </div>
               {message && <Notice tone="success">{t(message)}</Notice>}
+              {recovered && (
+                <Notice>
+                  <p>
+                    {t(
+                      "Đã khôi phục phiên chỉnh sửa trong tab này. Mã gõ dở được giữ nguyên; bản đã lưu chưa thay đổi.",
+                    )}
+                  </p>
+                  <Button onClick={() => setDiscardRecoveryOpen(true)}>
+                    {t("Bỏ bản khôi phục")}
+                  </Button>
+                </Notice>
+              )}
               {saveError && (
                 <Notice tone="danger">
                   {t(
@@ -420,7 +491,7 @@ export function FormsPage({
                 hidden={!["schema", "logic", "code"].includes(tab)}
               >
                 <div hidden={tab !== "code"} className="fd-code-pane">
-                  {!!codeText && (
+                  {(tab === "code" || !!codeText) && (
                     <Suspense
                       fallback={
                         <Notice>{t("Đang mở trình soạn mã...")}</Notice>
@@ -709,6 +780,41 @@ export function FormsPage({
           <p>
             {t(
               "Thay đổi của biểu mẫu hiện tại chưa được lưu. Chuyển tiếp sẽ bỏ các thay đổi này.",
+            )}
+          </p>
+        </Modal>
+      )}
+      {discardRecoveryOpen && (
+        <Modal
+          title={t("Bỏ bản khôi phục?")}
+          onClose={() => setDiscardRecoveryOpen(false)}
+          footer={
+            <>
+              <Button onClick={() => setDiscardRecoveryOpen(false)}>
+                {t("Tiếp tục chỉnh sửa")}
+              </Button>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  clearRecovery();
+                  if (saved) activate(saved);
+                  else {
+                    setDraft(null);
+                    setCatalogOpen(true);
+                    setCodeDirty(false);
+                    setCodeText("");
+                  }
+                  setDiscardRecoveryOpen(false);
+                }}
+              >
+                {t("Bỏ bản khôi phục")}
+              </Button>
+            </>
+          }
+        >
+          <p>
+            {t(
+              "Chỉ bỏ phần chỉnh sửa chưa lưu trong tab này. Biểu mẫu đã lưu được giữ nguyên.",
             )}
           </p>
         </Modal>

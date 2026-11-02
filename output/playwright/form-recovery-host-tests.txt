@@ -1,0 +1,77 @@
+
+ RUN  v5.0.5 D:/Andros portal/FlowDocker-E-Request
+
+ ✓ apps/e-request-web/src/forms.test.tsx > Form Studio host journeys > returns to the catalog through navigation without losing unsaved edits 9862ms
+ ✓ apps/e-request-web/src/forms.test.tsx > Form Studio host journeys > keeps edits through language switching, confirms discard and persists saved schema 16899ms
+ ✓ apps/e-request-web/src/forms.test.tsx > Form Studio host journeys > retains current edits and reports storage failure without reporting saved 8407ms
+ ✓ apps/e-request-web/src/forms.test.tsx > Form Studio host journeys > starts in the catalog, lists templates with saved forms and preserves saved edits 12117ms
+ ✓ apps/e-request-web/src/forms.test.tsx > edits spacing directly in preview, undoes a gesture and persists metadata 7413ms
+stderr | apps/e-request-web/src/forms.test.tsx > syncs code edits to canvas and retains the last valid form on invalid JSON
+TypeError: textRange(...).getClientRects is not a function
+    at TextTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2143:51)
+    at LineTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2056:27)
+    at DocView.coordsAt (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:3308:21)
+    at EditorView.coordsAtPos (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8611:29)
+    at RectangleMarker.forRange (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9379:28)
+    at Object.markers (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9647:51)
+    at LayerView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9536:27)
+    at file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8252:34
+    at Array.map (<anonymous>)
+    at EditorView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8250:42)
+TypeError: textRange(...).getClientRects is not a function
+    at TextTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2143:51)
+    at LineTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2056:27)
+    at DocView.coordsAt (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:3308:21)
+    at EditorView.coordsAtPos (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8611:29)
+    at RectangleMarker.forRange (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9379:28)
+    at Object.markers (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9647:51)
+    at LayerView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9536:27)
+    at file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8252:34
+    at Array.map (<anonymous>)
+    at EditorView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8250:42)
+
+stderr | apps/e-request-web/src/forms.test.tsx > syncs code edits to canvas and retains the last valid form on invalid JSON
+TypeError: textRange(...).getClientRects is not a function
+    at TextTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2143:51)
+    at LineTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2056:27)
+    at DocView.coordsAt (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:3308:21)
+    at EditorView.coordsAtPos (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8611:29)
+    at RectangleMarker.forRange (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9379:28)
+    at Object.markers (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9647:51)
+    at LayerView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9536:27)
+    at file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8252:34
+    at Array.map (<anonymous>)
+    at EditorView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8250:42)
+
+stderr | apps/e-request-web/src/forms.test.tsx > syncs code edits to canvas and retains the last valid form on invalid JSON
+TypeError: textRange(...).getClientRects is not a function
+    at TextTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2143:51)
+    at LineTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2056:27)
+    at DocView.coordsAt (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:3308:21)
+    at EditorView.coordsAtPos (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8611:29)
+    at RectangleMarker.forRange (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9379:28)
+    at Object.markers (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9647:51)
+    at LayerView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9536:27)
+    at file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8252:34
+    at Array.map (<anonymous>)
+    at EditorView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8250:42)
+TypeError: textRange(...).getClientRects is not a function
+    at TextTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2143:51)
+    at LineTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2056:27)
+    at DocView.coordsAt (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:3308:21)
+    at EditorView.coordsAtPos (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8611:29)
+    at RectangleMarker.forRange (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9379:28)
+    at Object.markers (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9647:51)
+    at LayerView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9536:27)
+    at file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8252:34
+    at Array.map (<anonymous>)
+    at EditorView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8250:42)
+
+ ✓ apps/e-request-web/src/forms.test.tsx > syncs code edits to canvas and retains the last valid form on invalid JSON 40394ms
+ ✓ apps/e-request-web/src/forms.test.tsx > confirms recovery discard and preserves saved forms 18483ms
+ ✓ apps/e-request-web/src/forms.test.tsx > reports unavailable session recovery while retaining local draft saving 12393ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  10:17:20
+   Duration  143.84s (tests 88%, import 9%, environment 2%, transform 1%)

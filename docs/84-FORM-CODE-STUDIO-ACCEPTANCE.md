@@ -3,7 +3,7 @@
 Date: 2026-10-31. Branch: feat/forms-field-ux-layout. Existing open PR: https://github.com/dinhvansh/FlowDocker-E-Request/pull/6. No merge performed.
 
 ## Scope and workflow
-The same FormDefinition is edited by the existing visual designer and optional Code Studio. All existing schema, settings, drag/drop, inspector and safe calculation/validation logic remain. Valid code synchronizes immediately, without Apply. Invalid source retains the last valid canvas, participates in the unsaved guard, and blocks visual mutations and saving until repaired. Invalid source is an in-session draft, not a persisted recovery file.
+The same FormDefinition is edited by the existing visual designer and optional Code Studio. All existing schema, settings, drag/drop, inspector and safe calculation/validation logic remain. Valid code synchronizes immediately, without Apply. Invalid source retains the last valid canvas, participates in the unsaved guard, and blocks visual mutations and saving until repaired. The original in-session-only limitation is superseded by tab-local editing recovery in [docs/88](88-FORM-CODE-DRAFT-RECOVERY.md). Recovery never commits unfinished source to the saved form catalog.
 
 User journey: Forms → open/create form → Code Studio. Code on the left, Canvas/Test data on the right. The designer uses Field library/Canvas/Field properties panes when embedded in the split layout. Narrow screens stack the two areas. Normal visual design remains unchanged. Click a field to reveal its source; cursor inside a field selects that field, including nested children. Visual changes patch JSON paths instead of replacing unrelated whitespace. Editor keeps cursor/history across app tabs and locale changes. Schema/field IDs remain data, not executable code.
 

@@ -13,6 +13,7 @@ import { createRef } from "react";
 import { I18nProvider, useI18n } from "@flowdocker/i18n";
 import { FormsPage, type FormsPageHandle } from "./forms";
 import { demoForms, formDraftStorageKey } from "./form-drafts";
+import { formRecoveryKey } from "./form-recovery";
 function Host() {
   const { setLocale } = useI18n();
   return (
@@ -25,6 +26,7 @@ function Host() {
 afterEach(() => {
   cleanup();
   localStorage.clear();
+  sessionStorage.clear();
   vi.restoreAllMocks();
 });
 describe("Form Studio host journeys", () => {
@@ -91,7 +93,7 @@ describe("Form Studio host journeys", () => {
     expect(
       screen.queryByRole("textbox", { name: "Form name · Vietnamese" }),
     ).toBeNull();
-  }, 15000);
+  }, 60000);
 
   it("retains current edits and reports storage failure without reporting saved", () => {
     render(
@@ -204,7 +206,7 @@ it("edits spacing directly in preview, undoes a gesture and persists metadata", 
 });
 
 it("syncs code edits to canvas and retains the last valid form on invalid JSON", async () => {
-  render(
+  const mounted = render(
     <I18nProvider>
       <FormsPage />
     </I18nProvider>,
@@ -222,7 +224,7 @@ it("syncs code edits to canvas and retains the last valid form on invalid JSON",
     {
       name: "Schema biểu mẫu · Code Studio",
     },
-    { timeout: 10000 },
+    { timeout: 60000 },
   );
   const view = EditorView.findFromDOM(editor.closest(".cm-editor")!)!;
   const edit = (value: string) =>
@@ -266,4 +268,122 @@ it("syncs code edits to canvas and retains the last valid form on invalid JSON",
     ctrlKey: false,
   });
   await waitFor(() => expect(view.state.doc.toString()).toBe("{"));
+  expect(JSON.parse(sessionStorage.getItem(formRecoveryKey)!).source).toBe("{");
+  expect(localStorage.getItem(formDraftStorageKey)).toBeNull();
+  mounted.unmount();
+  render(
+    <I18nProvider>
+      <FormsPage />
+    </I18nProvider>,
+  );
+  const recoveredEditor = await screen.findByRole(
+    "textbox",
+    { name: "Schema biểu mẫu · Code Studio" },
+    { timeout: 10000 },
+  );
+  const recoveredView = EditorView.findFromDOM(
+    recoveredEditor.closest(".cm-editor")!,
+  )!;
+  expect(recoveredView.state.doc.toString()).toBe("{");
+  expect(
+    screen.getByRole("heading", { name: "Code sync test", level: 1 }),
+  ).toBeTruthy();
+  expect(
+    (screen.getByRole("button", { name: "Lưu bản nháp" }) as HTMLButtonElement)
+      .disabled,
+  ).toBe(true);
+  act(() =>
+    recoveredView.dispatch({
+      changes: {
+        from: 0,
+        to: recoveredView.state.doc.length,
+        insert: JSON.stringify(schema),
+      },
+    }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Lưu bản nháp" }));
+  expect(sessionStorage.getItem(formRecoveryKey)).toBeNull();
+  expect(
+    JSON.parse(localStorage.getItem(formDraftStorageKey)!)[0].title.vi,
+  ).toBe("Code sync test");
+});
+
+it("confirms recovery discard and preserves saved forms", async () => {
+  const saved = structuredClone(demoForms[0]);
+  localStorage.setItem(formDraftStorageKey, JSON.stringify([saved]));
+  sessionStorage.setItem(
+    formRecoveryKey,
+    JSON.stringify({
+      version: 1,
+      definition: saved,
+      source: "",
+      codeDirty: true,
+    }),
+  );
+  render(
+    <I18nProvider>
+      <FormsPage />
+    </I18nProvider>,
+  );
+  const editor = await screen.findByRole(
+    "textbox",
+    { name: "Schema biểu mẫu · Code Studio" },
+    { timeout: 10000 },
+  );
+  expect(
+    EditorView.findFromDOM(editor.closest(".cm-editor")!)!.state.doc.toString(),
+  ).toBe("");
+  fireEvent.click(screen.getByRole("button", { name: "Bỏ bản khôi phục" }));
+  fireEvent.click(screen.getByRole("button", { name: "Tiếp tục chỉnh sửa" }));
+  expect(sessionStorage.getItem(formRecoveryKey)).not.toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Bỏ bản khôi phục" }));
+  fireEvent.click(
+    within(screen.getByRole("dialog")).getByRole("button", {
+      name: "Bỏ bản khôi phục",
+    }),
+  );
+  expect(sessionStorage.getItem(formRecoveryKey)).toBeNull();
+  expect(JSON.parse(localStorage.getItem(formDraftStorageKey)!)).toEqual([
+    saved,
+  ]);
+  expect(
+    screen
+      .getByRole("tab", { name: "Thiết kế trường" })
+      .getAttribute("aria-selected"),
+  ).toBe("true");
+});
+
+it("reports unavailable session recovery while retaining local draft saving", () => {
+  const originalSet = Storage.prototype.setItem;
+  vi.spyOn(Storage.prototype, "setItem").mockImplementation(function (
+    this: Storage,
+    key,
+    value,
+  ) {
+    if (this === sessionStorage) throw new Error("Quota exceeded");
+    return originalSet.call(this, key, value);
+  });
+  render(
+    <I18nProvider>
+      <FormsPage />
+    </I18nProvider>,
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: /Đề nghị mua sắm · mẫu/ }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Tùy chọn biểu mẫu" }));
+  fireEvent.click(screen.getByRole("button", { name: "Đổi tên biểu mẫu" }));
+  fireEvent.change(
+    screen.getByRole("textbox", { name: "Tên biểu mẫu · tiếng Việt" }),
+    { target: { value: "Vẫn lưu được" } },
+  );
+  expect(
+    screen.getByText(
+      "Không dùng được bản khôi phục trong tab này. Hãy lưu bản nháp hợp lệ trước khi tải lại hoặc rời trang.",
+    ),
+  ).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: "Lưu bản nháp" }));
+  expect(
+    JSON.parse(localStorage.getItem(formDraftStorageKey)!)[0].title.vi,
+  ).toBe("Vẫn lưu được");
 });

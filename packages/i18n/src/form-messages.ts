@@ -383,4 +383,12 @@ export const formMessages = {
   "tại dòng": "on line",
   "Đã thay kết quả tại dòng $": "replaced match on line $",
   "Đã thay $ kết quả": "replaced $ matches",
+  "Không dùng được bản khôi phục trong tab này. Hãy lưu bản nháp hợp lệ trước khi tải lại hoặc rời trang.":
+    "Recovery is unavailable in this tab. Save a valid draft before reloading or leaving.",
+  "Đã khôi phục phiên chỉnh sửa trong tab này. Mã gõ dở được giữ nguyên; bản đã lưu chưa thay đổi.":
+    "Your editing session was restored in this tab. Unfinished code is preserved; the saved form is unchanged.",
+  "Bỏ bản khôi phục": "Discard recovery",
+  "Bỏ bản khôi phục?": "Discard recovery?",
+  "Chỉ bỏ phần chỉnh sửa chưa lưu trong tab này. Biểu mẫu đã lưu được giữ nguyên.":
+    "Only unsaved edits in this tab will be discarded. Saved forms are preserved.",
 } as const;
