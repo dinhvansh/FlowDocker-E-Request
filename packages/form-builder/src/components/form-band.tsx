@@ -16,14 +16,8 @@ export function FormBandView({
   renderTitle?: () => ReactNode;
 }) {
   const { locale } = useI18n();
-  if (!decoration)
-    return placement === "header" ? (
-      renderTitle ? (
-        renderTitle()
-      ) : (
-        <h2>{title[locale]}</h2>
-      )
-    ) : null;
+  // The form name belongs to the catalog; document headings are authored blocks.
+  if (!decoration) return null;
   if (!validFormDecoration(decoration)) return null;
   const band = decoration[placement];
   if (!band.enabled) return null;

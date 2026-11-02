@@ -186,3 +186,7 @@ Raster upload resizes PNG/JPEG/WebP locally (5 MB source limit, 640×320 bound a
 
 ### 0.3.0 compatibility and examples
 Additive editor/controlled-selection/test-harness APIs. Existing FormDefinition schema and uncontrolled FormDesigner consumers remain compatible; no stored-data migration. See examples/main.tsx for an independent synthetic host with code, visual editing, selection and test data. The E-Request host lazy-loads Code Studio. Production authorization, AI provider integration, and commercial distribution terms remain separate work.
+
+## 0.5.2 — Authored document headings
+
+The form name no longer appears automatically inside the canvas or runtime/preview. Add a `content` (Nhãn / Văn bản) block and choose its heading size/alignment instead. Catalog names and rename actions remain available. Explicit legacy decoration title cells still render; no stored content is deleted. Public title-editing contracts from 0.5.1 remain compatible.

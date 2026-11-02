@@ -115,7 +115,7 @@ describe("form header/footer contracts and UI", () => {
         <FormBandView title={form.title} placement="header" />
       </I18nProvider>,
     );
-    expect(screen.getByRole("heading", { name: "Mẫu thử" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Mẫu thử" })).toBeNull();
   });
   it("edits live using the signature preset and keeps read-only controls disabled", () => {
     const changed = vi.fn();
