@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "types": ["vite/client", "vitest/globals"],
+    "paths": {
+      "@/*": ["./packages/ui/src/*"],
+      "@flowdocker/ui": ["./packages/ui/src/index.ts"],
+      "@flowdocker/app-shell": ["./packages/app-shell/src/index.tsx"],
+      "@flowdocker/app-contracts": ["./packages/app-contracts/src/index.ts"],
+      "@flowdocker/master-builder": ["./packages/master-builder/src/index.tsx"],
+      "@flowdocker/permission-builder": [
+        "./packages/permission-builder/src/index.tsx"
+      ]
+    }
+  },
+  "include": ["apps", "packages", "vite.config.ts"]
+}
