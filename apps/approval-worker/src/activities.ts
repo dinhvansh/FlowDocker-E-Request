@@ -19,6 +19,9 @@ export function createApprovalActivities(pool: pg.Pool) {
     const db = await pool.connect();
     try {
       await db.query("BEGIN");
+      await db.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [
+        `approval-run:${ref.tenantId}:${ref.appId}:${ref.runId}`,
+      ]);
       await db.query(
         "SELECT set_config('app.tenant_id',$1,true),set_config('app.app_id',$2,true),set_config('app.run_id',$3,true)",
         [ref.tenantId, ref.appId, ref.runId],
@@ -58,6 +61,12 @@ export function createApprovalActivities(pool: pg.Pool) {
       }),
     activateApproval: (ref: RunRef, stepId: string, assignees: string[]) =>
       scoped(ref, async (db) => {
+        const run = await db.query(
+          "SELECT status FROM fd.approval_runs WHERE id=$1",
+          [ref.runId],
+        );
+        if (run.rows[0].status !== "RUNNING")
+          throw ApplicationFailure.nonRetryable("Run is closed", "RUN_CLOSED");
         const active = await db.query(
           "SELECT id FROM fd.members WHERE id=ANY($1::uuid[]) AND active",
           [assignees],
@@ -115,6 +124,12 @@ export function createApprovalActivities(pool: pg.Pool) {
       }),
     finishRun: (ref: RunRef, status: "APPROVED" | "REJECTED" | "BLOCKED") =>
       scoped(ref, async (db) => {
+        const run = await db.query(
+          "SELECT status FROM fd.approval_runs WHERE id=$1",
+          [ref.runId],
+        );
+        if (run.rows[0].status !== "RUNNING" && run.rows[0].status !== status)
+          throw ApplicationFailure.nonRetryable("Run is closed", "RUN_CLOSED");
         await db.query("UPDATE fd.approval_runs SET status=$1 WHERE id=$2", [
           status,
           ref.runId,

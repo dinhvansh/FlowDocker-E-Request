@@ -21,9 +21,10 @@
     "backend:up": "docker compose --env-file .env.backend.local -f compose.backend.yml up -d --wait",
     "backend:migrate": "node --env-file=.env.backend.local scripts/backend-migrate.mjs",
     "backend:dev": "node --env-file=.env.backend.local --import tsx apps/api/src/main.ts",
-    "backend:test": "node --env-file=.env.backend.local --import tsx --test apps/api/src/api.integration.ts apps/api/src/publication.integration.ts",
+    "backend:test": "node --env-file=.env.backend.local --import tsx --test apps/api/src/api.integration.ts apps/api/src/publication.integration.ts apps/api/src/tasks.integration.ts",
     "backend:seed": "node --env-file=.env.backend.local --import tsx scripts/backend-seed.ts",
-    "approval:test": "node --env-file=.env.backend.local --import tsx --test apps/approval-worker/src/runtime.integration.ts"
+    "approval:test": "node --env-file=.env.backend.local --import tsx --test apps/approval-worker/src/runtime.integration.ts",
+    "approval:dev": "node --env-file=.env.backend.local --import tsx apps/approval-worker/src/main.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

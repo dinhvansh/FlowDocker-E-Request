@@ -4,6 +4,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { isFormDefinition } from "../../../packages/form-builder/src/schema.ts";
 import { registerLogin } from "./login.ts";
 import { registerPublication } from "./publication.ts";
+import { registerTasks } from "./tasks.ts";
 import { ApiFailure } from "./session.ts";
 const uuid =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -12,6 +13,7 @@ export function createApi(pool: pg.Pool) {
   const api = Fastify({ bodyLimit: 1024 * 1024, logger: false });
   api.register(async (instance) => registerLogin(instance, pool));
   registerPublication(api, pool);
+  registerTasks(api, pool);
   api.setErrorHandler((error, request, reply) => {
     const status = (error as { statusCode?: number }).statusCode ?? 500;
     reply.code(status).send({

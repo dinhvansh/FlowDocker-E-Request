@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { randomUUID } from "node:crypto";
+import { randomUUID, randomBytes, createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { setTimeout as delay } from "node:timers/promises";
 import pg from "pg";
@@ -13,6 +13,8 @@ import {
   DefaultLogger,
 } from "@temporalio/worker";
 import { createApprovalActivities, type RunRef } from "./activities.ts";
+import { createApi } from "../../api/src/server.ts";
+import { dispatchDecisionWakeups } from "./outbox.ts";
 import {
   compileApprovalPlan,
   type ApprovalPlan,
@@ -31,6 +33,9 @@ test(
       connectionString: process.env.WORKER_DATABASE_URL,
       max: 4,
     });
+    const apiPool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+    const api = createApi(apiPool);
+    const apiAddress = await api.listen({ host: "127.0.0.1", port: 0 });
     const connection = await Connection.connect({ address: "127.0.0.1:7233" });
     const native = await NativeConnection.connect({
       address: "127.0.0.1:7233",
@@ -40,6 +45,9 @@ test(
       owner = randomUUID(),
       manager = randomUUID(),
       head = randomUUID();
+    const tokens = new Map(
+      [manager, head].map((id) => [id, randomBytes(32).toString("hex")]),
+    );
     const taskQueue = `poc-${randomUUID()}`;
     const bundle = await bundleWorkflowCode({
       workflowsPath: fileURLToPath(new URL("./workflows.ts", import.meta.url)),
@@ -72,7 +80,7 @@ test(
     const rows = (runId: string) =>
       admin
         .query(
-          "SELECT id,step_id,status,version FROM fd.approval_work_items WHERE tenant_id=$1 AND run_id=$2 ORDER BY step_id",
+          "SELECT id,step_id,status,version,assignee_id FROM fd.approval_work_items WHERE tenant_id=$1 AND run_id=$2 ORDER BY step_id",
           [tenantId, runId],
         )
         .then((result) => result.rows);
@@ -83,7 +91,11 @@ test(
           [tenantId, runId],
         )
         .then((result) => result.rows[0]?.status);
-    async function start(plan: ApprovalPlan, amount: string) {
+    async function start(
+      plan: ApprovalPlan,
+      amount: string,
+      beforeStart?: (ref: RunRef) => Promise<void>,
+    ) {
       const ref: RunRef = { tenantId, appId: "e-request", runId: randomUUID() };
       const compiled = compileApprovalPlan(plan, { amount: "decimal" });
       await admin.query(
@@ -98,6 +110,7 @@ test(
           { amount: "decimal" },
         ],
       );
+      await beforeStart?.(ref);
       const handle = await client.workflow.start("approvalRun", {
         taskQueue,
         workflowId: `approval-${ref.runId}`,
@@ -107,19 +120,43 @@ test(
       handles.push(handle);
       return { ref, handle };
     }
-    async function fixtureApprove(taskId: string) {
-      // This POC commits synthetic decisions as test fixture setup, not an authenticated human API.
-      const result = await admin.query(
-        "UPDATE fd.approval_work_items SET status='APPROVED',version=version+1 WHERE tenant_id=$1 AND id=$2 AND status='PENDING'",
+    async function decide(taskId: string, decision = "APPROVED") {
+      const task = await admin.query(
+        "SELECT assignee_id,version FROM fd.approval_work_items WHERE tenant_id=$1 AND id=$2",
         [tenantId, taskId],
       );
-      assert.equal(result.rowCount, 1);
+      const result = await fetch(
+        `${apiAddress}/api/v1/apps/e-request/tasks/${taskId}/decision`,
+        {
+          method: "POST",
+          headers: {
+            authorization: `Bearer ${tokens.get(task.rows[0].assignee_id)}`,
+            "content-type": "application/json",
+            "idempotency-key": randomUUID(),
+          },
+          body: JSON.stringify({
+            decision,
+            expectedVersion: task.rows[0].version,
+          }),
+        },
+      );
+      assert.equal(result.status, 200, await result.text());
     }
     try {
       await admin.query(
         "INSERT INTO fd.members(tenant_id,id) VALUES ($1,$2),($1,$3),($1,$4)",
         [tenantId, owner, manager, head],
       );
+      for (const [actor, token] of tokens) {
+        await admin.query(
+          "UPDATE fd.members SET capabilities=$3 WHERE tenant_id=$1 AND id=$2",
+          [tenantId, actor, ["e-request:tasks:decide"]],
+        );
+        await admin.query(
+          "INSERT INTO fd.sessions(token_hash,tenant_id,actor_id,expires_at) VALUES($1,$2,$3,now()+interval '1 hour')",
+          [createHash("sha256").update(token).digest("hex"), tenantId, actor],
+        );
+      }
       const role = await pool.query(
         "SELECT rolsuper,rolbypassrls FROM pg_roles WHERE rolname=current_user",
       );
@@ -188,8 +225,8 @@ test(
         await delay(200);
         assert.equal(await status(ref.runId), "RUNNING");
         assert.equal((await rows(ref.runId))[0].status, "PENDING");
-        await fixtureApprove(items[0].id);
-        await handle.signal("decisionWake");
+        await decide(items[0].id);
+        assert.equal((await dispatchDecisionWakeups(pool, client)).failed, 0);
         assert.equal(await handle.result(), "APPROVED");
         assert.equal(await status(ref.runId), "APPROVED");
       }
@@ -211,15 +248,15 @@ test(
         () => rows(ref.runId),
         (value) => value.length === 2,
       );
-      await fixtureApprove(items[0].id);
-      await handle.signal("decisionWake");
+      await decide(items[0].id);
+      await dispatchDecisionWakeups(pool, client);
       await delay(200);
       assert.equal(await status(ref.runId), "RUNNING");
       worker!.shutdown();
       await running;
       await makeWorker();
-      await fixtureApprove(items[1].id);
-      await handle.signal("decisionWake");
+      await decide(items[1].id);
+      await dispatchDecisionWakeups(pool, client);
       assert.equal(await handle.result(), "APPROVED");
       assert.equal((await rows(ref.runId)).length, 2);
       assert.equal(await status(ref.runId), "APPROVED");
@@ -242,15 +279,56 @@ test(
         () => rows(rejected.ref.runId),
         (value) => value.length === 2,
       );
-      await admin.query(
-        "UPDATE fd.approval_work_items SET status='REJECTED',version=version+1 WHERE tenant_id=$1 AND id=$2",
-        [tenantId, rejectedItems[0].id],
-      );
-      await rejected.handle.signal("decisionWake");
+      await decide(rejectedItems[0].id, "REJECTED");
+      await dispatchDecisionWakeups(pool, client);
       assert.equal(await rejected.handle.result(), "REJECTED");
       assert.deepEqual(
         (await rows(rejected.ref.runId)).map((item) => item.status).sort(),
         ["CANCELLED", "REJECTED"],
+      );
+      const delayed = await start(
+        {
+          schemaVersion: 1,
+          steps: [{ id: "delayed", kind: "approval", assignees: [manager] }],
+        },
+        "10",
+        async (ref) => {
+          const taskId = randomUUID();
+          await admin.query(
+            "INSERT INTO fd.approval_work_items(tenant_id,app_id,id,run_id,step_id,assignee_id) VALUES($1,$2,$3,$4,'delayed',$5)",
+            [tenantId, ref.appId, taskId, ref.runId, manager],
+          );
+          await decide(taskId);
+          const failure = await dispatchDecisionWakeups(pool, client);
+          assert.equal(failure.failed, 1);
+          assert.equal(
+            (
+              await admin.query(
+                "SELECT delivered_at FROM fd.approval_outbox WHERE tenant_id=$1 AND run_id=$2",
+                [tenantId, ref.runId],
+              )
+            ).rows[0].delivered_at,
+            null,
+          );
+          // Advance only this test event's backoff; original committed decision stays intact.
+          await admin.query(
+            "UPDATE fd.approval_outbox SET lease_until=now()-interval '1 second' WHERE tenant_id=$1 AND run_id=$2",
+            [tenantId, ref.runId],
+          );
+        },
+      );
+      assert.equal(await delayed.handle.result(), "APPROVED");
+      const retried = await dispatchDecisionWakeups(pool, client);
+      assert.equal(retried.failed, 0);
+      assert.equal(retried.delivered, 1);
+      assert.equal(
+        (
+          await admin.query(
+            "SELECT attempts FROM fd.approval_outbox WHERE tenant_id=$1 AND run_id=$2",
+            [tenantId, delayed.ref.runId],
+          )
+        ).rows[0].attempts,
+        2,
       );
       await admin.query(
         "UPDATE fd.members SET active=false WHERE tenant_id=$1 AND id=$2",
@@ -283,6 +361,17 @@ test(
       await native.close();
       await connection.close();
       await pool.end();
+      await api.close();
+      await apiPool.end();
+      for (const table of [
+        "approval_outbox",
+        "task_decisions",
+        "audit",
+        "sessions",
+      ])
+        await admin.query(`DELETE FROM fd.${table} WHERE tenant_id=$1`, [
+          tenantId,
+        ]);
       await admin.query(
         "DELETE FROM fd.approval_work_items WHERE tenant_id=$1",
         [tenantId],

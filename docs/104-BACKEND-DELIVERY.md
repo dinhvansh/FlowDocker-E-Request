@@ -47,3 +47,10 @@ Temporal engine POC: real conditional/parallel execution, durable wait/restart,
 replay, rejection/inactive-assignee cleanup and non-owner worker RLS verified.
 See docs/107 and apps/approval-worker/README.md. Fixture decisions are not human
 API E2E. Submission/task API/outbox/UI and remaining modules are still pending.
+
+Authenticated task decisions and durable wakeup: implemented HTTP metadata
+read/list and assignee-only decision with optimistic version, exact idempotency,
+atomic audit/outbox and leased delivery outside transactions. Real HTTP/database/
+Temporal retry/restart/replay tests pass; sessions are synthetic test fixtures,
+not browser sign-in evidence. See docs/108. Request submission/version binding,
+workflow publication/runtime UI and remaining service modules still pending.

@@ -20,11 +20,21 @@ parallel branches settle before pending tasks are cancelled.
 
 Evidence: threshold routes, parallel ALL, untrusted wakeup, restart, history replay,
 rejection cancellation, inactive approver blocking and direct SQL/RLS denial.
-The integration currently commits decisions using the migration account solely as
-test fixture setup. This is **not authenticated human approval E2E**.
+The integration now commits decisions through the real authenticated HTTP API,
+using synthetic expiring sessions seeded by the test administrator. It exercises
+PostgreSQL/outbox/Temporal; this is **not browser sign-in or owner UAT evidence**.
 
-Pending: human decision API, submission/version binding, transactional outbox,
-editor graph adapter, runtime UI, audited transitions and recovery operations.
+Run `npm run approval:dev` for the local worker and sequential outbox dispatch loop
+(task queue `flowdocker-approval-v1`). Events are claimed with expiring leases,
+sent outside database transactions and acknowledged only after delivery or a
+verified closed Temporal execution. Missing/unreachable executions retain events
+for retry; no start-from-signal behavior. Duplicate wakeups are safe. The trusted
+dispatcher sees metadata events across tenants but no request payload.
+
+Decision API and metadata outbox are implemented; submission/version binding,
+editor graph adapter, runtime UI, system-transition audit and recovery operations
+remain pending. Human decisions have transactional audit. Worker run transitions
+do not yet have their own system audit stream.
 The pinned Temporal CLI development server uses persistent SQLite; it is not a
 production HA deployment. If database cleanup itself is unavailable, an activity
 failure remains visible in Temporal and needs reconciliation; no recovery SLA is
