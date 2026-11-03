@@ -21,7 +21,8 @@
     "backend:up": "docker compose --env-file .env.backend.local -f compose.backend.yml up -d --wait",
     "backend:migrate": "node --env-file=.env.backend.local scripts/backend-migrate.mjs",
     "backend:dev": "node --env-file=.env.backend.local --import tsx apps/api/src/main.ts",
-    "backend:test": "node --env-file=.env.backend.local --import tsx --test apps/api/src/api.integration.ts"
+    "backend:test": "node --env-file=.env.backend.local --import tsx --test apps/api/src/api.integration.ts",
+    "backend:seed": "node --env-file=.env.backend.local --import tsx scripts/backend-seed.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
@@ -48,6 +49,7 @@
     "vitest": "^5.0.5"
   },
   "dependencies": {
+    "@fastify/rate-limit": "10.3.0",
     "cn": "^0.5.0",
     "fastify": "5.12.8",
     "pg": "8.23.1",

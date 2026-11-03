@@ -46,3 +46,7 @@ No browser E2E, Temporal, Teams, PDF, restore or release gate passed here.
 Second independent backend consumer remains pending. See docs/104.
 
 Bounded list: GET /api/v1/apps/:appId/forms?after=<uuid> returns at most 50 title/id/version summaries plus nextCursor; it uses identical session/capability/RLS checks. Invalid cursors return 400, no SQL detail. HTTP storage adapter tests use the actual server/database; no UI wiring in this slice.
+
+## Local identity (development)
+POST /api/v1/session/login accepts login/password and returns an opaque one-hour token with Cache-Control no-store. Password verifiers use scrypt N=131072/r=8/p=1 with random salt; comparisons are timing-safe. Login limits requests per IP and concurrent expensive derivations. Unknown/disabled accounts share INVALID_CREDENTIALS. POST /api/v1/session/logout revokes the presented token. Tokens remain a host-session concern, never stored by the Forms repository. No public registration or account/role-grant endpoint.
+Run npm run backend:seed once to create a synthetic Forms-only author; random credentials go to ignored backend-demo.local.json and are never printed. Existing accounts/files are retained. This is not Entra/OAuth, password recovery, MFA, production identity governance or Teams authentication. OAuth/webhook configuration is deferred per owner. The login/session RLS returning-context regression, invalid password, logout, inactive membership and rate limiting are tested over HTTP/PostgreSQL.

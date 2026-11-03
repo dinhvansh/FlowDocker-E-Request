@@ -9,3 +9,4 @@ test-results/
 .env*
 output/app-dev-*.log
 output/api-dev-*.log
+*.local.json

@@ -8,6 +8,7 @@ import {
   FormStorageError,
 } from "../../../packages/form-builder/src/http-storage.ts";
 import type { FormDefinition } from "../../../packages/form-builder/src/schema.ts";
+import { createPassword } from "./password.ts";
 
 test("real PostgreSQL authoring API: isolation, conflicts, revocation, audit and restart", async () => {
   assert.ok(process.env.MIGRATION_DATABASE_URL);
@@ -28,6 +29,8 @@ test("real PostgreSQL authoring API: isolation, conflicts, revocation, audit and
   const hash = (value: string) =>
     createHash("sha256").update(value).digest("hex");
   const id = randomUUID();
+  const loginName = `test-${randomUUID()}`;
+  const password = randomBytes(24).toString("hex");
   const definition = {
     schemaVersion: 2,
     id: "example",
@@ -63,6 +66,36 @@ test("real PostgreSQL authoring API: isolation, conflicts, revocation, audit and
     await admin.query(
       "INSERT INTO fd.sessions(token_hash,tenant_id,actor_id,expires_at) VALUES ($1,$2,$3,now()+interval '1 hour'),($4,$5,$6,now()+interval '1 hour')",
       [hash(token), tenant, actor, hash(otherToken), otherTenant, otherActor],
+    );
+    const credential = await createPassword(password);
+    await admin.query(
+      "INSERT INTO fd.local_accounts(login_name,tenant_id,actor_id,salt,verifier) VALUES ($1,$2,$3,$4,$5)",
+      [loginName, tenant, actor, credential.salt, credential.verifier],
+    );
+    const login = (value: string) =>
+      fetch(`${address}/api/v1/session/login`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ login: loginName, password: value }),
+      });
+    assert.equal((await login("incorrect-password")).status, 401);
+    const signedIn = await login(password);
+    assert.equal(signedIn.status, 200);
+    assert.equal(signedIn.headers.get("cache-control"), "no-store");
+    const sessionBody = (await signedIn.json()) as { accessToken: string };
+    assert.equal(sessionBody.accessToken.length, 64);
+    assert.equal(
+      (await call("GET", undefined, sessionBody.accessToken)).statusCode,
+      404,
+    );
+    const signedOut = await fetch(`${address}/api/v1/session/logout`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${sessionBody.accessToken}` },
+    });
+    assert.equal(signedOut.status, 204);
+    assert.equal(
+      (await call("GET", undefined, sessionBody.accessToken)).statusCode,
+      401,
     );
     const role = await pool.query(
       "SELECT rolsuper,rolbypassrls FROM pg_roles WHERE rolname=current_user",
@@ -153,6 +186,7 @@ test("real PostgreSQL authoring API: isolation, conflicts, revocation, audit and
       [tenant, actor],
     );
     assert.equal((await call("GET")).statusCode, 403);
+    assert.equal((await login(password)).status, 401);
     await admin.query(
       "UPDATE fd.members SET active=true,capabilities=$3 WHERE tenant_id=$1 AND id=$2",
       [tenant, actor, []],
@@ -193,6 +227,23 @@ test("real PostgreSQL authoring API: isolation, conflicts, revocation, audit and
       pool.query("SELECT * FROM fd.audit"),
       /permission denied/,
     );
+    assert.equal(
+      (await pool.query("SELECT * FROM fd.local_accounts")).rowCount,
+      0,
+    );
+    let throttled = false;
+    for (let attempt = 0; attempt < 9; attempt++) {
+      const response = await fetch(`${address}/api/v1/session/login`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ login: "!", password: "bad" }),
+      });
+      if (response.status === 429) {
+        throttled = true;
+        break;
+      }
+    }
+    assert.equal(throttled, true);
   } finally {
     await api.close();
     await pool.end();
@@ -208,6 +259,9 @@ test("real PostgreSQL authoring API: isolation, conflicts, revocation, audit and
       "DELETE FROM fd.sessions WHERE tenant_id=ANY($1::uuid[])",
       [[tenant, otherTenant]],
     );
+    await admin.query("DELETE FROM fd.local_accounts WHERE login_name=$1", [
+      loginName,
+    ]);
     await admin.query(
       "DELETE FROM fd.members WHERE tenant_id=ANY($1::uuid[])",
       [[tenant, otherTenant]],
