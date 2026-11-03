@@ -198,3 +198,7 @@ Also suppress legacy decoration cells with `kind: title` in designer and runtime
 ## 0.5.4 — Preview schema diagnostics
 
 FormRenderer/FormPreview now list translated schema validation issues when preview is blocked. Optional `onEditSchemaIssue(issue: FormIssue)` lets an authoring host open the matching field/settings without changing or discarding the draft. E-Request wires the callback to its designer.
+
+## 0.5.5 — Live configuration panel
+
+New reusable `FormSchemaIssues` accepts `issues: readonly FormIssue[]`, `fields: FormField[]`, and optional `onEditIssue(issue)`; it lists translated messages with nested field labels/keys and a valid state. No draft mutation. Runtime and E-Request authoring share the component. Optional `FormDesigner.inspectionRequest: {fieldId: string; revision: number}` opens/focuses the inspector; controlled hosts also set `selectedFieldId` to that field. Increment revision for repeated navigation to the same field. E-Request adds a compact live-count toggle next to Save; existing validation/save rules remain unchanged.

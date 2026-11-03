@@ -1,4 +1,11 @@
 export const formMessages = {
+  "1 lỗi": "1 error",
+  "Cần sửa 1 lỗi cấu hình": "Fix 1 configuration error",
+  "Kiểm tra cấu hình biểu mẫu": "Check form configuration",
+  "Cần sửa {{count}} lỗi cấu hình": "Fix {{count}} configuration errors",
+  "Cấu hình hợp lệ, có thể xem thử biểu mẫu.":
+    "Configuration is valid. You can preview the form.",
+  "{{count}} lỗi": "{{count}} errors",
   "Hoàn tác khoảng cách": "Undo spacing",
   "{{value}} px": "{{value}} px",
   "Khoảng cách": "Spacing",

@@ -1,0 +1,168 @@
+
+ RUN  v5.0.5 D:/Andros portal/FlowDocker-E-Request
+
+stderr | apps/e-request-web/src/forms.test.tsx > syncs code edits to canvas and retains the last valid form on invalid JSON
+TypeError: textRange(...).getClientRects is not a function
+    at TextTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2143:51)
+    at LineTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2056:27)
+    at DocView.coordsAt (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:3308:21)
+    at EditorView.coordsAtPos (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8611:29)
+    at RectangleMarker.forRange (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9379:28)
+    at Object.markers (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9647:51)
+    at LayerView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9536:27)
+    at file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8252:34
+    at Array.map (<anonymous>)
+    at EditorView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8250:42)
+TypeError: textRange(...).getClientRects is not a function
+    at TextTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2143:51)
+    at LineTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2056:27)
+    at DocView.coordsAt (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:3308:21)
+    at EditorView.coordsAtPos (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8611:29)
+    at RectangleMarker.forRange (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9379:28)
+    at Object.markers (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9647:51)
+    at LayerView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9536:27)
+    at file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8252:34
+    at Array.map (<anonymous>)
+    at EditorView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8250:42)
+
+stderr | apps/e-request-web/src/forms.test.tsx > syncs code edits to canvas and retains the last valid form on invalid JSON
+TypeError: textRange(...).getClientRects is not a function
+    at TextTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2143:51)
+    at LineTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2056:27)
+    at DocView.coordsAt (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:3308:21)
+    at EditorView.coordsAtPos (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8611:29)
+    at RectangleMarker.forRange (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9379:28)
+    at Object.markers (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9647:51)
+    at LayerView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9536:27)
+    at file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8252:34
+    at Array.map (<anonymous>)
+    at EditorView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8250:42)
+
+stderr | apps/e-request-web/src/forms.test.tsx > syncs code edits to canvas and retains the last valid form on invalid JSON
+TypeError: textRange(...).getClientRects is not a function
+    at TextTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2143:51)
+    at LineTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2056:27)
+    at DocView.coordsAt (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:3308:21)
+    at EditorView.coordsAtPos (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8611:29)
+    at RectangleMarker.forRange (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9379:28)
+    at Object.markers (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9647:51)
+    at LayerView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9536:27)
+    at file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8252:34
+    at Array.map (<anonymous>)
+    at EditorView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8250:42)
+TypeError: textRange(...).getClientRects is not a function
+    at TextTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2143:51)
+    at LineTile.coordsIn (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:2056:27)
+    at DocView.coordsAt (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:3308:21)
+    at EditorView.coordsAtPos (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8611:29)
+    at RectangleMarker.forRange (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9379:28)
+    at Object.markers (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9647:51)
+    at LayerView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:9536:27)
+    at file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8252:34
+    at Array.map (<anonymous>)
+    at EditorView.measure (file:///D:/Andros%20portal/FlowDocker-E-Request/node_modules/@codemirror/view/dist/index.js:8250:42)
+
+ ❯ apps/e-request-web/src/forms.test.tsx (9 tests | 1 failed) 214089ms
+   × syncs code edits to canvas and retains the last valid form on invalid JSON 66614ms
+ ❯ packages/form-builder/src/components/form-schema-issues.test.tsx (2 tests | 1 failed) 540ms
+   × labels nested issues, routes callbacks without mutation and clears live 521ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/e-request-web/src/forms.test.tsx > syncs code edits to canvas and retains the last valid form on invalid JSON
+Error: Test timed out in 60000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ apps/e-request-web/src/forms.test.tsx:208:1
+    206| });
+    207|
+    208| it("syncs code edits to canvas and retains the last valid form on inva…
+       | ^
+    209|   const mounted = render(
+    210|     <I18nProvider>
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  packages/form-builder/src/components/form-schema-issues.test.tsx > labels nested issues, routes callbacks without mutation and clears live
+TestingLibraryElementError: Found multiple elements with the role "status"
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+<div
+  class="relative grid w-full grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border px-4 py-3 text-sm has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current bg-card text-card-foreground fd-notice fd-notice-success"
+  data-slot="alert"
+  role="status"
+>
+  <div
+    class="col-start-2 grid justify-items-start gap-1 text-sm text-muted-foreground [&_p]:leading-relaxed"
+    data-slot="alert-description"
+  >
+    <p
+      aria-atomic="true"
+      aria-live="polite"
+      role="status"
+    >
+      Configuration is valid. You can preview the form.
+    </p>
+  </div>
+</div>
+
+Ignored nodes: comments, script, style
+<p
+  aria-atomic="true"
+  aria-live="polite"
+  role="status"
+>
+  Configuration is valid. You can preview the form.
+</p>
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-label="Check form configuration"
+      class="fd-form-schema-issues"
+    >
+      <div
+        class="relative grid w-full grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border px-4 py-3 text-sm has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current bg-card text-card-foreground fd-notice fd-notice-success"
+        data-slot="alert"
+        role="status"
+      >
+        <div
+          class="col-start-2 grid justify-items-start gap-1 text-sm text-muted-foreground [&_p]:leading-relaxed"
+          data-slot="alert-description"
+        >
+          <p
+            aria-atomic="true"
+            aria-live="polite"
+            role="status"
+          >
+            Configuration is valid. You can preview the form.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ packages/form-builder/src/components/form-schema-issues.test.tsx:44:17
+     42|     </I18nProvider>,
+     43|   );
+     44|   expect(screen.getByRole("status").textContent).toContain(
+       |                 ^
+     45|     "Configuration is valid",
+     46|   );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 1 passed (3)
+      Tests  2 failed | 12 passed (14)
+   Start at  11:09:03
+   Duration  277.78s (tests 78%, import 17%, environment 4%, transform 1%)

@@ -50,3 +50,8 @@ export {
   EditableFormTitle,
   type EditableFormTitleProps,
 } from "./components/editable-form-title";
+
+export {
+  FormSchemaIssues,
+  type FormSchemaIssuesProps,
+} from "./components/form-schema-issues";

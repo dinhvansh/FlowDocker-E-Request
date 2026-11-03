@@ -115,6 +115,7 @@ export interface FormDesignerProps {
   compact?: boolean;
   /** Optional controlled selection shared with code/outline integrations. */
   selectedFieldId?: string;
+  inspectionRequest?: { fieldId: string; revision: number };
   onSelectField?(id: string): void;
   runtimeContext?: FormRendererProps["runtimeContext"];
   providers?: FormRendererProps["providers"];
@@ -350,6 +351,7 @@ function OutlineRow({
 export function FormDesigner({
   compact = false,
   selectedFieldId,
+  inspectionRequest,
   onSelectField,
   definition,
   onChange,
@@ -375,6 +377,16 @@ export function FormDesigner({
   const [pane, setPane] = useState("canvas");
   const [toolboxOpen, setToolboxOpen] = useState(true);
   const [inspectorOpen, setInspectorOpen] = useState(true);
+  const inspectorRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (inspectionRequest) {
+      setInternalSelectedId(inspectionRequest.fieldId);
+      setInspectorOpen(true);
+      setPane("properties");
+      const frame = requestAnimationFrame(() => inspectorRef.current?.focus());
+      return () => cancelAnimationFrame(frame);
+    }
+  }, [inspectionRequest]);
   const [inspectorWidth, setInspectorWidth] = useState(300);
   const [device, setDevice] = useState("desktop");
   const [insertAt, setInsertAt] = useState<{
@@ -1071,6 +1083,8 @@ export function FormDesigner({
             </SortableContext>
           </section>
           <aside
+            ref={inspectorRef}
+            tabIndex={-1}
             className="fd-form-properties"
             aria-label={t("Thuộc tính trường")}
           >

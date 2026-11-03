@@ -387,3 +387,45 @@ it("reports unavailable session recovery while retaining local draft saving", ()
     JSON.parse(localStorage.getItem(formDraftStorageKey)!)[0].title.vi,
   ).toBe("Vẫn lưu được");
 });
+
+it("routes the live configuration issue panel to a recovered field and clears after repair", () => {
+  const definition = structuredClone(demoForms[0]);
+  definition.fields[0].key = "invalid key";
+  sessionStorage.setItem(
+    formRecoveryKey,
+    JSON.stringify({
+      version: 1,
+      definition,
+      source: JSON.stringify(definition),
+      codeDirty: false,
+    }),
+  );
+  render(
+    <I18nProvider>
+      <FormsPage />
+    </I18nProvider>,
+  );
+  const toggle = screen.getByRole("button", {
+    name: "Kiểm tra cấu hình biểu mẫu",
+  });
+  expect(toggle.textContent).toContain("lỗi");
+  fireEvent.click(toggle);
+  const panel = screen.getByRole("region", {
+    name: "Kiểm tra cấu hình biểu mẫu",
+  });
+  fireEvent.click(
+    within(panel).getByRole("button", {
+      name: /Mã trường invalid key không hợp lệ/,
+    }),
+  );
+  const key = screen.getByRole("textbox", { name: "Mã trường" });
+  expect(key).toHaveProperty("value", "invalid key");
+  fireEvent.change(key, { target: { value: "repaired_key" } });
+  expect(
+    within(panel).queryByText(/Mã trường invalid key không hợp lệ/),
+  ).toBeNull();
+  expect(
+    JSON.parse(sessionStorage.getItem(formRecoveryKey)!).definition.fields[0]
+      .key,
+  ).toBe("repaired_key");
+});

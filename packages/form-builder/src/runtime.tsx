@@ -1,3 +1,4 @@
+import { FormSchemaIssues } from "./components/form-schema-issues";
 import { useChoices } from "./use-choices";
 import { spacingStyle } from "./spacing";
 import { FormBandView } from "./components/form-band";
@@ -1012,25 +1013,11 @@ export function FormRenderer({
   }, [checked, issues.length]);
   if (schemaIssues.length)
     return (
-      <Notice tone="warning">
-        <p>{t("Sửa lỗi cấu trúc trước khi xem thử biểu mẫu.")}</p>
-        <ul>
-          {schemaIssues.map((issue, index) => (
-            <li key={index}>
-              {props.onEditSchemaIssue ? (
-                <Button
-                  variant="ghost"
-                  onClick={() => props.onEditSchemaIssue?.(issue)}
-                >
-                  {t(issue.message, issue.params)}
-                </Button>
-              ) : (
-                t(issue.message, issue.params)
-              )}
-            </li>
-          ))}
-        </ul>
-      </Notice>
+      <FormSchemaIssues
+        issues={schemaIssues}
+        fields={definition.fields}
+        onEditIssue={props.onEditSchemaIssue}
+      />
     );
   const update = (next: PreviewValues) => {
     onChange(prepareValues(definition, next, access, props.runtimeContext));

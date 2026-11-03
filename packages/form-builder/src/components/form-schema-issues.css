@@ -1,0 +1,40 @@
+.fd-form-schema-issues {
+  min-width: 0;
+}
+.fd-form-schema-issues ul {
+  display: grid;
+  gap: 6px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.fd-form-schema-issues li {
+  min-width: 0;
+}
+.fd-form-schema-issues li > button {
+  width: 100%;
+  height: auto;
+  min-height: var(--fd-control-height, 36px);
+  justify-content: space-between;
+  white-space: normal;
+  text-align: left;
+}
+.fd-form-schema-issue-text {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.fd-form-schema-issue-target {
+  font-weight: 600;
+}
+.fd-form-schema-issues .fd-notice {
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+}
+.fd-form-schema-issues [data-slot="alert-description"] {
+  min-width: 0;
+}

@@ -82,7 +82,7 @@ it("shows actionable schema errors and recovers preview after a definition is re
   );
   fireEvent.click(
     screen.getByRole("button", {
-      name: "Mã trường bad key không hợp lệ hoặc được dành riêng.",
+      name: /Mã trường bad key không hợp lệ hoặc được dành riêng\./,
     }),
   );
   expect(edit).toHaveBeenCalledWith(

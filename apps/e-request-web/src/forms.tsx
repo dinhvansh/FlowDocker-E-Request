@@ -17,9 +17,18 @@ import {
   demoFormRuntimeContext,
 } from "./demo-profile";
 import { useI18n } from "@flowdocker/i18n";
-import { ArrowLeft, MoreHorizontal, Plus, Save } from "lucide-react";
+import {
+  ArrowLeft,
+  CircleAlert,
+  CircleCheck,
+  MoreHorizontal,
+  Plus,
+  Save,
+} from "lucide-react";
 import {
   FormDesigner,
+  FormSchemaIssues,
+  type FormIssue,
   FormPreview,
   FormSpacingEditor,
   FormTestPreview,
@@ -197,6 +206,10 @@ export function FormsPage({
   const [message, setMessage] = useState("");
   const [saveError, setSaveError] = useState(false);
   const [showIssues, setShowIssues] = useState(false);
+  const [inspectionRequest, setInspectionRequest] = useState<{
+    fieldId: string;
+    revision: number;
+  }>();
   const [createOpen, setCreateOpen] = useState(false);
   const [titleVi, setTitleVi] = useState("");
   const [titleEn, setTitleEn] = useState("");
@@ -247,6 +260,24 @@ export function FormsPage({
     return () => window.removeEventListener("beforeunload", protectDraft);
   }, [dirty]);
   const issues = draft ? validateFormDefinition(draft) : [];
+  const openIssue = (issue: FormIssue) => {
+    if (!draft) return;
+    setTab("schema");
+    setShowIssues(true);
+    if (issue.fieldId) {
+      setSelectedFieldId(issue.fieldId);
+      setInspectionRequest((previous) => ({
+        fieldId: issue.fieldId!,
+        revision: (previous?.revision ?? 0) + 1,
+      }));
+      setRevealField((previous) => ({
+        id: issue.fieldId!,
+        revision: (previous?.revision ?? 0) + 1,
+      }));
+    } else if (!draft.title.vi.trim() || !draft.title.en.trim()) {
+      setTitlesOpen(true);
+    }
+  };
   useEffect(() => {
     if (!draft || tab !== "code" || codeDirty) return;
     setCodeText((current) => reconcileFormCode(current, draft));
@@ -266,6 +297,7 @@ export function FormsPage({
     setCodeText("");
     setSelectedFieldId("");
     setRevealField(undefined);
+    setInspectionRequest(undefined);
     setValues({});
     setShowIssues(false);
     setMessage("");
@@ -410,6 +442,26 @@ export function FormsPage({
                   </span>
                 </div>
                 <Button
+                  variant="ghost"
+                  aria-label={t("Kiểm tra cấu hình biểu mẫu")}
+                  aria-expanded={showIssues}
+                  aria-controls="fd-form-configuration-issues"
+                  onClick={() => setShowIssues(!showIssues)}
+                >
+                  {issues.length ? (
+                    <CircleAlert aria-hidden="true" />
+                  ) : (
+                    <CircleCheck aria-hidden="true" />
+                  )}
+                  <span aria-live="polite" aria-atomic="true">
+                    {issues.length === 1
+                      ? t("1 lỗi")
+                      : issues.length
+                        ? t("{{count}} lỗi", { count: issues.length })
+                        : t("Kiểm tra")}
+                  </span>
+                </Button>
+                <Button
                   variant="primary"
                   disabled={
                     !dirty || initial.failed || issues.length > 0 || codeInvalid
@@ -447,14 +499,14 @@ export function FormsPage({
                   )}
                 </Notice>
               )}
-              {showIssues && issues.length > 0 && (
-                <Notice tone="danger">
-                  <ul>
-                    {issues.map((issue, index) => (
-                      <li key={index}>{t(issue.message, issue.params)}</li>
-                    ))}
-                  </ul>
-                </Notice>
+              {showIssues && (
+                <div id="fd-form-configuration-issues">
+                  <FormSchemaIssues
+                    issues={issues}
+                    fields={draft.fields}
+                    onEditIssue={openIssue}
+                  />
+                </div>
               )}
               <Tabs
                 active={tab}
@@ -578,6 +630,7 @@ export function FormsPage({
                       key={draft.id}
                       definition={draft}
                       selectedFieldId={selectedFieldId}
+                      inspectionRequest={inspectionRequest}
                       onSelectField={(id) => {
                         setSelectedFieldId(id);
                         setRevealField((previous) => ({
@@ -632,22 +685,7 @@ export function FormsPage({
                       runtimeContext={demoFormRuntimeContext}
                       key={draft.id}
                       definition={draft}
-                      onEditSchemaIssue={(issue) => {
-                        setTab("schema");
-                        setShowIssues(true);
-                        if (issue.fieldId) {
-                          setSelectedFieldId(issue.fieldId);
-                          setRevealField((previous) => ({
-                            id: issue.fieldId!,
-                            revision: (previous?.revision ?? 0) + 1,
-                          }));
-                        } else if (
-                          !draft.title.vi.trim() ||
-                          !draft.title.en.trim()
-                        ) {
-                          setTitlesOpen(true);
-                        }
-                      }}
+                      onEditSchemaIssue={openIssue}
                       providers={providers}
                       values={values}
                       onChange={setValues}
@@ -698,11 +736,7 @@ export function FormsPage({
               onClick={() => {
                 setActionsOpen(false);
                 setShowIssues(true);
-                setMessage(
-                  issues.length
-                    ? ""
-                    : "Cấu trúc biểu mẫu hợp lệ trên trình duyệt.",
-                );
+                setMessage("");
               }}
             >
               {t("Kiểm tra")}
