@@ -210,6 +210,21 @@ function tokenizeFormula(source: string): FormulaToken[] | null {
   return tokens;
 }
 
+/** Field identifiers from the same safe tokenizer used by calculation evaluation. */
+export function formulaReferences(source: string): string[] {
+  const tokens = tokenizeFormula(source) ?? [];
+  return [
+    ...new Set(
+      tokens
+        .filter(
+          (token, index) =>
+            token.kind === "name" && tokens[index + 1]?.value !== "(",
+        )
+        .map((token) => token.value),
+    ),
+  ];
+}
+
 function evaluateCalculationExpression(
   source: string,
   values: PreviewValues,

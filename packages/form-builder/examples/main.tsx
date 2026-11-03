@@ -4,6 +4,7 @@ import { I18nProvider, useI18n } from "@flowdocker/i18n";
 import { Button, LanguagePicker } from "@flowdocker/ui";
 import {
   FormDesigner,
+  FormLogicStudio,
   FormTestPreview,
   createShowcaseDefinition,
   createPaymentDefinition,
@@ -43,6 +44,7 @@ function Example() {
   const { t } = useI18n();
   const [definition, setDefinition] = useState(initial);
   const [values, setValues] = useState<PreviewValues>({});
+  const [logicOpen, setLogicOpen] = useState(false);
   const [codeOpen, setCodeOpen] = useState(false);
   const [source, setSource] = useState(JSON.stringify(initial, null, 2));
   const [selected, setSelected] = useState("");
@@ -70,6 +72,28 @@ function Example() {
         <Button aria-pressed={codeOpen} onClick={() => setCodeOpen(!codeOpen)}>
           {t("Code Studio")}
         </Button>
+        <Button
+          aria-pressed={logicOpen}
+          onClick={() => setLogicOpen(!logicOpen)}
+        >
+          {t("Logic Studio")}
+        </Button>
+        {logicOpen && (
+          <FormLogicStudio
+            definition={definition}
+            values={values}
+            onChange={setValues}
+            selectedFieldId={selected}
+            onSelectField={setSelected}
+            providers={providers}
+            runtimeContext={runtimeContext}
+            readOnly={invalid}
+            onDefinitionChange={(next) => {
+              setDefinition(next);
+              setSource((current) => reconcileFormCode(current, next));
+            }}
+          />
+        )}
         <div className="fd-hybrid-workspace" data-code={codeOpen}>
           <div hidden={!codeOpen}>
             {codeOpen && (

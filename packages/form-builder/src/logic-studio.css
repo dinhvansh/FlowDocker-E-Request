@@ -1,0 +1,85 @@
+.fd-logic-studio {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  gap: var(--fd-section-gap, 24px);
+  align-items: start;
+}
+.fd-logic-inventory,
+.fd-logic-detail,
+.fd-logic-links {
+  display: grid;
+  gap: var(--fd-field-gap, 16px);
+  min-width: 0;
+}
+.fd-logic-inventory {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.fd-logic-filter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.fd-logic-list {
+  display: grid;
+  gap: 4px;
+  max-height: 65vh;
+  overflow: auto;
+}
+.fd-logic-list button {
+  justify-content: space-between;
+  height: auto;
+  min-height: 44px;
+  text-align: start;
+  white-space: normal;
+}
+.fd-logic-list button[aria-pressed="true"] {
+  background: var(--muted);
+}
+.fd-logic-studio code {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--muted-foreground);
+}
+.fd-logic-editor {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+.fd-logic-links button {
+  justify-content: flex-start;
+  gap: 12px;
+  height: auto;
+  white-space: normal;
+}
+@media (max-width: 700px) {
+  .fd-logic-studio {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fd-logic-list {
+    max-height: 180px;
+  }
+}
+
+.fd-logic-studio .fd-notice {
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.fd-logic-detail > [data-slot="tabs"] {
+  min-width: 0;
+}
+.fd-logic-detail > [data-slot="tabs"] > [role="tablist"] {
+  max-width: 100%;
+  height: auto;
+  flex-wrap: wrap;
+}
+.fd-logic-detail [role="tab"] {
+  white-space: normal;
+}

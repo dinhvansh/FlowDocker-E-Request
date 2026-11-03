@@ -206,3 +206,15 @@ New reusable `FormSchemaIssues` accepts `issues: readonly FormIssue[]`, `fields:
 ## 0.5.6 — Inline configuration errors
 
 Reusable `FieldIssueBadge({field,count,onNavigate?})` displays actual authoring error counts; zero renders nothing. Canvas derives counts from `validateFormDefinition`; outline uses the same validator. Optional `FormCanvas.onIssue(id)` opens the inspector in FormDesigner. Child errors stay on their child; runtime input errors remain separate. The selected field's shared diagnostics now appear above property controls. No validation-rule or schema change.
+
+## 0.5.7 — Logic Studio
+
+`FormLogicStudio` extends `FormPreviewProps`, adding `onDefinitionChange`, optional
+`selectedFieldId` / `onSelectField`. Controlled or local selection, searchable logic
+inventory, shared rule/calculation controls, upstream/downstream navigation and
+whole-form local testing. `readOnly` blocks design mutations. The host owns
+recovery, persistence and source reconciliation. `logicInventory` resolves root
+and local row/object references, including dotted aggregates; `formulaReferences`
+uses the safe runtime tokenizer. These are navigation helpers, not a new validator.
+No new execution engine or backend. E-Request is the first consumer; independent
+consumer validation remains pending.

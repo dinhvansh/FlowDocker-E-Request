@@ -60,3 +60,8 @@ export {
   FieldIssueBadge,
   type FieldIssueBadgeProps,
 } from "./components/field-issue-badge";
+
+export { FormLogicStudio } from "./logic-studio";
+export type { FormLogicStudioProps } from "./logic-studio";
+export { logicInventory, hasLogic } from "./logic-model";
+export type { LogicNode } from "./logic-model";

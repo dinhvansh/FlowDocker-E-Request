@@ -1,0 +1,9 @@
+
+> lint
+> eslint . && npm run i18n:check
+
+
+> i18n:check
+> node scripts/check-i18n.mjs
+
+i18n check passed: UI literals are localized and literal translation keys exist.

@@ -1,5 +1,21 @@
 import { formMessages } from "./form-messages";
 export const en = {
+  "Không có kết quả phù hợp.": "No matching results.",
+  "Logic Studio": "Logic Studio",
+  "Tìm trường và quy tắc": "Find fields and rules",
+  "Chỉ trường có logic": "Only fields with logic",
+  "Quy tắc": "Rules",
+  "Phụ thuộc trường": "Field dependencies",
+  "Thử toàn biểu mẫu": "Test the entire form",
+  "Lấy dữ liệu từ": "Reads from",
+  "Không tìm thấy trường tham chiếu: {{key}}":
+    "Referenced field not found: {{key}}",
+  "Không có trường phụ thuộc.": "No field dependencies.",
+  "Được sử dụng bởi": "Used by",
+  "Phụ thuộc gồm điều kiện, công thức, so sánh và nguồn dữ liệu. Trong bảng lặp, tham chiếu dùng ngữ cảnh từng dòng.":
+    "Dependencies include conditions, formulas, comparisons and data sources. Repeating tables resolve references within each row.",
+  "Thêm trường để thiết kế logic.": "Add fields to design logic.",
+
   "Để trống": "Leave blank",
   "Bản ghi đang được tham chiếu. Gỡ tham chiếu trước khi xóa hoặc đổi mã.":
     "This record is referenced. Remove its references before deleting it or changing its key.",

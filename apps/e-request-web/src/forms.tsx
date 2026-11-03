@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import {
   FormDesigner,
+  FormLogicStudio,
   FormSchemaIssues,
   type FormIssue,
   FormPreview,
@@ -540,7 +541,7 @@ export function FormsPage({
               <div
                 className="fd-hybrid-workspace"
                 data-code={tab === "code"}
-                hidden={!["schema", "logic", "code"].includes(tab)}
+                hidden={!["schema", "code"].includes(tab)}
               >
                 <div hidden={tab !== "code"} className="fd-code-pane">
                   {(tab === "code" || !!codeText) && (
@@ -626,7 +627,7 @@ export function FormsPage({
                       runtimeContext={demoFormRuntimeContext}
                       dataSources={availableSources}
                       providers={providers}
-                      inspectorSection={tab === "logic" ? "logic" : "basic"}
+                      inspectorSection="basic"
                       key={draft.id}
                       definition={draft}
                       selectedFieldId={selectedFieldId}
@@ -656,6 +657,19 @@ export function FormsPage({
                   )}
                 </div>
               </div>
+              {tab === "logic" && (
+                <FormLogicStudio
+                  definition={draft}
+                  values={values}
+                  onChange={setValues}
+                  onDefinitionChange={update}
+                  selectedFieldId={selectedFieldId}
+                  onSelectField={setSelectedFieldId}
+                  providers={providers}
+                  runtimeContext={demoFormRuntimeContext}
+                  readOnly={codeInvalid}
+                />
+              )}
               {tab === "preview" && (
                 <div className="fd-preview-workspace">
                   <div className="fd-toolbar-actions fd-preview-controls">
