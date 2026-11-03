@@ -22,7 +22,8 @@
     "backend:migrate": "node --env-file=.env.backend.local scripts/backend-migrate.mjs",
     "backend:dev": "node --env-file=.env.backend.local --import tsx apps/api/src/main.ts",
     "backend:test": "node --env-file=.env.backend.local --import tsx --test apps/api/src/api.integration.ts apps/api/src/publication.integration.ts",
-    "backend:seed": "node --env-file=.env.backend.local --import tsx scripts/backend-seed.ts"
+    "backend:seed": "node --env-file=.env.backend.local --import tsx scripts/backend-seed.ts",
+    "approval:test": "node --env-file=.env.backend.local --import tsx --test apps/approval-worker/src/runtime.integration.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
@@ -50,6 +51,10 @@
   },
   "dependencies": {
     "@fastify/rate-limit": "10.3.0",
+    "@temporalio/client": "1.25.0",
+    "@temporalio/common": "1.25.0",
+    "@temporalio/worker": "1.25.0",
+    "@temporalio/workflow": "1.25.0",
     "cn": "^0.5.0",
     "fastify": "5.12.8",
     "pg": "8.23.1",

@@ -42,3 +42,8 @@ Local identity slice: added scrypt-based synthetic local account login, expiring
 Visible storage slice: Form Studio now has Server storage modal with local test sign-in, actual server save/read/update/delete/logout, bounded catalog and conflict recovery. No automatic browser-data migration; server-loaded documents are new working copies and use existing unsaved guard. VI/EN, dark mobile, real database browser CRUD, conflict/revocation and browser-offline tests passed; full frontend suite 233 tests passed after repairing five stale index-based assertions. Details docs/105. Remaining: immutable publication/workflow execution/submission/tasks, master/permission service administration, Finance/files/PDF, authenticated MCP and webhook/OAuth adapters, restore/release gates.
 
 Immutable authoring publication API: implemented and tested on real PostgreSQL; separate permission, server validation, concurrent dedupe, immutable snapshots/checksum and audit. See docs/106. Workflow binding and visible publication controls remain next; submission/tasks/Temporal still pending.
+
+Temporal engine POC: real conditional/parallel execution, durable wait/restart,
+replay, rejection/inactive-assignee cleanup and non-owner worker RLS verified.
+See docs/107 and apps/approval-worker/README.md. Fixture decisions are not human
+API E2E. Submission/task API/outbox/UI and remaining modules are still pending.

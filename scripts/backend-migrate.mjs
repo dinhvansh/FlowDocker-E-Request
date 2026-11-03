@@ -6,7 +6,8 @@ const db = new pg.Client({
 });
 if (
   !process.env.MIGRATION_DATABASE_URL ||
-  !/^[a-f0-9]{64}$/.test(process.env.FD_RUNTIME_PASSWORD ?? "")
+  !/^[a-f0-9]{64}$/.test(process.env.FD_RUNTIME_PASSWORD ?? "") ||
+  !/^[a-f0-9]{64}$/.test(process.env.FD_WORKER_PASSWORD ?? "")
 )
   throw new Error("Run backend:setup and load local configuration.");
 await db.connect();
@@ -18,6 +19,13 @@ try {
   if (!role.rowCount)
     await db.query(
       `CREATE ROLE fd_runtime LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS PASSWORD '${process.env.FD_RUNTIME_PASSWORD}'`,
+    );
+  const workerRole = await db.query(
+    "SELECT 1 FROM pg_roles WHERE rolname='fd_worker'",
+  );
+  if (!workerRole.rowCount)
+    await db.query(
+      `CREATE ROLE fd_worker LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS PASSWORD '${process.env.FD_WORKER_PASSWORD}'`,
     );
   await db.query(
     "CREATE TABLE IF NOT EXISTS public.fd_migrations (name text PRIMARY KEY, checksum text NOT NULL, applied_at timestamptz NOT NULL DEFAULT now())",
