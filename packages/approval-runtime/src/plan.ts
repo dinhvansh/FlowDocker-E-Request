@@ -60,10 +60,18 @@ export function compileApprovalPlan(
           !item.assignees.every(
             (actor) => typeof actor === "string" && uuid.test(actor),
           ) ||
-          new Set(item.assignees).size !== item.assignees.length
+          new Set(
+            item.assignees.map((actor) =>
+              typeof actor === "string" ? actor.toLowerCase() : actor,
+            ),
+          ).size !== item.assignees.length
         )
           throw new Error("INVALID_ASSIGNEE");
-        return { id, kind: "approval", assignees: [...item.assignees] };
+        return {
+          id,
+          kind: "approval",
+          assignees: item.assignees.map((actor: string) => actor.toLowerCase()),
+        };
       }
       if (item.kind === "if") {
         if (

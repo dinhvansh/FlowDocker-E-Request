@@ -1,6 +1,26 @@
 import { expect, it } from "vitest";
 import { compileApprovalPlan, compareDecimal, matchesCondition } from "./plan";
 const person = "11111111-1111-4111-8111-111111111111";
+it("normalizes UUID case and rejects duplicate assignees regardless of case", () => {
+  const id = "abcdefab-abcd-4abc-8abc-abcdefabcdef";
+  const plan = {
+    schemaVersion: 1,
+    steps: [{ id: "review", kind: "approval", assignees: [id.toUpperCase()] }],
+  };
+  expect(compileApprovalPlan(plan, {}).steps[0]).toEqual({
+    ...plan.steps[0],
+    assignees: [id],
+  });
+  expect(() =>
+    compileApprovalPlan(
+      {
+        ...plan,
+        steps: [{ ...plan.steps[0], assignees: [id, id.toUpperCase()] }],
+      },
+      {},
+    ),
+  ).toThrow("INVALID_ASSIGNEE");
+});
 it("compiles only bounded typed steps and rejects unknown code, fields, types and duplicate IDs", () => {
   const step = { id: "manager", kind: "approval", assignees: [person] };
   expect(

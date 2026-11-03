@@ -4,10 +4,27 @@ import { createHash, randomUUID } from "node:crypto";
 import {
   validateFormDefinition,
   isFormDefinition,
+  type FormDefinition,
 } from "../../../packages/form-builder/src/schema.ts";
 import { ApiFailure, withActor } from "./session.ts";
 const uuid =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+/** Publication status is a storage envelope; original engine accepts DRAFT only.
+ * Restore its authoring discriminator in memory, without rewriting the snapshot. */
+export function readPublishedForm(value: unknown): FormDefinition | null {
+  if (
+    !value ||
+    typeof value !== "object" ||
+    Array.isArray(value) ||
+    (value as Record<string, unknown>).status !== "PUBLISHED"
+  )
+    return null;
+  const definition = { ...value, status: "DRAFT" };
+  return isFormDefinition(definition) &&
+    !validateFormDefinition(definition).length
+    ? definition
+    : null;
+}
 /** JSON keys are sorted recursively so checksum does not depend on key insertion order. */
 export function canonicalJson(value: unknown): string {
   if (Array.isArray(value))

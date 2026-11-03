@@ -45,6 +45,14 @@ test("publication is permissioned, validated, deduplicated, immutable and tenant
         required: true,
         options: [],
       },
+      {
+        id: "amount",
+        key: "amount",
+        label: { vi: "Số tiền", en: "Amount" },
+        type: "currency",
+        required: true,
+        options: [],
+      },
     ],
   };
   const publish = (expectedVersion: number) =>
@@ -107,6 +115,102 @@ test("publication is permissioned, validated, deduplicated, immutable and tenant
       checksum: string;
     };
     assert.equal(original.definition.status, "PUBLISHED");
+    // Workflow publication pins this immutable form version, never a draft ID.
+    const workflowId = randomUUID();
+    const workflowEndpoint = `${address}/api/v1/apps/e-request/workflows/${workflowId}/publish`;
+    const plan = {
+      schemaVersion: 1,
+      steps: [
+        {
+          id: "threshold",
+          kind: "if",
+          field: "amount",
+          operator: "gt",
+          value: "100",
+          then: [{ id: "high", kind: "approval", assignees: [actor] }],
+          else: [{ id: "low", kind: "approval", assignees: [actor] }],
+        },
+      ],
+    };
+    const workflowBody = {
+      formVersionId: copies[0].id,
+      conditionFields: ["amount"],
+      plan,
+    };
+    const publishWorkflow = (body: unknown = workflowBody) =>
+      fetch(workflowEndpoint, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body),
+      });
+    assert.equal((await publishWorkflow()).status, 403);
+    await admin.query(
+      "UPDATE fd.members SET capabilities=array_append(capabilities,'e-request:workflows:publish') WHERE tenant_id=$1 AND id=$2",
+      [tenant, actor],
+    );
+    assert.equal(
+      (await publishWorkflow({ ...workflowBody, conditionFields: ["unknown"] }))
+        .status,
+      422,
+    );
+    assert.equal(
+      (
+        await publishWorkflow({
+          ...workflowBody,
+          plan: {
+            schemaVersion: 1,
+            steps: [{ id: "bad", kind: "approval", assignees: [otherActor] }],
+          },
+        })
+      ).status,
+      422,
+    );
+    assert.equal(
+      (await publishWorkflow({ ...workflowBody, formVersionId: randomUUID() }))
+        .status,
+      404,
+    );
+    const workflows = await Promise.all([publishWorkflow(), publishWorkflow()]);
+    assert.deepEqual(
+      workflows.map((r) => r.status).sort(),
+      [200, 201],
+      JSON.stringify(await Promise.all(workflows.map((r) => r.clone().json()))),
+    );
+    const workflowVersions = (await Promise.all(
+      workflows.map((r) => r.json()),
+    )) as { id: string; version: number; checksum: string }[];
+    assert.equal(workflowVersions[0].id, workflowVersions[1].id);
+    const workflowUrl = `${address}/api/v1/apps/e-request/workflow-versions/${workflowVersions[0].id}`;
+    const frozenWorkflow = (await (
+      await fetch(workflowUrl, { headers })
+    ).json()) as { form_version_id: string; exposed_fields: unknown };
+    assert.equal(frozenWorkflow.form_version_id, copies[0].id);
+    assert.deepEqual(frozenWorkflow.exposed_fields, { amount: "decimal" });
+    await admin.query(
+      "UPDATE fd.members SET capabilities=array_append(capabilities,'e-request:workflows:publish') WHERE tenant_id=$1 AND id=$2",
+      [otherTenant, otherActor],
+    );
+    assert.equal(
+      (
+        await fetch(workflowUrl, {
+          headers: { authorization: `Bearer ${otherToken}` },
+        })
+      ).status,
+      404,
+    );
+    await assert.rejects(
+      pool.query("UPDATE fd.workflow_versions SET version=99"),
+      /permission denied/,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT fd.valid_workflow_assignees($1::uuid[]) AS valid",
+          [[actor]],
+        )
+      ).rows[0].valid,
+      false,
+    );
     assert.equal(
       original.checksum,
       createHash("sha256")
@@ -138,6 +242,10 @@ test("publication is permissioned, validated, deduplicated, immutable and tenant
     const second = await publish(3);
     assert.equal(second.status, 201);
     assert.equal(((await second.json()) as { version: number }).version, 2);
+    assert.deepEqual(
+      await (await fetch(workflowUrl, { headers })).json(),
+      frozenWorkflow,
+    );
     assert.deepEqual(
       await (await fetch(versionUrl, { headers })).json(),
       original,
@@ -177,6 +285,7 @@ test("publication is permissioned, validated, deduplicated, immutable and tenant
     await pool.end();
     for (const table of [
       "audit",
+      "workflow_versions",
       "form_versions",
       "form_drafts",
       "sessions",

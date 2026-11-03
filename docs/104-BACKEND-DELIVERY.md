@@ -54,3 +54,9 @@ atomic audit/outbox and leased delivery outside transactions. Real HTTP/database
 Temporal retry/restart/replay tests pass; sessions are synthetic test fixtures,
 not browser sign-in evidence. See docs/108. Request submission/version binding,
 workflow publication/runtime UI and remaining service modules still pending.
+
+Workflow publication API now pins an immutable form version, validates typed
+conditions/active tenant assignees, deduplicates under concurrent publication and
+stores a checksum plus audit. Negative HTTP/SQL tests pass (docs/109). Published
+form/engine discriminator compatibility fixed with an in-memory read adapter.
+Editor integration, submission/runtime UI and remaining service modules pending.
