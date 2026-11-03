@@ -14,6 +14,11 @@ export interface FormSummary {
   title: BilingualText;
   version: number;
 }
+export interface PublishedForm {
+  id: string;
+  version: number;
+  checksum: string;
+}
 export class FormStorageError extends Error {
   constructor(
     public readonly code: string,
@@ -98,6 +103,27 @@ export function createHttpFormRepository(options: {
     return { id: row.id, version: row.version as number };
   }
   return {
+    async publicationPermission(): Promise<boolean> {
+      const data = (await request("/publication-permission", "GET")) as {
+        canPublish?: unknown;
+      };
+      if (typeof data?.canPublish !== "boolean")
+        throw new FormStorageError("INVALID_RESPONSE", 502);
+      return data.canPublish;
+    },
+    async publish(id: string, expectedVersion: number): Promise<PublishedForm> {
+      if (!Number.isSafeInteger(expectedVersion) || expectedVersion < 1)
+        throw new FormStorageError("INVALID_VERSION", 400);
+      const data = (await request(idPath(id) + "/publish", "POST", {
+        expectedVersion,
+      })) as { checksum?: unknown };
+      if (
+        typeof data?.checksum !== "string" ||
+        !/^[a-f0-9]{64}$/.test(data.checksum)
+      )
+        throw new FormStorageError("INVALID_RESPONSE", 502);
+      return { ...versioned(data), checksum: data.checksum };
+    },
     async list(
       after?: string,
     ): Promise<{ items: FormSummary[]; nextCursor: string | null }> {

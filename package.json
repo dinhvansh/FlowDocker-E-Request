@@ -9,6 +9,7 @@
   "scripts": {
     "build:forms": "vite build --config vite.forms.config.ts && node scripts/package-forms.mjs",
     "dev": "npm run dev -w @flowdocker/e-request-web",
+    "dev:local": "npm run dev -w @flowdocker/e-request-web -- --host 127.0.0.1 --port 5174 --strictPort",
     "examples:ui": "vite packages/ui/examples --host 0.0.0.0",
     "examples:forms": "vite packages/form-builder/examples --config vite.config.ts --host 0.0.0.0",
     "build": "npm run build -w @flowdocker/e-request-web",

@@ -6,6 +6,9 @@
   margin: 0;
   padding: 0;
 }
+.fd-server-storage-fields button {
+  min-height: var(--fd-control-height, 36px);
+}
 .fd-server-form-list > li {
   display: flex;
   align-items: center;

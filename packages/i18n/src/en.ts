@@ -1,5 +1,18 @@
 import { formMessages } from "./form-messages";
 export const en = {
+  "Xuất bản trên máy chủ": "Publish on server",
+  "Tài khoản không có quyền thực hiện thao tác này trên máy chủ.":
+    "This account is not allowed to perform this server action.",
+  "Cấu hình biểu mẫu chưa hợp lệ để xuất bản. Kiểm tra lại các trường và quy tắc.":
+    "This form is not ready to publish. Check its fields and rules.",
+  "Đã xuất bản phiên bản cố định trên máy chủ. Các lần chỉnh sửa sau không thay đổi phiên bản này.":
+    "An immutable version was published on the server. Later edits will not change this version.",
+  "Tài khoản chưa được cấp quyền xuất bản biểu mẫu.":
+    "This account has not been granted form publication permission.",
+  "Lưu bản đang sửa lên máy chủ trước khi xuất bản.":
+    "Save the working draft to the server before publishing.",
+  "Phiên bản xuất bản {{version}} · Mã {{id}}":
+    "Published version {{version}} · ID {{id}}",
   "Lưu trên máy chủ": "Server storage",
   "Biểu mẫu trên máy chủ": "Server forms",
   "Lưu trên máy chủ là bản riêng. Các mẫu đã lưu trên máy này vẫn được giữ nguyên.":

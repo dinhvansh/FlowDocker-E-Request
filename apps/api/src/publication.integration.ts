@@ -4,6 +4,7 @@ import { randomUUID, randomBytes, createHash } from "node:crypto";
 import pg from "pg";
 import { createApi } from "./server.ts";
 import { canonicalJson } from "./publication.ts";
+import { createHttpFormRepository } from "../../../packages/form-builder/src/http-storage.ts";
 
 test("publication is permissioned, validated, deduplicated, immutable and tenant-scoped", async () => {
   const admin = new pg.Pool({
@@ -61,6 +62,11 @@ test("publication is permissioned, validated, deduplicated, immutable and tenant
       headers,
       body: JSON.stringify({ expectedVersion }),
     });
+  const repository = createHttpFormRepository({
+    baseUrl: address,
+    appId: "e-request",
+    getAccessToken: () => token,
+  });
   try {
     await admin.query(
       "INSERT INTO fd.members(tenant_id,id,capabilities) VALUES ($1,$2,$5),($3,$4,$5)",
@@ -84,11 +90,17 @@ test("publication is permissioned, validated, deduplicated, immutable and tenant
       201,
     );
     assert.equal((await publish(1)).status, 403);
+    assert.equal(await repository.publicationPermission(), false);
+    await assert.rejects(
+      repository.publish(id, 1),
+      (error) => (error as { status: number }).status === 403,
+    );
     await admin.query(
       "UPDATE fd.members SET capabilities=$3 WHERE tenant_id=$1 AND id=$2",
       [tenant, actor, ["e-request:forms:edit", "e-request:forms:publish"]],
     );
     assert.equal((await publish(1)).status, 422);
+    assert.equal(await repository.publicationPermission(), true);
     assert.equal(
       (
         await fetch(endpoint, {
@@ -109,6 +121,11 @@ test("publication is permissioned, validated, deduplicated, immutable and tenant
     }[];
     assert.equal(copies[0].id, copies[1].id);
     assert.equal(copies[0].checksum, copies[1].checksum);
+    assert.deepEqual(await repository.publish(id, 2), {
+      id: copies[0].id,
+      version: copies[0].version,
+      checksum: copies[0].checksum,
+    });
     const versionUrl = `${address}/api/v1/apps/e-request/form-versions/${copies[0].id}`;
     const original = (await (await fetch(versionUrl, { headers })).json()) as {
       definition: typeof definition;

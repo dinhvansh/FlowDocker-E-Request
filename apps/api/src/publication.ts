@@ -46,6 +46,25 @@ export function canonicalJson(value: unknown): string {
   return JSON.stringify(value);
 }
 export function registerPublication(api: FastifyInstance, pool: pg.Pool) {
+  api.get(
+    "/api/v1/apps/:appId/forms/publication-permission",
+    async (request) => {
+      const { appId } = request.params as { appId: string };
+      return withActor(
+        pool,
+        request.headers.authorization,
+        appId,
+        "forms:edit",
+        async (ctx) => {
+          const row = await ctx.db.query(
+            "SELECT $1=ANY(capabilities) AS allowed FROM fd.members WHERE id=$2 AND tenant_id=$3 AND active",
+            [`${appId}:forms:publish`, ctx.actorId, ctx.tenantId],
+          );
+          return { canPublish: row.rows[0]?.allowed === true };
+        },
+      );
+    },
+  );
   api.post("/api/v1/apps/:appId/forms/:id/publish", async (request, reply) => {
     const { appId, id } = request.params as { appId: string; id: string };
     if (!uuid.test(id)) throw new ApiFailure(400, "INVALID_ID");

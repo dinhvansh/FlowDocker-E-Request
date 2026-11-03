@@ -14,6 +14,7 @@ import {
   createHttpFormRepository,
   FormStorageError,
   type FormSummary,
+  type PublishedForm,
 } from "@flowdocker/form-builder/http-storage";
 
 export function FormServerStorage({
@@ -38,10 +39,13 @@ export function FormServerStorage({
   const [rows, setRows] = useState<FormSummary[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
   const [deleting, setDeleting] = useState("");
+  const [canPublish, setCanPublish] = useState(false);
+  const [published, setPublished] = useState<PublishedForm | null>(null);
   const [binding, setBinding] = useState<{
     localId: string;
     remoteId: string;
     version: number;
+    snapshot: string;
   } | null>(null);
   const repository = useMemo(
     () =>
@@ -63,6 +67,8 @@ export function FormServerStorage({
       setFailed(true);
       if (error instanceof FormStorageError && error.status === 401) {
         setToken("");
+        setCanPublish(false);
+        setPublished(null);
         setBinding(null);
         setRows([]);
         setCursor(null);
@@ -72,8 +78,15 @@ export function FormServerStorage({
         setMessage(
           "Bản máy chủ đã thay đổi. Hãy mở bản mới nhất hoặc lưu thành bản sao mới; bản đang sửa vẫn được giữ lại.",
         );
-      } else if (error instanceof FormStorageError && error.status === 403)
-        setMessage("Tài khoản không có quyền sửa biểu mẫu trên máy chủ.");
+      } else if (error instanceof FormStorageError && error.status === 403) {
+        setCanPublish(false);
+        setMessage(
+          "Tài khoản không có quyền thực hiện thao tác này trên máy chủ.",
+        );
+      } else if (error instanceof FormStorageError && error.status === 422)
+        setMessage(
+          "Cấu hình biểu mẫu chưa hợp lệ để xuất bản. Kiểm tra lại các trường và quy tắc.",
+        );
       else
         setMessage(
           "Không hoàn tất được thao tác. Kiểm tra kết nối hoặc tài khoản rồi thử lại. Bản đang sửa vẫn được giữ lại.",
@@ -84,6 +97,7 @@ export function FormServerStorage({
   }
   async function refresh(after?: string) {
     const page = await repository.list(after);
+    setCanPublish(await repository.publicationPermission());
     setRows((current) => (after ? [...current, ...page.items] : page.items));
     setCursor(page.nextCursor);
     setDeleting("");
@@ -101,11 +115,17 @@ export function FormServerStorage({
       localId: definition.id,
       remoteId: saved.id,
       version: saved.version,
+      snapshot: JSON.stringify(definition),
     });
+    setPublished(null);
     setConflict(false);
     await refresh();
     setMessage("Đã lưu bản nháp trên máy chủ. Bản cục bộ không bị thay đổi.");
   }
+  const synced =
+    !!definition &&
+    binding?.localId === definition.id &&
+    binding.snapshot === JSON.stringify(definition);
   return (
     <>
       <Button onClick={() => setOpen(true)}>{t("Lưu trên máy chủ")}</Button>
@@ -121,7 +141,7 @@ export function FormServerStorage({
             </Button>
           }
         >
-          <FieldGroup>
+          <FieldGroup className="fd-server-storage-fields">
             <Notice>
               {t(
                 "Lưu trên máy chủ là bản riêng. Các mẫu đã lưu trên máy này vẫn được giữ nguyên.",
@@ -162,9 +182,12 @@ export function FormServerStorage({
                       getAccessToken: () => data.accessToken as string,
                     });
                     const page = await next.list();
+                    const permission = await next.publicationPermission();
                     setToken(data.accessToken);
                     setPassword("");
                     setBinding(null);
+                    setPublished(null);
+                    setCanPublish(permission);
                     setConflict(false);
                     setRows(page.items);
                     setCursor(page.nextCursor);
@@ -221,6 +244,31 @@ export function FormServerStorage({
                       ? t("Cập nhật bản máy chủ")
                       : t("Lưu mẫu đang mở lên máy chủ")}
                   </Button>
+                  <Button
+                    disabled={
+                      busy || !canSave || !canPublish || !synced || conflict
+                    }
+                    onClick={() =>
+                      void run(async () => {
+                        if (!binding || !synced) return;
+                        const permission =
+                          await repository.publicationPermission();
+                        setCanPublish(permission);
+                        if (!permission)
+                          throw new FormStorageError("FORBIDDEN", 403);
+                        const result = await repository.publish(
+                          binding.remoteId,
+                          binding.version,
+                        );
+                        setPublished(result);
+                        setMessage(
+                          "Đã xuất bản phiên bản cố định trên máy chủ. Các lần chỉnh sửa sau không thay đổi phiên bản này.",
+                        );
+                      })
+                    }
+                  >
+                    {t("Xuất bản trên máy chủ")}
+                  </Button>
                   {binding && (
                     <Button
                       disabled={busy || !definition || !canSave}
@@ -246,6 +294,8 @@ export function FormServerStorage({
                         });
                         if (!response.ok) throw new Error("Logout failed");
                         setToken("");
+                        setCanPublish(false);
+                        setPublished(null);
                         setPassword("");
                         setBinding(null);
                         setRows([]);
@@ -257,6 +307,23 @@ export function FormServerStorage({
                     {t("Đăng xuất máy chủ")}
                   </Button>
                 </div>
+                {!canPublish ? (
+                  <Notice>
+                    {t("Tài khoản chưa được cấp quyền xuất bản biểu mẫu.")}
+                  </Notice>
+                ) : !synced ? (
+                  <Notice>
+                    {t("Lưu bản đang sửa lên máy chủ trước khi xuất bản.")}
+                  </Notice>
+                ) : null}
+                {published && (
+                  <Notice>
+                    {t("Phiên bản xuất bản {{version}} · Mã {{id}}", {
+                      version: published.version,
+                      id: published.id,
+                    })}
+                  </Notice>
+                )}
                 {!canSave && definition && (
                   <Notice>
                     {t(
@@ -287,7 +354,9 @@ export function FormServerStorage({
                               localId: next.id,
                               remoteId: stored.id,
                               version: stored.version,
+                              snapshot: JSON.stringify(next),
                             });
+                            setPublished(null);
                             setConflict(false);
                             setOpen(false);
                             onOpen(next);

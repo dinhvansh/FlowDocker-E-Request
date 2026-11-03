@@ -67,3 +67,10 @@ derived writes, commits run/audit/start event atomically, starts Temporal durabl
 and deduplicates replay. Real backend create-to-approval chain passes (docs/110).
 Full nested/person/master/file/numbering submission, field projections, browser
 runtime UI and remaining modules are NOT DONE.
+
+Visible form publication is now available in the server-storage modal, guarded
+by actual publication permission and exact saved-copy match. Real VI/EN desktop/
+mobile browser publication, conflict, immutable snapshot and denied-account
+journeys pass; 236 frontend tests and 3 backend tests pass. Forms adapter is
+0.5.12. Details/evidence docs/111. Workflow authoring/request/task UI, full schema
+submission and remaining service modules are still pending.

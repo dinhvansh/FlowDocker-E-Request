@@ -1,0 +1,16 @@
+
+> test
+> vitest run --maxWorkers=2 --testTimeout=15000
+
+
+ RUN  v5.0.5 D:/Andros portal/FlowDocker-E-Request
+
+
+ Test Files  53 passed (53)
+      Tests  236 passed (236)
+   Start at  00:22:21
+   Duration  127.48s (import 46%, tests 33%, environment 19%, transform 1%)
+
+    Isolate  53 workers spawned · ~1.07s startup each (spawn + environment, per file)
+             at least ~27.41s faster with isolate: false — reuses workers across files instead of one per file
+

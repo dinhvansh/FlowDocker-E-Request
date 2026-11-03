@@ -1,0 +1,15 @@
+
+> backend:test
+> node --env-file=.env.backend.local --import tsx --test apps/api/src/api.integration.ts apps/api/src/publication.integration.ts apps/api/src/tasks.integration.ts
+
+✔ real PostgreSQL authoring API: isolation, conflicts, revocation, audit and restart (1840.1792ms)
+✔ publication is permissioned, validated, deduplicated, immutable and tenant-scoped (833.8217ms)
+✔ authenticated decisions: assignment, isolation, race, idempotency and atomic audit/outbox (668.9131ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2346.0274
