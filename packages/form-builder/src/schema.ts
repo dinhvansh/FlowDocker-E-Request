@@ -155,6 +155,9 @@ export interface FormField {
   columnRatios?: number[];
   /** Hide the visual legend for a columns layout while keeping it accessible. */
   hideLabel?: boolean;
+  /** Optional root section rendered before/after body; children use the ordinary field tree. */
+  documentRegion?: "header" | "footer";
+  regionEnabled?: boolean;
   presentation?: FormBlockPresentation;
   minRows?: number;
   maxRows?: number;
@@ -357,6 +360,8 @@ const allowedKeys = new Set([
   "columnRatios",
   "minRows",
   "hideLabel",
+  "documentRegion",
+  "regionEnabled",
   "maxRows",
   "autoRows",
   "uniqueBy",
@@ -408,6 +413,19 @@ function fieldsShape(
       )
         return false;
       if (field.hideLabel !== undefined && typeof field.hideLabel !== "boolean")
+        return false;
+      if (
+        field.documentRegion !== undefined &&
+        (depth !== 0 ||
+          field.type !== "section" ||
+          !["header", "footer"].includes(String(field.documentRegion)))
+      )
+        return false;
+      if (
+        field.regionEnabled !== undefined &&
+        (typeof field.regionEnabled !== "boolean" ||
+          field.documentRegion === undefined)
+      )
         return false;
       for (const key of [
         "min",
@@ -598,7 +616,14 @@ export function isFormDefinition(value: unknown): value is FormDefinition {
       /^[A-Z]{3}$/.test(String(value.currency))) &&
     (value.spacing === undefined || validFormSpacing(value.spacing)) &&
     (value.decoration === undefined || validFormDecoration(value.decoration)) &&
-    fieldsShape(value.fields)
+    fieldsShape(value.fields) &&
+    uniqueDocumentRegions(value.fields)
+  );
+}
+function uniqueDocumentRegions(fields: FormField[]): boolean {
+  return ["header", "footer"].every(
+    (region) =>
+      fields.filter((field) => field.documentRegion === region).length <= 1,
   );
 }
 export function validFormSpacing(value: unknown): value is FormSpacing {

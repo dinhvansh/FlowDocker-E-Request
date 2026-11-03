@@ -320,7 +320,7 @@ export function FieldInspector({
                   label: item.label[locale],
                 })),
             ]}
-            disabled={readOnly}
+            disabled={readOnly || !!field.documentRegion}
             onValueChange={(value) =>
               onParentChange(value === "__root__" ? "" : value)
             }
@@ -430,6 +430,7 @@ export function FieldInspector({
             <Field label={t("Kiểu dữ liệu")}>
               <Select
                 label={t("Kiểu dữ liệu")}
+                disabled={readOnly || !!field.documentRegion}
                 value={field.type}
                 options={formFieldTypes.map((type) => ({
                   value: type,

@@ -449,7 +449,8 @@ export function prepareValues(
       if (
         policy?.read === "deny" ||
         policy?.read === "mask" ||
-        !evaluateRule(field.visibleWhen, context)
+        !evaluateRule(field.visibleWhen, context) ||
+        (field.documentRegion && field.regionEnabled === false)
       ) {
         delete next[field.key];
         if (isContainer(field) && !["repeat", "container"].includes(field.type))
@@ -565,6 +566,7 @@ export function validatePreview(
         policy?.read === "deny" ||
         policy?.read === "mask" ||
         !evaluateRule(field.visibleWhen, context) ||
+        (field.documentRegion && field.regionEnabled === false) ||
         field.type === "hidden" ||
         field.type === "content" ||
         field.type === "image" ||
@@ -900,7 +902,8 @@ export function submissionValues(
         ) ||
         field.disabled ||
         evaluateRule(field.disabledWhen, { ...prepared, ...data }, false) ||
-        !evaluateRule(field.visibleWhen, { ...prepared, ...data })
+        !evaluateRule(field.visibleWhen, { ...prepared, ...data }) ||
+        (field.documentRegion && field.regionEnabled === false)
       )
         continue;
       if (field.type === "container") {

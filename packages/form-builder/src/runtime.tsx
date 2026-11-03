@@ -3,6 +3,7 @@ import {
   type ContentDesign,
 } from "./components/direct-content-editor";
 import { columnStyle } from "./column-layout";
+import { documentFieldOrder } from "./document-regions";
 import { FormSchemaIssues } from "./components/form-schema-issues";
 import { useChoices } from "./use-choices";
 import { spacingStyle } from "./spacing";
@@ -559,11 +560,13 @@ function RuntimeField({
         id={id}
         className="fd-runtime-section"
         data-field-type={field.type}
+        data-document-region={field.documentRegion}
         data-spacing-section={field.type === "section" || undefined}
       >
         <FieldLegend
           className={
-            field.type === "columns" && field.hideLabel !== false
+            (field.documentRegion && !props.design) ||
+            (field.type === "columns" && field.hideLabel !== false)
               ? "sr-only"
               : undefined
           }
@@ -960,9 +963,13 @@ function RuntimeField({
 export function RuntimeFields(props: RuntimeFieldsProps) {
   return (
     <>
-      {props.fields.map((field) => (
-        <RuntimeFieldSlot {...props} key={field.id} field={field} />
-      ))}
+      {documentFieldOrder(props.fields)
+        .filter(
+          (field) => !field.documentRegion || field.regionEnabled !== false,
+        )
+        .map((field) => (
+          <RuntimeFieldSlot {...props} key={field.id} field={field} />
+        ))}
     </>
   );
 }
@@ -1007,16 +1014,25 @@ export function FormRenderer({
         props.runtimeContext,
       )
     : [];
-  const stepIndex = Math.min(step, Math.max(0, definition.fields.length - 1));
+  const bodyFields = definition.fields.filter((field) => !field.documentRegion);
+  const stepIndex = Math.min(step, Math.max(0, bodyFields.length - 1));
   const wizard = definition.display === "wizard";
   const visibleFields = wizard
-    ? definition.fields.slice(stepIndex, stepIndex + 1)
+    ? [
+        ...definition.fields.filter(
+          (field) => field.documentRegion === "header",
+        ),
+        ...bodyFields.slice(stepIndex, stepIndex + 1),
+        ...definition.fields.filter(
+          (field) => field.documentRegion === "footer",
+        ),
+      ]
     : definition.fields;
   const currentIds = new Set(
     flattenFields(visibleFields).map((field) => field.id),
   );
   const issues =
-    wizard && stepIndex < definition.fields.length - 1
+    wizard && stepIndex < bodyFields.length - 1
       ? allIssues.filter(
           (issue) => !issue.fieldId || currentIds.has(issue.fieldId),
         )
@@ -1056,7 +1072,7 @@ export function FormRenderer({
       )}
       {wizard && (
         <div className="fd-form-order">
-          {definition.fields.map((field, index) => (
+          {bodyFields.map((field, index) => (
             <Badge
               key={field.id}
               tone={index === stepIndex ? "info" : "neutral"}
@@ -1085,7 +1101,7 @@ export function FormRenderer({
                   type="button"
                   onClick={() => {
                     setRevealFieldId(issue.fieldId);
-                    const top = definition.fields.findIndex(
+                    const top = bodyFields.findIndex(
                       (field) => field.key === issue.path?.split(".")[0],
                     );
                     if (wizard && top >= 0) setStep(top);
@@ -1128,7 +1144,7 @@ export function FormRenderer({
             props.onInvalid?.(problems);
             return;
           }
-          if (wizard && stepIndex < definition.fields.length - 1) {
+          if (wizard && stepIndex < bodyFields.length - 1) {
             setStep(stepIndex + 1);
             setChecked(false);
             return;
@@ -1196,7 +1212,7 @@ export function FormRenderer({
               >
                 {t("Bước trước")}
               </Button>
-              {stepIndex < definition.fields.length - 1 && (
+              {stepIndex < bodyFields.length - 1 && (
                 <Button
                   type="button"
                   onClick={() => {
@@ -1224,7 +1240,7 @@ export function FormRenderer({
               )}
             </>
           )}
-          {(!wizard || stepIndex === definition.fields.length - 1) && (
+          {(!wizard || stepIndex >= bodyFields.length - 1) && (
             <Button
               type="submit"
               variant="primary"

@@ -247,3 +247,34 @@
   max-width: 100%;
   min-width: 0;
 }
+
+/* Optional document regions use ordinary section fields and existing drop targets. */
+.fd-canvas-field[data-document-region] {
+  border: 1px dashed var(--fd-border);
+  border-radius: var(--radius);
+  min-height: 100px;
+  padding: 12px;
+}
+.fd-canvas-field[data-document-region="header"] {
+  margin-bottom: 12px;
+}
+.fd-canvas-field[data-document-region="footer"] {
+  margin-top: 12px;
+}
+.fd-canvas-field[data-region-empty="true"] {
+  min-height: 140px;
+}
+.fd-canvas-field[data-region-empty="true"] > .fd-container-drop-zone {
+  top: 38px;
+}
+.fd-runtime-section[data-document-region] {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.fd-runtime-section[data-document-region] > legend {
+  font-family: var(--fd-font-ui);
+  font-size: var(--fd-font-ui-size);
+  font-weight: var(--fd-font-ui-weight);
+}

@@ -1,7 +1,7 @@
 {
   "name": "@flowdocker/form-builder",
   "private": true,
-  "version": "0.5.9",
+  "version": "0.5.10",
   "type": "module",
   "exports": {
     ".": "./src/index.tsx",

@@ -12,10 +12,10 @@ describe("form storage loading", () => {
       (form) => form.id === "demo-logo-heading",
     )!;
     expect(validateFormDefinition(demo)).toEqual([]);
-    expect(demo.fields[0].children?.map((field) => field.type)).toEqual([
-      "image",
-      "content",
-    ]);
+    expect(demo.fields[0].documentRegion).toBe("header");
+    expect(
+      demo.fields[0].children?.[0].children?.map((field) => field.type),
+    ).toEqual(["image", "content"]);
     const edited = { ...demo, title: { vi: "Đã sửa", en: "Edited" } };
     expect(formCatalog([edited]).filter((form) => form.id === demo.id)).toEqual(
       [edited],

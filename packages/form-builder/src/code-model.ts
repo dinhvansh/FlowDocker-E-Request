@@ -137,6 +137,8 @@ export const codeProperties = {
     "columns",
     "columnRatios",
     "hideLabel",
+    "documentRegion",
+    "regionEnabled",
     "minRows",
     "maxRows",
     "autoRows",

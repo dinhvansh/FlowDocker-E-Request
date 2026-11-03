@@ -260,3 +260,21 @@ Run `npm run examples:forms` and open `/direct-content.html` for an independent
 synthetic designer/preview consumer. Examples explicitly load the shared Vite
 configuration so Tailwind controls render correctly. No backend, remote upload,
 arbitrary HTML/JS or overlapping absolute page layout is introduced.
+
+## 0.5.10 — Optional document header and footer
+
+Designer “Đầu trang” / “Chân trang” toggles create optional root section fields.
+Drag library fields into their existing container drop areas, or select the region
+as the toolbox destination / parent in the inspector. Disabling hides the region
+without deleting its children; designer undo applies to these operations. Runtime
+renders content without authoring frames. This defines document areas, not printed
+page repetition or a PDF pagination engine.
+
+FormField.documentRegion?: "header" | "footer" is valid only on root sections,
+at most one of each. regionEnabled?: boolean belongs only to a document region;
+omitted means enabled. Disabled descendants do not validate or submit values.
+Header and footer surround body content; wizard steps count body fields only.
+The exported toggleDocumentRegion(form, region) returns a new definition and
+documentFieldOrder(fields) orders sibling fields. Existing legacy decoration
+and ordinary fields remain compatible; strict old clients must upgrade for these
+additive keys. E-Request's built-in logo demo and reusable tests exercise both areas.

@@ -1,4 +1,5 @@
 import { FieldIssueBadge } from "./components/field-issue-badge";
+import { documentFieldOrder, toggleDocumentRegion } from "./document-regions";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import { FormSpacingEditor } from "./components/form-spacing-editor";
@@ -145,6 +146,7 @@ export function moveField(
   const selected = flattenFields(fields).find((field) => field.id === id);
   if (
     !selected ||
+    (selected.documentRegion && !!parentId) ||
     (parentId &&
       (!flattenFields(fields).some(
         (field) => field.id === parentId && isContainer(field),
@@ -429,7 +431,11 @@ export function FormDesigner({
     if (readOnly) return;
     setPast((items) => [...items.slice(-99), definition]);
     setFuture([]);
-    onChange({ ...next, schemaVersion: 2 });
+    onChange({
+      ...next,
+      fields: documentFieldOrder(next.fields),
+      schemaVersion: 2,
+    });
   };
   const patch = (changes: Partial<FormField>) =>
     field &&
@@ -504,6 +510,8 @@ export function FormDesigner({
   const cloneSelected = (item: FormField) => {
     if (rows.length + flattenFields([item]).length > 300) return;
     const copy = duplicateField(item, definition.fields);
+    delete copy.documentRegion;
+    delete copy.regionEnabled;
     const row = rows.find((row) => row.field.id === item.id);
     const fields = row?.parent
       ? updateFieldTree(definition.fields, row.parent, (parent) => ({
@@ -582,6 +590,37 @@ export function FormDesigner({
       data-inspector={inspectorOpen}
     >
       <div className="fd-form-product-toolbar">
+        {(["header", "footer"] as const).map((region) => {
+          const band = definition.fields.find(
+            (item) => item.documentRegion === region,
+          );
+          return (
+            <Button
+              key={region}
+              disabled={readOnly}
+              aria-pressed={!!band && band.regionEnabled !== false}
+              onClick={() => {
+                const next = toggleDocumentRegion(definition, region);
+                commit(next);
+                const activeBand = next.fields.find(
+                  (item) => item.documentRegion === region,
+                )!;
+                if (activeBand.regionEnabled !== false) {
+                  setSelectedId(activeBand.id);
+                  setDestination(activeBand.id);
+                  setPane("canvas");
+                } else setDestination("");
+              }}
+            >
+              {band && band.regionEnabled !== false ? (
+                <CheckSquare aria-hidden="true" data-icon="inline-start" />
+              ) : (
+                <EyeOff aria-hidden="true" data-icon="inline-start" />
+              )}
+              {t(region === "header" ? "Đầu trang" : "Chân trang")}
+            </Button>
+          );
+        })}
         <div className="fd-designer-pane-controls">
           <Button
             aria-label={t("Thư viện trường")}
@@ -1149,8 +1188,10 @@ export function FormDesigner({
                 onClone={() => cloneSelected(field)}
                 onDelete={() => deleteSelected(field)}
                 onError={setError}
-                canMoveUp={fieldIndex > 0}
-                canMoveDown={fieldIndex < siblings.length - 1}
+                canMoveUp={!field.documentRegion && fieldIndex > 0}
+                canMoveDown={
+                  !field.documentRegion && fieldIndex < siblings.length - 1
+                }
                 canClone={rows.length + flattenFields([field]).length <= 300}
                 readOnly={readOnly}
                 issues={issues}

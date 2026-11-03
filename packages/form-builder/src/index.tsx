@@ -1,4 +1,6 @@
 export * from "./schema";
+export { documentFieldOrder, toggleDocumentRegion } from "./document-regions";
+export type { DocumentRegion } from "./document-regions";
 export { defaultDecoration, validFormDecoration } from "./decoration";
 export type { FormDecoration, FormBand, FormBandCell } from "./decoration";
 export { FormBandView } from "./components/form-band";

@@ -1,0 +1,13 @@
+
+ RUN  v5.0.5 D:/Andros portal/FlowDocker-E-Request
+
+
+ Test Files  4 passed (4)
+      Tests  18 passed (18)
+   Start at  17:28:23
+   Duration  170.50s (import 72%, environment 17%, tests 8%, transform 3%)
+
+     Import  101 modules were evaluated 168 times · 118.46s total, 72% of tracked time
+             ~47.24s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+

@@ -3,7 +3,7 @@ import { demoLogo } from "./demo-form-logo";
 
 /** Synthetic example, discoverable without replacing any saved draft. */
 export function createDirectContentTemplate(): FormDefinition {
-  return {
+  const form: FormDefinition = {
     schemaVersion: 2,
     id: "demo-logo-heading",
     title: { vi: "DEMO · Logo và tiêu đề", en: "DEMO · Logo and heading" },
@@ -84,4 +84,36 @@ export function createDirectContentTemplate(): FormDefinition {
       },
     ],
   };
+  form.fields[0] = {
+    ...createField("section", form.fields),
+    id: "page_header",
+    key: "page_header",
+    documentRegion: "header",
+    regionEnabled: true,
+    required: false,
+    label: { vi: "Đầu trang", en: "Header" },
+    children: [form.fields[0]],
+  };
+  form.fields.push({
+    ...createField("section", form.fields),
+    id: "page_footer",
+    key: "page_footer",
+    documentRegion: "footer",
+    regionEnabled: true,
+    required: false,
+    label: { vi: "Chân trang", en: "Footer" },
+    children: [
+      {
+        ...createField("content", form.fields),
+        id: "footer_note",
+        key: "footer_note",
+        label: {
+          vi: "FlowDocker · Biểu mẫu minh họa",
+          en: "FlowDocker · Sample form",
+        },
+        presentation: { align: "center", size: "body", bold: false },
+      },
+    ],
+  });
+  return form;
 }

@@ -134,6 +134,8 @@ const fieldProperties: Record<(typeof codeProperties.field)[number], object> = {
       "Columns layouts only. Length must equal columns (default 2). Relative widths.",
   },
   hideLabel: bool,
+  documentRegion: enumOf("header", "footer"),
+  regionEnabled: bool,
   presentation: object(["align", "size", "bold"], {
     horizontalPosition: { type: "integer", minimum: 0, maximum: 100 },
     spaceAbove: { type: "integer", minimum: 0, maximum: 160 },

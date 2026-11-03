@@ -82,7 +82,7 @@ function FieldOverlay({
       !flattenFields([dragged]).some((item) => item.id === field.id));
   const sortable = useSortable({
     id: field.id,
-    disabled: props.readOnly,
+    disabled: props.readOnly || !!field.documentRegion,
     data: { field },
   });
   const containerDrop = useDroppable({
@@ -94,6 +94,10 @@ function FieldOverlay({
     <div
       ref={sortable.setNodeRef}
       data-canvas-field={field.id}
+      data-document-region={field.documentRegion}
+      data-region-empty={
+        field.documentRegion && !field.children?.length ? true : undefined
+      }
       data-selected={selected}
       data-drop-active={!!sortable.isOver && !!validDrop}
       data-dragging={sortable.isDragging || undefined}
@@ -166,7 +170,7 @@ function FieldOverlay({
         <button
           type="button"
           className="fd-drag-handle"
-          disabled={props.readOnly}
+          disabled={props.readOnly || !!field.documentRegion}
           {...sortable.attributes}
           {...sortable.listeners}
           aria-label={t("Di chuyển trường {{key}}", { key: field.key })}
@@ -205,14 +209,14 @@ function FieldOverlay({
               </Button>
             )}
             <Button
-              disabled={props.readOnly}
+              disabled={props.readOnly || !!field.documentRegion}
               aria-label={t("Lên trên")}
               onClick={() => props.onMove(field, -1)}
             >
               <ArrowUp />
             </Button>
             <Button
-              disabled={props.readOnly}
+              disabled={props.readOnly || !!field.documentRegion}
               aria-label={t("Xuống dưới")}
               onClick={() => props.onMove(field, 1)}
             >
