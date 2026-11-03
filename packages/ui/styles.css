@@ -2497,6 +2497,16 @@ a {
   overflow-y: auto;
   padding: 0;
 }
+/* Calendar captions are spans, so the shared control font rule misses them. */
+.fd-date-popover [data-slot="calendar"],
+.fd-date-popover
+  [data-slot="calendar"]
+  :is(span, select, option, th, td, button) {
+  font-family: var(--fd-font-ui);
+  font-size: var(--fd-font-ui-size);
+  font-weight: var(--fd-font-ui-weight);
+  line-height: var(--fd-font-ui-line-height);
+}
 .fd-date-time {
   display: grid;
   grid-template-columns: 1fr 1fr;

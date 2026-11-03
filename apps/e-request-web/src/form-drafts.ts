@@ -7,8 +7,10 @@ import {
 import { createExpenseRequestTemplate } from "./expense-request-template";
 import { createConnectedExpenseTemplate } from "./connected-expense-template";
 import { organizationForm } from "./organization";
+import { createDirectContentTemplate } from "./direct-content-template";
 export const formDraftStorageKey = "flowdocker.form-drafts.v1";
 export const demoForms: FormDefinition[] = [
+  createDirectContentTemplate(),
   {
     id: "demo-purchase-intake",
     title: { vi: "Đề nghị mua sắm · mẫu", en: "Purchase intake · sample" },
