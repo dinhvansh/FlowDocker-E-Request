@@ -44,3 +44,5 @@ cross-tenant/app reads, two-writer conflict, restart persistence, revocation,
 expiry, pooled context clearing, transactional audit); typecheck/lint/build.
 No browser E2E, Temporal, Teams, PDF, restore or release gate passed here.
 Second independent backend consumer remains pending. See docs/104.
+
+Bounded list: GET /api/v1/apps/:appId/forms?after=<uuid> returns at most 50 title/id/version summaries plus nextCursor; it uses identical session/capability/RLS checks. Invalid cursors return 400, no SQL detail. HTTP storage adapter tests use the actual server/database; no UI wiring in this slice.

@@ -1,9 +1,10 @@
 {
   "name": "@flowdocker/form-builder",
   "private": true,
-  "version": "0.5.10",
+  "version": "0.5.11",
   "type": "module",
   "exports": {
+    "./http-storage": "./src/http-storage.ts",
     ".": "./src/index.tsx",
     "./code-studio": "./src/code-studio.tsx",
     "./code-model": "./src/code-model.ts",

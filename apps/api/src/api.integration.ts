@@ -3,6 +3,11 @@ import assert from "node:assert/strict";
 import { randomBytes, randomUUID, createHash } from "node:crypto";
 import pg from "pg";
 import { createApi } from "./server.ts";
+import {
+  createHttpFormRepository,
+  FormStorageError,
+} from "../../../packages/form-builder/src/http-storage.ts";
+import type { FormDefinition } from "../../../packages/form-builder/src/schema.ts";
 
 test("real PostgreSQL authoring API: isolation, conflicts, revocation, audit and restart", async () => {
   assert.ok(process.env.MIGRATION_DATABASE_URL);
@@ -81,6 +86,29 @@ test("real PostgreSQL authoring API: isolation, conflicts, revocation, audit and
       409,
     );
     assert.equal((await call("GET")).json().version, 1);
+    const repository = createHttpFormRepository({
+      baseUrl: address,
+      appId: "e-request",
+      getAccessToken: () => token,
+    });
+    assert.deepEqual(
+      (await repository.list()).items.map((row) => row.id),
+      [id],
+    );
+    assert.equal((await repository.read(id)).version, 1);
+    const otherRepository = createHttpFormRepository({
+      baseUrl: address,
+      appId: "e-request",
+      getAccessToken: () => otherToken,
+    });
+    assert.deepEqual((await otherRepository.list()).items, []);
+    const cursorError = await fetch(
+      `${address}/api/v1/apps/e-request/forms?after=------------------------------------`,
+      { headers: { authorization: `Bearer ${token}` } },
+    );
+    assert.equal(cursorError.status, 400);
+    // Exact cursor on the only row ends the page without repeating it.
+    assert.deepEqual((await repository.list(id)).items, []);
     assert.equal((await call("GET", undefined, otherToken)).statusCode, 404);
     assert.equal(
       (await call("GET", undefined, token, "it-assets")).statusCode,
@@ -100,6 +128,20 @@ test("real PostgreSQL authoring API: isolation, conflicts, revocation, audit and
     api = createApi(pool);
     address = await api.listen({ host: "127.0.0.1", port: 0 });
     assert.equal((await call("GET")).json().version, 2);
+    const restarted = createHttpFormRepository({
+      baseUrl: address,
+      appId: "e-request",
+      getAccessToken: () => token,
+    });
+    await assert.rejects(
+      restarted.save({
+        id,
+        definition: definition as FormDefinition,
+        version: 1,
+      }),
+      (error) =>
+        error instanceof FormStorageError && error.code === "VERSION_CONFLICT",
+    );
     assert.equal(
       (await pool.query("SELECT * FROM fd.form_drafts")).rowCount,
       0,

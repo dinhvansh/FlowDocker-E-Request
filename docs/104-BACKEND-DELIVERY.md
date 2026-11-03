@@ -34,3 +34,5 @@ No production deployment or automatic merge is authorized by these local tests.
 Every implemented slice is committed and pushed before starting the next slice.
 
 Foundation verification: npm run backend:test passed using a real loopback HTTP listener and PostgreSQL non-owner role; migration rerun preserved state. npm run typecheck, npm run lint and npm run build passed. Runtime audit reported zero advisories; 11 moderate developer-tool advisories remain. See apps/api/README.md for missing gates. No browser/API integration yet.
+
+Storage transport slice: added paginated authorized form summaries and reusable optional HTTP repository (Forms 0.5.11). Tested against real HTTP/PostgreSQL; malformed cursor regression and stale client save included. Existing local UI untouched. Login/session issuance and visible storage choice remain the next slice.

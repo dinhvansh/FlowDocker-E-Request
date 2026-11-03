@@ -278,3 +278,6 @@ The exported toggleDocumentRegion(form, region) returns a new definition and
 documentFieldOrder(fields) orders sibling fields. Existing legacy decoration
 and ordinary fields remain compatible; strict old clients must upgrade for these
 additive keys. E-Request's built-in logo demo and reusable tests exercise both areas.
+
+## HTTP storage adapter (0.5.11)
+Workspace subpath @flowdocker/form-builder/http-storage exposes createHttpFormRepository, StoredForm, FormSummary and FormStorageError. Host supplies trusted baseUrl, appId and current getAccessToken callback. It lists bounded pages, reads, creates/updates by exact version and deletes. No token persistence, silent local fallback, automatic merge or UI/storage migration. VERSION_CONFLICT preserves the caller's draft; explicitly reload/compare before retrying. Request errors are sanitized. Original schema validation runs in client and server. Backend HTTP/PostgreSQL integration tests cover scoped listing, client reads and stale-save errors; second backend host and visible UI integration pending. This workspace subpath is not a standalone exported JS artifact yet.
