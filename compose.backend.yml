@@ -1,0 +1,19 @@
+name: flowdocker-erequest-dev
+services:
+  postgres:
+    image: postgres:16.6-alpine
+    environment:
+      POSTGRES_DB: flowdocker
+      POSTGRES_USER: fd_migrator
+      POSTGRES_PASSWORD: ${FD_DB_PASSWORD:?Run npm run backend:setup first}
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - flowdocker_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fd_migrator -d flowdocker"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+volumes:
+  flowdocker_pg:

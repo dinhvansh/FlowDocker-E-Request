@@ -62,3 +62,6 @@ For V1, **exclude ONLYOFFICE and signing**. Select Form.io JS Core + Synergy Cod
 
 ## Optional Form Code Studio — 2026-10-31
 Direct dependencies pinned: codemirror 6.0.2; @codemirror/lang-json 6.0.2; @codemirror/lint 6.9.7; @codemirror/autocomplete 6.20.4; @codemirror/view 6.43.15; @codemirror/state 6.7.6; @codemirror/language 6.13.1; @lezer/highlight 1.2.3; jsonc-parser 3.3.1. Installed package manifests identify MIT; preserve their LICENSE files and transitive notices in distributions. These remain upstream software, not FlowDocker-owned code. Standard standalone forms export remains independent of this optional editor subpath at this stage.
+
+## Backend foundation — 2026-11-03
+Installed direct runtime packages Fastify 5.12.8 and node-postgres (pg) 8.23.1 declare MIT in their installed manifests; dev runner tsx 4.23.15 declares MIT. Exact dependency graph is locked. Local PostgreSQL uses 16.6-alpine, subject to patch/image/SBOM review before release. npm audit --omit=dev reports zero runtime advisories on this run; full developer dependency audit still has 11 moderate advisories. This is not release or legal signoff.

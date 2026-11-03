@@ -5,3 +5,7 @@ playwright-report/
 test-results/
 .DS_Store
 .playwright-cli/
+
+.env*
+output/app-dev-*.log
+output/api-dev-*.log
