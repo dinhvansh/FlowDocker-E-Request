@@ -32,6 +32,7 @@ import {
   FormLogicStudio,
   FormSchemaIssues,
   type FormIssue,
+  updateFieldTree,
   FormPreview,
   FormSpacingEditor,
   FormTestPreview,
@@ -187,6 +188,8 @@ export function FormsPage({
     }),
     [draft, forms],
   );
+  const [contentEdit, setContentEdit] = useState(false);
+  const [contentPast, setContentPast] = useState<FormDefinition[]>([]);
   const [previewDevice, setPreviewDevice] = useState("desktop");
   const [actionsOpen, setActionsOpen] = useState(false);
   const [titlesOpen, setTitlesOpen] = useState(false);
@@ -294,6 +297,8 @@ export function FormsPage({
   const activate = (next: FormDefinition) => {
     clearRecovery();
     setPreviewSpacingPast([]);
+    setContentPast([]);
+    setContentEdit(false);
     setCatalogOpen(false);
     setTitlesOpen(false);
     setActionsOpen(false);
@@ -321,7 +326,12 @@ export function FormsPage({
     if (next === "create") setCreateOpen(true);
     else activate(next);
   };
-  const update = (next: FormDefinition, fromCode = false) => {
+  const update = (
+    next: FormDefinition,
+    fromCode = false,
+    fromContent = false,
+  ) => {
+    if (!fromContent) setContentPast([]);
     setDraft(next);
     if (!fromCode) {
       setCodeText((current) => reconcileFormCode(current, next));
@@ -350,6 +360,31 @@ export function FormsPage({
       setMessage("");
     }
   };
+  const previewContentControls = draft && (
+    <>
+      <Button
+        aria-pressed={contentEdit}
+        disabled={codeInvalid}
+        onClick={() => setContentEdit(!contentEdit)}
+      >
+        {contentEdit ? t("Xong chỉnh nội dung") : t("Chỉnh logo / tiêu đề")}
+      </Button>
+      {contentEdit && (
+        <Button
+          disabled={!contentPast.length || codeInvalid}
+          onClick={() => {
+            const previous = contentPast[contentPast.length - 1];
+            if (previous) {
+              update(previous, false, true);
+              setContentPast((past) => past.slice(0, -1));
+            }
+          }}
+        >
+          {t("Hoàn tác nội dung")}
+        </Button>
+      )}
+    </>
+  );
   const previewSpacingControls = draft && (
     <>
       <FormSpacingEditor
@@ -704,12 +739,42 @@ export function FormsPage({
                   >
                     <div className="fd-toolbar-actions fd-preview-inline-controls">
                       {previewSpacingControls}
+                      {previewContentControls}
                     </div>
                     <FormPreview
                       runtimeContext={demoFormRuntimeContext}
                       key={draft.id}
                       definition={draft}
                       onEditSchemaIssue={openIssue}
+                      contentDesign={
+                        contentEdit
+                          ? {
+                              selectedId: selectedFieldId,
+                              disabled: codeInvalid,
+                              onSelect: setSelectedFieldId,
+                              onPatch: (id, changes, recordHistory = true) => {
+                                if (codeInvalid) return;
+                                if (recordHistory)
+                                  setContentPast((past) => [
+                                    ...past.slice(-99),
+                                    draft,
+                                  ]);
+                                update(
+                                  {
+                                    ...draft,
+                                    fields: updateFieldTree(
+                                      draft.fields,
+                                      id,
+                                      (field) => ({ ...field, ...changes }),
+                                    ),
+                                  },
+                                  false,
+                                  true,
+                                );
+                              },
+                            }
+                          : undefined
+                      }
                       providers={providers}
                       values={values}
                       onChange={setValues}
@@ -758,6 +823,8 @@ export function FormsPage({
           onClose={() => setHistoryOpen(false)}
           onRestore={(next) => {
             clearRecovery();
+            setContentPast([]);
+            setContentEdit(false);
             update(next);
             setCodeText(JSON.stringify(next, null, 2));
             setValues({});

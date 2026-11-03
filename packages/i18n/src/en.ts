@@ -1,5 +1,26 @@
 import { formMessages } from "./form-messages";
 export const en = {
+  "Chọn và chỉnh {{label}}": "Select and edit {{label}}",
+  "Chỉnh nội dung trực tiếp": "Edit content directly",
+  "Kéo đổi kích thước ảnh": "Drag to resize image",
+  "Kéo đổi cỡ chữ": "Drag to resize text",
+  "Di chuyển nội dung": "Move content",
+  "Kéo để di chuyển; phím mũi tên để chỉnh vị trí":
+    "Drag to move; use arrow keys to adjust position",
+  "Sửa chữ": "Edit text",
+  "Đổi ảnh": "Change image",
+  "Cỡ chữ (px)": "Font size (px)",
+  "Đặt lại vị trí": "Reset position",
+  "Nội dung trên mẫu": "Text on the form",
+  "Kéo nội dung trong ô bố cục; kéo góc để đổi cỡ. Esc để hủy kéo.":
+    "Drag content within its layout cell; drag the corner to resize. Esc cancels a drag.",
+  "Ảnh và nội dung": "Image and content",
+  "Vị trí ngang (%)": "Horizontal position (%)",
+  "Khoảng trống phía trên (px)": "Space above (px)",
+  "Xong chỉnh nội dung": "Finish editing content",
+  "Chỉnh logo / tiêu đề": "Edit logo / heading",
+  "Hoàn tác nội dung": "Undo content change",
+
   "Mốc đã lưu": "Saved snapshot",
   "Bản đang sửa": "Current draft",
 

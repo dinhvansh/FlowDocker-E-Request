@@ -58,8 +58,42 @@ export function ContentBlockEditor({
                 { value: "right", label: t("Căn phải") },
               ]}
               onValueChange={(align) =>
-                patch({ align: align as FormBlockPresentation["align"] })
+                patch({
+                  align: align as FormBlockPresentation["align"],
+                  horizontalPosition: undefined,
+                })
               }
+            />
+          </Field>
+          <Field label={t("Vị trí ngang (%)")}>
+            <Input
+              type="number"
+              min={0}
+              max={100}
+              disabled={disabled}
+              value={
+                p.horizontalPosition ??
+                (p.align === "center" ? 50 : p.align === "right" ? 100 : 0)
+              }
+              onChange={(event) => {
+                const next = Number(event.target.value);
+                if (Number.isInteger(next) && next >= 0 && next <= 100)
+                  patch({ horizontalPosition: next });
+              }}
+            />
+          </Field>
+          <Field label={t("Khoảng trống phía trên (px)")}>
+            <Input
+              type="number"
+              min={0}
+              max={160}
+              disabled={disabled}
+              value={p.spaceAbove ?? 0}
+              onChange={(event) => {
+                const next = Number(event.target.value);
+                if (Number.isInteger(next) && next >= 0 && next <= 160)
+                  patch({ spaceAbove: next });
+              }}
             />
           </Field>
           {field.type === "content" && (
@@ -75,7 +109,10 @@ export function ContentBlockEditor({
                     { value: "title", label: t("Tiêu đề lớn") },
                   ]}
                   onValueChange={(size) =>
-                    patch({ size: size as FormBlockPresentation["size"] })
+                    patch({
+                      size: size as FormBlockPresentation["size"],
+                      fontSize: undefined,
+                    })
                   }
                 />
               </Field>

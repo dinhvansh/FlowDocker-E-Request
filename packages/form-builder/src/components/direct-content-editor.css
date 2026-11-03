@@ -1,0 +1,105 @@
+.fd-direct-content {
+  position: relative;
+  min-width: 0;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+}
+.fd-direct-content[data-selected="true"]
+  > .fd-content-block
+  > .fd-content-object {
+  outline: 1px dashed var(--fd-text-muted);
+  outline-offset: 3px;
+  cursor: move;
+  user-select: none;
+}
+.fd-direct-content img {
+  -webkit-user-drag: none;
+}
+.fd-content-inline-toolbar {
+  position: relative;
+  order: 1;
+  margin-top: 24px;
+  align-self: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 4px;
+  border: 1px solid var(--fd-border);
+  border-radius: var(--radius);
+  background: var(--fd-surface-default);
+  box-shadow: 0 2px 8px #0001;
+}
+.fd-content-inline-toolbar button {
+  min-width: 32px;
+  height: 32px;
+  padding: 4px 6px;
+}
+.fd-content-inline-toolbar input {
+  width: 66px;
+  height: 32px;
+  padding-inline: 6px;
+}
+.fd-content-size-handle {
+  position: absolute;
+  right: -6px;
+  bottom: -20px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 3px;
+  border: 1px solid var(--fd-border);
+  border-radius: 4px;
+  background: var(--fd-surface-default);
+  cursor: nwse-resize;
+  touch-action: none;
+}
+.fd-content-size-handle svg {
+  width: 14px;
+  height: 14px;
+}
+.fd-content-size-handle:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.fd-content-drag-help {
+  order: 2;
+  margin: 0;
+  color: var(--fd-text-muted);
+  background: var(--fd-surface-default);
+  font: var(--fd-font-ui-weight)
+    var(--fd-font-ui-size)/var(--fd-font-ui-line-height) var(--fd-font-family);
+  padding: 4px;
+  pointer-events: none;
+}
+@media (max-width: 600px) {
+  .fd-content-inline-toolbar button,
+  .fd-content-inline-toolbar input {
+    min-height: 44px;
+    height: 44px;
+  }
+  .fd-content-size-handle {
+    width: 44px;
+    height: 44px;
+    bottom: -36px;
+  }
+  .fd-content-inline-toolbar {
+    margin-top: 40px;
+  }
+}
+
+.fd-direct-content:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 4px;
+}
+.fd-direct-content .fd-content-object {
+  cursor: pointer;
+}
+
+.fd-direct-content .fd-content-object {
+  touch-action: none;
+}

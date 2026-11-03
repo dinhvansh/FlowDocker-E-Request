@@ -52,7 +52,7 @@ function Example() {
   const invalid = !analyzeFormCode(source, definition.id).definition;
   const [theme, setTheme] = useState<"light" | "dark">("light");
   return (
-    <div className="fd-app" data-theme={theme}>
+    <div className="fd-app fd-forms-root" data-theme={theme}>
       <main className="fd-screen">
         <LanguagePicker />
         <Button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>

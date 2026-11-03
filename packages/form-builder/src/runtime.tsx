@@ -1,3 +1,7 @@
+import {
+  DirectContentEditor,
+  type ContentDesign,
+} from "./components/direct-content-editor";
 import { columnStyle } from "./column-layout";
 import { FormSchemaIssues } from "./components/form-schema-issues";
 import { useChoices } from "./use-choices";
@@ -87,6 +91,8 @@ export interface CustomControlProps {
   "aria-invalid"?: boolean;
 }
 export interface FormRendererProps {
+  /** Optional configuration-only authoring controls; never stored in submission values. */
+  contentDesign?: ContentDesign;
   runtimeContext?: FormRuntimeContext;
   definition: FormDefinition;
   values: PreviewValues;
@@ -434,6 +440,7 @@ interface RuntimeFieldsProps extends Pick<
   | "renderers"
   | "readOnly"
   | "runtimeContext"
+  | "contentDesign"
 > {
   currency?: string;
   design?: { wrap(field: FormField, control: ReactNode): ReactNode };
@@ -527,7 +534,11 @@ function RuntimeField({
     onChange({ ...data, [field.key]: next });
   const nextProps = { ...props, readOnly: disabled, prefix, data };
   if (["content", "image", "divider"].includes(field.type))
-    return <ContentBlock field={field} />;
+    return props.contentDesign && field.type !== "divider" ? (
+      <DirectContentEditor field={field} design={props.contentDesign} />
+    ) : (
+      <ContentBlock field={field} />
+    );
   if (field.type === "alert")
     return (
       <Notice tone={field.tone ?? "info"}>

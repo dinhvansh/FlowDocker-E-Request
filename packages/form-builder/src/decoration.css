@@ -240,3 +240,10 @@
   min-width: 0;
   overflow-wrap: anywhere;
 }
+
+.fd-content-object {
+  position: relative;
+  width: max-content;
+  max-width: 100%;
+  min-width: 0;
+}

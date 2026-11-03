@@ -74,3 +74,15 @@ export {
   resizeColumns,
   validColumnRatios,
 } from "./column-layout";
+
+export { DirectContentEditor } from "./components/direct-content-editor";
+export type {
+  DirectContentEditorProps,
+  ContentDesign,
+} from "./components/direct-content-editor";
+export {
+  contentPosition,
+  contentPresentation,
+  movedContent,
+  resizedContent,
+} from "./content-position";

@@ -230,3 +230,33 @@ recordHistory). Canvas pointer gestures record one history checkpoint and update
 widths live; arrows, Shift+arrows, Home/End and presets are alternatives. Inspector
 uses presets. New optional FormCanvas.onPatch third argument controls history,
 old consumers remain compatible. E-Request and isolated designer use this path.
+
+## 0.5.9 — Direct logo and text editing
+
+Select an `image` or `content` block on the designer canvas: drag the object within
+its layout cell, resize with the corner, align left/center/right, edit localized
+text or replace the image. Existing field drag handles still reorder blocks.
+Keyboard alternatives: move button + arrows (Shift for larger steps), size handle
++ arrows, numeric size and inspector position/spacing. Escape cancels a drag.
+Pointer gestures request one history checkpoint, then emit live changes without
+additional checkpoints. Hosts own history and persistence.
+
+`DirectContentEditor({field, design})` is exported. `ContentDesign` accepts
+`selectedId`, `disabled`, `onSelect(id)` and
+`onPatch(id, changes, recordHistory?)`. `FormRenderer` / `FormPreview` accept optional
+`contentDesign`; omit it for normal runtime with no authoring controls. Visibility
+and field access checks still apply. The E-Request Preview has an in-paper
+“Chỉnh logo / tiêu đề” toggle and bounded content undo, reconciled with Code Studio.
+
+Optional `FormBlockPresentation.horizontalPosition` is an integer 0..100 across
+available cell width; omitted uses alignment. `spaceAbove` is 0..160px and
+`fontSize` is 12..48px. Images retain 32..640px authored width and shrink to fit.
+Metadata round-trips through schema/code without entering submitted values.
+Existing documents require no migration; strict older clients must upgrade to
+accept the additive properties. Legacy decoration bands remain rendered through
+their compatibility APIs; direct manipulation targets toolbox content/image blocks.
+
+Run `npm run examples:forms` and open `/direct-content.html` for an independent
+synthetic designer/preview consumer. Examples explicitly load the shared Vite
+configuration so Tailwind controls render correctly. No backend, remote upload,
+arbitrary HTML/JS or overlapping absolute page layout is introduced.

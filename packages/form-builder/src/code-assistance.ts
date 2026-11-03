@@ -135,6 +135,9 @@ const fieldProperties: Record<(typeof codeProperties.field)[number], object> = {
   },
   hideLabel: bool,
   presentation: object(["align", "size", "bold"], {
+    horizontalPosition: { type: "integer", minimum: 0, maximum: 100 },
+    spaceAbove: { type: "integer", minimum: 0, maximum: 160 },
+    fontSize: { type: "integer", minimum: 12, maximum: 48 },
     align: enumOf("left", "center", "right"),
     size: enumOf("body", "subtitle", "title"),
     bold: bool,

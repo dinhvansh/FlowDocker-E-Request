@@ -383,6 +383,16 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
           fields={definition.fields}
           data={prepared}
           root={prepared}
+          contentDesign={
+            props.onPatch
+              ? {
+                  selectedId: props.selectedId,
+                  disabled: props.readOnly,
+                  onSelect: props.onSelect,
+                  onPatch: props.onPatch,
+                }
+              : undefined
+          }
           onChange={setValues}
           issues={[]}
           prefix=""

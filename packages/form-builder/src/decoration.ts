@@ -23,7 +23,7 @@ export interface FormDecoration {
 export type FormBlockPresentation = Pick<
   FormBandCell,
   "align" | "size" | "bold" | "image" | "imageWidth"
->;
+> & { horizontalPosition?: number; spaceAbove?: number; fontSize?: number };
 export function validBlockPresentation(
   value: unknown,
 ): value is FormBlockPresentation {
@@ -31,11 +31,33 @@ export function validBlockPresentation(
   const p = value as Record<string, unknown>;
   return (
     Object.keys(p).every((key) =>
-      ["align", "size", "bold", "image", "imageWidth"].includes(key),
+      [
+        "align",
+        "size",
+        "bold",
+        "image",
+        "imageWidth",
+        "horizontalPosition",
+        "spaceAbove",
+        "fontSize",
+      ].includes(key),
     ) &&
     ["left", "center", "right"].includes(String(p.align)) &&
     ["body", "subtitle", "title"].includes(String(p.size)) &&
     typeof p.bold === "boolean" &&
+    (
+      [
+        ["horizontalPosition", 0, 100],
+        ["spaceAbove", 0, 160],
+        ["fontSize", 12, 48],
+      ] as const
+    ).every(
+      ([key, min, max]) =>
+        p[key] === undefined ||
+        (Number.isInteger(p[key]) &&
+          Number(p[key]) >= min &&
+          Number(p[key]) <= max),
+    ) &&
     (p.image === undefined || safeBandImage(p.image)) &&
     (p.imageWidth === undefined ||
       (Number.isInteger(p.imageWidth) &&
