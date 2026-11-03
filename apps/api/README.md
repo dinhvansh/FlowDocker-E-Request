@@ -55,4 +55,22 @@ Run npm run backend:seed once to create a synthetic Forms-only author; random cr
 Current UI offers optional Server storage in Forms, backed by this API through Vite's same-origin /api development proxy. Run backend:dev alongside the existing web dev server; use the synthetic bootstrap account from the ignored local file. Tokens are memory-only, so reload requires sign-in. Local save and server save are separate; loading a server form makes a new working copy, and stale updates never silently overwrite. Local storage is not reset or automatically uploaded. Browser E2E evidence and limits: docs/105. Production reverse-proxy/HTTPS and OAuth are still deployment work.
 
 ## Immutable authoring publication
+
+See also current approval/submission scope below; this section describes the first publication slice.
 POST /api/v1/apps/:appId/forms/:id/publish requires expectedVersion, current forms:edit and separate forms:publish capabilities. The original validator rejects incomplete or invalid schemas with 422. Same draft revision is idempotent, concurrent publish serializes on the draft row. GET /api/v1/apps/:appId/form-versions/:versionId is an authoring-only read. Published JSON has canonical SHA-256, independent immutable version number and audit. Runtime has no UPDATE/DELETE grant on form_versions; draft changes/deletion retain versions. This is not request-type/workflow publication. HTTP/PostgreSQL tests: output/backend-publication-tests.log.
+
+## Approval and submission foundation (current)
+
+Workflow publication now pins a form version and a typed validated plan (docs/109).
+Task metadata/decision endpoints enforce active assignment, capability, optimistic
+version and idempotency; audit and wakeup event commit with the decision (docs/108).
+Owner request submission stores immutable revision and durable start (docs/110).
+Only the documented scalar subset may submit for now; unsupported schemas fail
+closed. Task readers receive no pinned request payload. No broad admin read.
+
+Run `npm run approval:dev` beside API for the worker/start+wakeup dispatcher;
+`npm run approval:test` exercises real HTTP/database/Temporal with synthetic
+fixtures. This includes start retry, decision retry/race, restart and replay.
+The original historical foundation sections describe earlier slices; current
+scope is tracked in docs/104. Full field policy/runtime UI, Finance/files/PDF,
+server master/permission admin, MCP transport and release gates remain pending.

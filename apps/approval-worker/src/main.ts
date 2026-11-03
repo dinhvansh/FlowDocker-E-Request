@@ -4,7 +4,7 @@ import { Worker, NativeConnection } from "@temporalio/worker";
 import { fileURLToPath } from "node:url";
 import { setTimeout as delay } from "node:timers/promises";
 import { createApprovalActivities } from "./activities.ts";
-import { dispatchDecisionWakeups } from "./outbox.ts";
+import { dispatchDecisionWakeups, dispatchApprovalStarts } from "./outbox.ts";
 
 if (!process.env.WORKER_DATABASE_URL)
   throw new Error("Missing worker database configuration");
@@ -37,6 +37,9 @@ process.once("SIGTERM", stop);
 async function dispatchLoop() {
   while (!stopping) {
     try {
+      await connection.withDeadline(Date.now() + 10000, () =>
+        dispatchApprovalStarts(pool, client),
+      );
       await connection.withDeadline(Date.now() + 10000, () =>
         dispatchDecisionWakeups(pool, client),
       );

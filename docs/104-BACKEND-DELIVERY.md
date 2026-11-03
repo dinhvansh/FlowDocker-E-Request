@@ -60,3 +60,10 @@ conditions/active tenant assignees, deduplicates under concurrent publication an
 stores a checksum plus audit. Negative HTTP/SQL tests pass (docs/109). Published
 form/engine discriminator compatibility fixed with an in-memory read adapter.
 Editor integration, submission/runtime UI and remaining service modules pending.
+
+Request submission foundation: immutable owner revision pins published workflow/
+form; server validates/recomputes a restricted scalar schema, rejects unknown or
+derived writes, commits run/audit/start event atomically, starts Temporal durably
+and deduplicates replay. Real backend create-to-approval chain passes (docs/110).
+Full nested/person/master/file/numbering submission, field projections, browser
+runtime UI and remaining modules are NOT DONE.
