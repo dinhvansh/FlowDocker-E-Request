@@ -318,3 +318,11 @@
   gap: 8px;
   margin-bottom: var(--fd-field-gap, 16px);
 }
+
+.fd-form-catalog > [data-slot="tabs"] {
+  margin-bottom: 16px;
+}
+.fd-form-template:disabled {
+  opacity: 0.55;
+  cursor: default;
+}

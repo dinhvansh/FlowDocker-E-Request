@@ -1,3 +1,5 @@
+import { FormHistory } from "./form-history";
+import { FormTemplateDialog } from "./form-template-dialog";
 import {
   lazy,
   Suspense,
@@ -54,6 +56,7 @@ import {
   Textarea,
 } from "@flowdocker/ui";
 import {
+  demoForms,
   formCatalog,
   formDraftStorageKey,
   readFormDrafts,
@@ -211,6 +214,8 @@ export function FormsPage({
     fieldId: string;
     revision: number;
   }>();
+  const [template, setTemplate] = useState<FormDefinition | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [titleVi, setTitleVi] = useState("");
   const [titleEn, setTitleEn] = useState("");
@@ -419,6 +424,11 @@ export function FormsPage({
       <div className="fd-form-workbench" data-catalog={catalogOpen || !draft}>
         <FormCatalog
           forms={catalog}
+          templates={demoForms}
+          templateDisabled={initial.failed || forms.length >= 100}
+          onUseTemplate={(form) => {
+            if (!initial.failed && forms.length < 100) setTemplate(form);
+          }}
           activeId={draft?.id}
           query={query}
           onQueryChange={setQuery}
@@ -729,6 +739,36 @@ export function FormsPage({
           )}
         </div>
       </div>
+      {template && (
+        <FormTemplateDialog
+          key={template.id}
+          template={template}
+          onClose={() => setTemplate(null)}
+          onCreate={(next) => {
+            setTemplate(null);
+            request(next);
+          }}
+        />
+      )}
+      {historyOpen && draft && (
+        <FormHistory
+          key={draft.id}
+          definition={draft}
+          disabled={codeInvalid}
+          onClose={() => setHistoryOpen(false)}
+          onRestore={(next) => {
+            clearRecovery();
+            update(next);
+            setCodeText(JSON.stringify(next, null, 2));
+            setValues({});
+            setSelectedFieldId("");
+            setRevealField(undefined);
+            setInspectionRequest(undefined);
+            setHistoryOpen(false);
+            setTab("schema");
+          }}
+        />
+      )}
       {actionsOpen && (
         <Modal
           title={t("Tùy chọn biểu mẫu")}
@@ -754,6 +794,14 @@ export function FormsPage({
               }}
             >
               {t("Kiểm tra")}
+            </Button>
+            <Button
+              onClick={() => {
+                setActionsOpen(false);
+                setHistoryOpen(true);
+              }}
+            >
+              {t("Lịch sử thiết kế")}
             </Button>
             <Button
               disabled

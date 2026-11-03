@@ -1,0 +1,8 @@
+
+ RUN  v5.0.5 D:/Andros portal/FlowDocker-E-Request
+
+
+ Test Files  4 passed (4)
+      Tests  17 passed (17)
+   Start at  12:33:56
+   Duration  146.65s (tests 57%, import 35%, environment 7%, transform 2%)

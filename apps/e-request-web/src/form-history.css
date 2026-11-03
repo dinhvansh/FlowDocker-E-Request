@@ -1,0 +1,110 @@
+.fd-modal:has(.fd-form-history),
+.fd-modal:has(.fd-form-template-dialog) {
+  max-width: min(1060px, calc(100vw - 24px));
+  width: 100%;
+}
+.fd-form-history,
+.fd-form-template-dialog,
+.fd-history-detail {
+  display: grid;
+  gap: var(--fd-field-gap);
+  min-width: 0;
+}
+.fd-form-history .fd-notice,
+.fd-form-template-dialog .fd-notice {
+  width: auto;
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.fd-history-capture {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+}
+.fd-history-capture > [data-slot="field"] {
+  flex: 1;
+}
+.fd-history-grid {
+  display: grid;
+  grid-template-columns: minmax(150px, 220px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.fd-history-list {
+  display: grid;
+  gap: 4px;
+  max-height: 55vh;
+  overflow: auto;
+  min-width: 0;
+}
+.fd-history-list button {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  align-items: start;
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  min-height: 44px;
+  gap: 4px;
+}
+.fd-history-list button[aria-pressed="true"] {
+  background: var(--muted);
+}
+.fd-history-list time {
+  color: var(--fd-text-muted);
+}
+.fd-history-code {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 6px;
+}
+.fd-history-code pre {
+  overflow: auto;
+  max-height: 280px;
+  padding: 8px;
+  background: var(--muted);
+  border-radius: var(--radius);
+  font-family: monospace;
+}
+.fd-history-detail details {
+  border-bottom: 1px solid var(--fd-border);
+  padding-block: 8px;
+  min-width: 0;
+}
+.fd-history-detail summary {
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.fd-history-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.fd-history-confirm .fd-notice {
+  flex-basis: 100%;
+}
+@media (max-width: 600px) {
+  .fd-history-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .fd-history-list {
+    max-height: 180px;
+  }
+  .fd-history-capture {
+    flex-wrap: wrap;
+  }
+  .fd-history-capture > [data-slot="field"] {
+    flex-basis: 100%;
+  }
+  .fd-history-code {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.fd-history-code > div {
+  min-width: 0;
+}

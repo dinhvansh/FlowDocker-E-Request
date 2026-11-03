@@ -26,6 +26,14 @@ Skill [shadcn/ui chính thức](.agents/skills/shadcn/SKILL.md) đã được c�
 
 Form Studio tại `#forms` dùng [engine FlowDocker tự phát triển](docs/56-FLOWDOCKER-FORMS-PRODUCT.md), 33 loại trường, điều kiện, phép tính và preview cục bộ. [UX V2](docs/58-FORMS-UX-V2-IMPLEMENTATION.md) bổ sung toolbox theo nhóm, canvas input thật dùng chung renderer, inspector theo ngữ cảnh, Designer/Preview/Logic/JSON, mẫu thanh toán và chế độ mobile. Package dùng chung [`@flowdocker/form-builder`](packages/form-builder/README.md) có ví dụ riêng qua `npm run examples:forms`. Theo quyết định owner trong Issue #3: giữ engine riêng, không tích hợp hay tiếp tục POC so sánh Form.io. Backend, phát hành và phê duyệt thật chưa được triển khai.
 
+## Form Studio — chặng nâng cấp 2026-11-03
+
+- Logic Studio: danh sách và bộ lọc logic, chỉnh điều kiện/công thức, dẫn đến trường phụ thuộc và thử toàn biểu mẫu bằng engine gốc.
+- Bố cục cột: tỷ lệ không đều, kéo độ rộng trên canvas, phím mũi tên và hoàn tác; điện thoại xếp một cột. Đồng bộ với Code Studio.
+- Danh sách biểu mẫu → Thư viện mẫu để tạo bản riêng. Trong thiết kế, menu (…) → Lịch sử thiết kế để lưu mốc, so sánh và khôi phục vào bản đang sửa. Lưu bản nháp vẫn là thao tác riêng.
+
+Đây là frontend và lưu cấu hình trên trình duyệt, chưa có lịch sử phía máy chủ hoặc phát hành thật. Xem [phạm vi và bằng chứng 3 chặng](docs/99-FORM-STUDIO-THREE-MILESTONES.md), [mẫu và lịch sử thiết kế](docs/100-FORM-TEMPLATES-AND-DESIGN-HISTORY.md). Forms package hiện tại 0.5.8; chưa xuất bản npm.
+
 ## Key architectural choices
 
 | Layer | Proposed choice | Status |

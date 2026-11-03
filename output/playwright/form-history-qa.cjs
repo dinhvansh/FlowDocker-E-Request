@@ -1,0 +1,47 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions -- Playwright CLI entry. */
+async page => {
+ const keys=['flowdocker.form-drafts.v1','flowdocker.locale','flowdocker.theme','flowdocker.form-versions.v1'];
+ const original=await page.evaluate(keys=>keys.map(k=>localStorage.getItem(k)),keys), recovery=await page.evaluate(()=>sessionStorage.getItem('flowdocker.form-recovery.v1'));
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));const check=(ok,m)=>{if(!ok)throw Error(m)};
+ const field={id:'amount',key:'amount',label:{vi:'Amount',en:'Amount'},type:'number',required:false,options:[]};
+ const form={id:'qa-history',schemaVersion:2,title:{vi:'History QA',en:'History QA'},version:1,status:'DRAFT',fields:[field]};
+ const edited={...form,title:{vi:'Changed QA',en:'Changed QA'},fields:[{...field,key:'amount_changed'}]};
+ try {
+  await page.addInitScript(()=>{window.addEventListener('beforeunload',e=>e.stopImmediatePropagation(),{capture:true});const fixture=sessionStorage.getItem('qa-history-fixture');if(fixture){sessionStorage.setItem('flowdocker.form-recovery.v1',fixture);sessionStorage.removeItem('qa-history-fixture')}});
+  const results=[];
+  for(const [width,height,locale,theme] of [[1440,900,'vi','light'],[1366,768,'en','dark'],[390,844,'en','dark']]) {
+   await page.evaluate(({form,locale,theme})=>{localStorage.setItem('flowdocker.form-drafts.v1',JSON.stringify([form]));localStorage.removeItem('flowdocker.form-versions.v1');localStorage.setItem('flowdocker.locale',locale);localStorage.setItem('flowdocker.theme',theme);sessionStorage.setItem('qa-history-fixture',JSON.stringify({version:1,definition:form,source:JSON.stringify(form),codeDirty:false}))},{form,locale,theme});await page.setViewportSize({width,height});await page.reload();
+   const vi=locale==='vi';
+   const history=async()=>{await page.getByRole('button',{name:vi?'Tùy chọn biểu mẫu':'Form options',exact:true}).click();await page.getByRole('button',{name:vi?'Lịch sử thiết kế':'Design history',exact:true}).click();};
+   await history();let dialog=page.getByRole('dialog',{name:vi?'Lịch sử thiết kế':'Design history',exact:true});
+   await dialog.getByRole('textbox',{name:vi?'Tên mốc thiết kế':'Snapshot name',exact:true}).fill('Baseline');
+   await dialog.getByRole('button',{name:vi?'Lưu mốc hiện tại':'Save current snapshot',exact:true}).click();
+   check(await page.evaluate(()=>JSON.parse(localStorage.getItem('flowdocker.form-versions.v1')).entries.length)===1,'Snapshot missing');
+   await dialog.getByRole('button',{name:vi?'Đóng':'Close',exact:true}).first().click();
+   await page.reload();await history();dialog=page.getByRole('dialog',{name:vi?'Lịch sử thiết kế':'Design history',exact:true});await dialog.getByText('Baseline',{exact:true}).waitFor();await dialog.getByRole('button',{name:vi?'Đóng':'Close',exact:true}).first().click();
+   await page.getByRole('tab',{name:'Code Studio',exact:true}).click();const editor=page.locator('.cm-content[contenteditable="true"]');await editor.waitFor();await editor.fill(JSON.stringify(edited,null,2));
+   await page.getByRole('heading',{name:'Changed QA',exact:true}).waitFor();
+   await history();dialog=page.getByRole('dialog',{name:vi?'Lịch sử thiết kế':'Design history',exact:true});await dialog.getByText(vi?'Trường thay đổi':'Changed field',{exact:true}).waitFor();await dialog.getByText(vi?'Trường thay đổi':'Changed field',{exact:true}).click();const oldCode=dialog.locator('.fd-history-detail > details[open] .fd-history-code pre').nth(0);const newCode=dialog.locator('.fd-history-detail > details[open] .fd-history-code pre').nth(1);check((await oldCode.textContent()).includes('amount'),'Missing original config');check((await newCode.textContent()).includes('amount_changed'),'Missing edited config');await newCode.focus();
+   const metrics=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));check(metrics.width===metrics.scroll,'History overflow');
+   const font=await dialog.getByRole('textbox',{name:vi?'Tên mốc thiết kế':'Snapshot name',exact:true}).evaluate(el=>({size:getComputedStyle(el).fontSize,line:getComputedStyle(el).lineHeight}));check(font.size==='12px','Wrong routine type size');
+   await page.screenshot({path:`output/playwright/form-history-${width}-${locale}-${theme}.png`,animations:'disabled'});
+   await dialog.getByRole('button',{name:vi?'Khôi phục vào bản đang sửa':'Restore into current draft',exact:true}).click();
+   await dialog.getByRole('button',{name:vi?'Hủy':'Cancel',exact:true}).click();check(await dialog.count()===1,'Cancel closed history');
+   await dialog.getByRole('button',{name:vi?'Khôi phục vào bản đang sửa':'Restore into current draft',exact:true}).click();await dialog.getByRole('button',{name:vi?'Xác nhận khôi phục':'Confirm restore',exact:true}).click();await dialog.waitFor({state:'hidden'});
+   await page.getByRole('tab',{name:'Schema JSON',exact:true}).click();const json=JSON.parse(await page.getByRole('textbox',{name:vi?'Nội dung schema JSON':'JSON schema content',exact:true}).inputValue());check(json.fields[0].key==='amount'&&json.title.en==='History QA','Restore mismatch');
+   check(await page.evaluate(()=>JSON.parse(localStorage.getItem('flowdocker.form-drafts.v1'))[0].title.en)==='History QA','Restore silently saved draft');
+   await history();dialog=page.getByRole('dialog',{name:vi?'Lịch sử thiết kế':'Design history',exact:true});await dialog.getByRole('button',{name:vi?'Xóa mốc':'Delete snapshot',exact:true}).click();await dialog.getByRole('button',{name:vi?'Xác nhận xóa mốc':'Confirm snapshot deletion',exact:true}).click();check(await page.evaluate(()=>JSON.parse(localStorage.getItem('flowdocker.form-versions.v1')).entries.length)===0,'Delete snapshot failed');await dialog.getByRole('button',{name:vi?'Đóng':'Close',exact:true}).first().click();
+   await page.getByRole('button',{name:vi?'Danh sách biểu mẫu':'Form catalog',exact:true}).click();await page.getByRole('tab',{name:vi?'Thư viện mẫu':'Template library',exact:true}).click();
+   await page.screenshot({path:`output/playwright/template-library-${width}-${locale}-${theme}.png`,animations:'disabled'});
+   await page.locator('.fd-form-catalog-grid .fd-form-template').first().click();const template=page.getByRole('dialog',{name:vi?'Tạo từ mẫu':'Create from template',exact:true});
+   await template.getByRole('textbox',{name:vi?'Tên biểu mẫu · tiếng Việt':'Form name · Vietnamese',exact:true}).fill('QA Copy');await template.getByRole('textbox',{name:vi?'Tên biểu mẫu · tiếng Anh':'Form name · English',exact:true}).fill('QA Copy');
+   await template.getByRole('button',{name:vi?'Tạo bản riêng':'Create an independent form',exact:true}).click();
+   await page.getByRole('heading',{name:'QA Copy',exact:true}).waitFor();await page.getByRole('tab',{name:'Schema JSON',exact:true}).click();const copy=JSON.parse(await page.getByRole('textbox',{name:vi?'Nội dung schema JSON':'JSON schema content',exact:true}).inputValue());check(copy.id!=='demo-purchase-intake'&&copy.fields[0].id!=='purpose','Template identities reused');
+   check(await page.evaluate(()=>JSON.parse(localStorage.getItem('flowdocker.form-drafts.v1')).length)===1,'Template silently saved');await page.getByRole('button',{name:vi?'Danh sách biểu mẫu':'Form catalog',exact:true}).click();await page.locator('.fd-form-catalog-grid .fd-form-template').first().click();
+   const another=page.getByRole('dialog',{name:vi?'Tạo từ mẫu':'Create from template',exact:true});await another.getByRole('button',{name:vi?'Tạo bản riêng':'Create an independent form',exact:true}).click();
+   const unsaved=page.getByRole('dialog',{name:vi?'Bản nháp chưa lưu':'Unsaved draft',exact:true});await unsaved.waitFor();await unsaved.getByRole('button',{name:vi?'Tiếp tục chỉnh sửa':'Continue editing',exact:true}).click();await page.getByRole('heading',{name:'QA Copy',exact:true}).waitFor();
+   results.push({width,locale,theme,font,...metrics});
+  }
+  check(!errors.length,errors.join(';'));console.log(JSON.stringify({results,errors}));
+ } finally {await page.evaluate(({keys,original,recovery})=>{keys.forEach((k,i)=>{if(original[i]===null)localStorage.removeItem(k);else localStorage.setItem(k,original[i])});if(recovery===null)sessionStorage.removeItem('flowdocker.form-recovery.v1');else sessionStorage.setItem('flowdocker.form-recovery.v1',recovery)},{keys,original,recovery});}
+}

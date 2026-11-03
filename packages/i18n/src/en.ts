@@ -1,5 +1,55 @@
 import { formMessages } from "./form-messages";
 export const en = {
+  "Mốc đã lưu": "Saved snapshot",
+  "Bản đang sửa": "Current draft",
+
+  "Đối chiếu cấu hình mốc đã lưu và bản đang sửa.":
+    "Compare the saved snapshot configuration with the current draft.",
+  "Mốc đã lưu và bản đang sửa": "Saved snapshot and current draft",
+  "Không thể tạo thêm bản nháp. Kiểm tra bộ nhớ hoặc giới hạn 100 biểu mẫu.":
+    "Cannot create another draft. Check browser storage or the 100-form limit.",
+  "Tạo từ mẫu": "Create from template",
+  "Tạo bản riêng": "Create an independent form",
+  "Tạo biểu mẫu mới với mã riêng. Mẫu gốc được giữ nguyên; bản mới chỉ được lưu khi bạn bấm Lưu bản nháp.":
+    "Creates a new form with its own ID. The source template is preserved. Save draft persists your new form.",
+  "Mẫu chưa hợp lệ, không thể tạo bản riêng.":
+    "This template is invalid and cannot be copied.",
+  "Xem mẫu trước khi tạo": "Preview before creating",
+  "Lịch sử thiết kế": "Design history",
+  "Mốc thiết kế chỉ lưu cấu hình trên trình duyệt này, không chứa dữ liệu nhập thử. Tối đa 20 mốc mỗi biểu mẫu và 100 mốc tổng cộng.":
+    "Design snapshots store configuration in this browser, excluding entered test values. Limit: 20 snapshots per form and 100 in total.",
+  "Không đọc hoặc lưu được mốc thiết kế. Dữ liệu đang có được giữ nguyên; kiểm tra bộ nhớ, giới hạn lưu trữ rồi thử lại.":
+    "Could not read or save design snapshots. Existing data is preserved; check browser storage and storage limits, then retry.",
+  "Đã lưu mốc thiết kế trên trình duyệt này.":
+    "Design snapshot saved in this browser.",
+  "Tên mốc thiết kế": "Snapshot name",
+  "Lưu mốc hiện tại": "Save current snapshot",
+  "Sửa lỗi cấu hình hoặc mã trước khi lưu mốc thiết kế.":
+    "Fix configuration or source errors before saving a snapshot.",
+  "Các mốc đã lưu": "Saved snapshots",
+  "Chưa có mốc thiết kế. Lưu mốc trước khi thử những thay đổi lớn.":
+    "No design snapshots yet. Save one before making major changes.",
+  "Mốc không tên": "Unnamed snapshot",
+  "So sánh với bản đang sửa": "Compare with current draft",
+  "Bên trái là mốc đã lưu; bên phải là bản đang sửa.":
+    "The saved snapshot is on the left; the current draft is on the right.",
+  "Bản đang sửa giống mốc này.": "The current draft matches this snapshot.",
+  "Cấu hình biểu mẫu thay đổi": "Changed form settings",
+  "Trường được thêm": "Added field",
+  "Trường bị xóa": "Removed field",
+  "Trường thay đổi": "Changed field",
+  "Xem mốc thiết kế": "Preview snapshot",
+  "Khôi phục sẽ thay cấu hình đang sửa bằng mốc này, gồm cả mã gõ dở. Bạn có thể lưu mốc hiện tại trước. Bản nháp đã lưu chưa thay đổi cho đến khi bạn bấm Lưu bản nháp.":
+    "Restoring replaces your current configuration and unfinished source with this snapshot. You can save the current design as a snapshot first. The saved draft changes only when you choose Save draft.",
+  "Xóa mốc này khỏi trình duyệt? Bản đang sửa và các mốc khác được giữ nguyên.":
+    "Delete this browser snapshot? Your current draft and other snapshots are preserved.",
+  "Xác nhận khôi phục": "Confirm restore",
+  "Xác nhận xóa mốc": "Confirm snapshot deletion",
+  "Khôi phục vào bản đang sửa": "Restore into current draft",
+  "Xóa mốc": "Delete snapshot",
+  "Thư viện mẫu": "Template library",
+  "Dùng mẫu này": "Use this template",
+
   "Tỷ lệ cột": "Column proportions",
   "Tỷ lệ {{ratio}}": "Ratio {{ratio}}",
   "Đổi độ rộng cột {{count}}": "Resize column {{count}}",

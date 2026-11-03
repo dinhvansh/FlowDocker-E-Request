@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { ArrowUpRight, FilePenLine, LayoutGrid } from "lucide-react";
 import type { FormDefinition } from "@flowdocker/form-builder";
 import { useI18n } from "@flowdocker/i18n";
-import { Badge, EmptyState, SearchInput } from "@flowdocker/ui";
+import { Badge, EmptyState, SearchInput, Tabs } from "@flowdocker/ui";
 import "./form-catalog.css";
 
 interface FormCatalogProps {
   forms: readonly FormDefinition[];
+  templates?: readonly FormDefinition[];
+  templateDisabled?: boolean;
+  onUseTemplate?(form: FormDefinition): void;
   activeId?: string;
   query: string;
   onQueryChange(query: string): void;
@@ -14,19 +18,34 @@ interface FormCatalogProps {
 
 export function FormCatalog({
   forms,
+  templates = [],
+  templateDisabled,
+  onUseTemplate,
   activeId,
   query,
   onQueryChange,
   onOpen,
 }: FormCatalogProps) {
   const { t, locale } = useI18n();
-  const matches = forms.filter((form) =>
+  const [view, setView] = useState("forms");
+  const items = view === "templates" ? templates : forms;
+  const matches = items.filter((form) =>
     `${form.title.vi} ${form.title.en}`
       .toLocaleLowerCase()
       .includes(query.trim().toLocaleLowerCase()),
   );
   return (
     <aside className="fd-form-catalog" aria-label={t("Danh sách biểu mẫu")}>
+      {templates.length > 0 && (
+        <Tabs
+          active={view}
+          onChange={setView}
+          tabs={[
+            { id: "forms", label: t("Biểu mẫu") },
+            { id: "templates", label: t("Thư viện mẫu") },
+          ]}
+        />
+      )}
       <div className="fd-form-catalog-tools">
         <SearchInput
           label={t("Tìm biểu mẫu...")}
@@ -42,7 +61,7 @@ export function FormCatalog({
           <LayoutGrid aria-hidden="true" />
           {t("{{visible}} trên {{total}} biểu mẫu", {
             visible: matches.length,
-            total: forms.length,
+            total: items.length,
           })}
         </p>
       </div>
@@ -53,9 +72,19 @@ export function FormCatalog({
               <button
                 type="button"
                 className="fd-form-template"
-                data-active={activeId === form.id}
+                disabled={view === "templates" && templateDisabled}
+                title={
+                  view === "templates" && templateDisabled
+                    ? t(
+                        "Không thể tạo thêm bản nháp. Kiểm tra bộ nhớ hoặc giới hạn 100 biểu mẫu.",
+                      )
+                    : undefined
+                }
+                data-active={view === "forms" && activeId === form.id}
                 aria-label={form.title[locale]}
-                onClick={() => onOpen(form)}
+                onClick={() =>
+                  view === "templates" ? onUseTemplate?.(form) : onOpen(form)
+                }
               >
                 <span className="fd-form-template-preview" aria-hidden="true">
                   <span className="fd-form-template-paper">
@@ -104,7 +133,9 @@ export function FormCatalog({
                     })}
                   </span>
                   <span className="fd-form-template-open">
-                    {t("Mở thiết kế")}
+                    {view === "templates"
+                      ? t("Dùng mẫu này")
+                      : t("Mở thiết kế")}
                     <ArrowUpRight aria-hidden="true" />
                   </span>
                 </span>

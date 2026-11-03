@@ -410,7 +410,9 @@ it("routes the live configuration issue panel to a recovered field and clears af
   });
   expect(toggle.textContent).toContain("lỗi");
   fireEvent.click(toggle);
-  const panel = screen.getByRole("region", {
+  const panel = within(
+    document.getElementById(toggle.getAttribute("aria-controls")!)!,
+  ).getByRole("region", {
     name: "Kiểm tra cấu hình biểu mẫu",
   });
   fireEvent.click(
