@@ -218,3 +218,15 @@ and local row/object references, including dotted aggregates; `formulaReferences
 uses the safe runtime tokenizer. These are navigation helpers, not a new validator.
 No new execution engine or backend. E-Request is the first consumer; independent
 consumer validation remains pending.
+
+## 0.5.8 — Column proportions
+
+Optional `FormField.columnRatios` applies only to `columns`: one integer weight
+(1..100) per column; length equals `columns` (default 2). Omitted weights retain
+equal widths. JSON authoring and visual editing preserve the same metadata.
+Nested columns reset their own CSS template. Phone media rules stack columns.
+`ColumnLayoutEditor` accepts field, disabled, resize and onChange(ratios,
+recordHistory). Canvas pointer gestures record one history checkpoint and update
+widths live; arrows, Shift+arrows, Home/End and presets are alternatives. Inspector
+uses presets. New optional FormCanvas.onPatch third argument controls history,
+old consumers remain compatible. E-Request and isolated designer use this path.

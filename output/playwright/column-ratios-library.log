@@ -1,0 +1,20 @@
+
+> build:forms
+> vite build --config vite.forms.config.ts && node scripts/package-forms.mjs
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 2798 modules transformed.
+rendering chunks...
+
+[unplugin:dts] Start generate declaration files...
+computing gzip size...
+[unplugin:dts] Declaration files built in 18025ms.
+
+dist/forms-library/bundle-provenance.json    5.37 kB │ gzip:   0.66 kB
+dist/forms-library/styles.css              506.55 kB │ gzip: 295.18 kB
+dist/forms-library/schema-BMrE4OIz.js      298.87 kB │ gzip:  88.53 kB
+dist/forms-library/flowdocker-forms.js     547.58 kB │ gzip: 135.63 kB
+dist/forms-library/code-studio.js          715.65 kB │ gzip: 200.84 kB
+✓ built in 41.10s
+Prepared @flowdocker/forms 0.5.8 with 76 bundled license entries.

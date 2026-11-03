@@ -1,3 +1,4 @@
+import { ColumnLayoutEditor } from "./column-layout-editor";
 import { FormSchemaIssues } from "./form-schema-issues";
 import { defaultSourcesForType } from "../schema";
 import { ContentBlockEditor } from "./content-block-editor";
@@ -341,6 +342,14 @@ export function FieldInspector({
                 />
               </Field>
             )}
+            {field.type === "columns" && (
+              <ColumnLayoutEditor
+                field={field}
+                disabled={readOnly}
+                resize={false}
+                onChange={(columnRatios) => patch({ columnRatios })}
+              />
+            )}
             <Field label={t("Trường trên mỗi hàng")}>
               <Select
                 label={t("Trường trên mỗi hàng")}
@@ -351,7 +360,10 @@ export function FieldInspector({
                   label: t("{{count}} trường", { count: number }),
                 }))}
                 onValueChange={(value) =>
-                  patch({ columns: Number(value) as 1 | 2 | 3 })
+                  patch({
+                    columns: Number(value) as 1 | 2 | 3,
+                    columnRatios: undefined,
+                  })
                 }
               />
             </Field>

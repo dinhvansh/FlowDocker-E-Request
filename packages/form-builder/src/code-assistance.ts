@@ -125,6 +125,14 @@ const fieldProperties: Record<(typeof codeProperties.field)[number], object> = {
   aggregation: enumOf("none", "sum", "average", "min", "max", "count"),
   children: { type: "array", maxItems: 100, items: ref("Field") },
   columns: enumOf(1, 2, 3),
+  columnRatios: {
+    type: "array",
+    minItems: 1,
+    maxItems: 3,
+    items: { type: "integer", minimum: 1, maximum: 100 },
+    description:
+      "Columns layouts only. Length must equal columns (default 2). Relative widths.",
+  },
   hideLabel: bool,
   presentation: object(["align", "size", "bold"], {
     align: enumOf("left", "center", "right"),

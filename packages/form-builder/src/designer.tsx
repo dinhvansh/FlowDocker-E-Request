@@ -1088,8 +1088,9 @@ export function FormDesigner({
                     setInspectorOpen(true);
                     setPane("properties");
                   }}
-                  onPatch={(id, changes) =>
-                    commit({
+                  onPatch={(id, changes, recordHistory = true) =>
+                    !readOnly &&
+                    (recordHistory ? commit : onChange)({
                       ...definition,
                       fields: updateFieldTree(
                         definition.fields,

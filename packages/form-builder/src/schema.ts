@@ -1,3 +1,4 @@
+import { validColumnRatios } from "./column-layout";
 import {
   validFormDecoration,
   validBlockPresentation,
@@ -150,6 +151,8 @@ export interface FormField {
   aggregation?: ColumnAggregation;
   children?: FormField[];
   columns?: 1 | 2 | 3;
+  /** Relative widths for columns layouts; existing equal-width drafts remain compatible. */
+  columnRatios?: number[];
   /** Hide the visual legend for a columns layout while keeping it accessible. */
   hideLabel?: boolean;
   presentation?: FormBlockPresentation;
@@ -351,6 +354,7 @@ const allowedKeys = new Set([
   "aggregation",
   "children",
   "columns",
+  "columnRatios",
   "minRows",
   "hideLabel",
   "maxRows",
@@ -447,6 +451,12 @@ function fieldsShape(
       if (
         field.columns !== undefined &&
         ![1, 2, 3].includes(Number(field.columns))
+      )
+        return false;
+      if (
+        field.columnRatios !== undefined &&
+        (field.type !== "columns" ||
+          !validColumnRatios(field.columnRatios, Number(field.columns ?? 2)))
       )
         return false;
       if (field.defaultValue !== undefined && !boundedValue(field.defaultValue))

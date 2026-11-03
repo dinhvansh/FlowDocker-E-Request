@@ -1,3 +1,4 @@
+import { columnStyle } from "./column-layout";
 import { FormSchemaIssues } from "./components/form-schema-issues";
 import { useChoices } from "./use-choices";
 import { spacingStyle } from "./spacing";
@@ -636,6 +637,7 @@ function RuntimeField({
           </div>
         ) : (
           <div
+            style={columnStyle(field)}
             className={
               field.type === "columns"
                 ? `fd-runtime-columns fd-runtime-columns-${field.columns ?? 2}`

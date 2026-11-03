@@ -1,3 +1,4 @@
+import { ColumnLayoutEditor } from "./components/column-layout-editor";
 import { FieldIssueBadge } from "./components/field-issue-badge";
 import { useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "@flowdocker/i18n";
@@ -47,7 +48,11 @@ export interface FormCanvasProps {
   onMove(field: FormField, offset: number): void;
   onClone(field: FormField): void;
   onDelete(field: FormField): void;
-  onPatch?(id: string, changes: Partial<FormField>): void;
+  onPatch?(
+    id: string,
+    changes: Partial<FormField>,
+    recordHistory?: boolean,
+  ): void;
   onInspect?(id: string, section: ConfigurationSection): void;
   onDecorationChange?(decoration: FormDecoration): void;
   onTitleChange?(title: BilingualText): void;
@@ -255,6 +260,15 @@ function FieldOverlay({
                   ?.focus(),
               );
           }}
+        />
+      )}
+      {selected && field.type === "columns" && props.onPatch && (
+        <ColumnLayoutEditor
+          field={field}
+          disabled={props.readOnly}
+          onChange={(columnRatios, recordHistory) =>
+            props.onPatch?.(field.id, { columnRatios }, recordHistory)
+          }
         />
       )}
       <div className="fd-canvas-control">

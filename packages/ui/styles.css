@@ -128,7 +128,7 @@
   gap: var(--fd-field-gap);
 }
 .fd-runtime-columns-1 {
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: var(--fd-column-template, minmax(0, 1fr));
 }
 
 /* Authored form density is scoped to the canvas/runtime, never the inspector. */
@@ -209,10 +209,10 @@
   }
 }
 .fd-runtime-columns-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: var(--fd-column-template, repeat(2, minmax(0, 1fr)));
 }
 .fd-runtime-columns-3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: var(--fd-column-template, repeat(3, minmax(0, 1fr)));
 }
 .fd-runtime-field {
   min-width: 0;

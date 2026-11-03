@@ -135,6 +135,7 @@ export const codeProperties = {
     "aggregation",
     "children",
     "columns",
+    "columnRatios",
     "hideLabel",
     "minRows",
     "maxRows",

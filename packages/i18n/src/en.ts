@@ -1,5 +1,11 @@
 import { formMessages } from "./form-messages";
 export const en = {
+  "Tỷ lệ cột": "Column proportions",
+  "Tỷ lệ {{ratio}}": "Ratio {{ratio}}",
+  "Đổi độ rộng cột {{count}}": "Resize column {{count}}",
+  "Kéo vạch chia hoặc dùng phím mũi tên. Điện thoại tự xếp một cột.":
+    "Drag the divider or use arrow keys. Phones automatically stack into one column.",
+
   "Không có kết quả phù hợp.": "No matching results.",
   "Logic Studio": "Logic Studio",
   "Tìm trường và quy tắc": "Find fields and rules",

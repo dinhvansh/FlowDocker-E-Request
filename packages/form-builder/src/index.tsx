@@ -65,3 +65,12 @@ export { FormLogicStudio } from "./logic-studio";
 export type { FormLogicStudioProps } from "./logic-studio";
 export { logicInventory, hasLogic } from "./logic-model";
 export type { LogicNode } from "./logic-model";
+
+export { ColumnLayoutEditor } from "./components/column-layout-editor";
+export type { ColumnLayoutEditorProps } from "./components/column-layout-editor";
+export {
+  columnStyle,
+  columnPercentages,
+  resizeColumns,
+  validColumnRatios,
+} from "./column-layout";
