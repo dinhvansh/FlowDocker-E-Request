@@ -18,3 +18,5 @@ wizard behavior, field moves, and browser drop/optional toggle. Owner acceptance
 pending; actual evidence appended after verification.
 
 Verification 2026-11-03: 18 focused tests passed across document regions, direct content, code model and app drafts (output/playwright/document-regions-tests.log). Typecheck and lint/i18n passed. App and standalone Forms builds passed (logs under output/playwright). Designer screenshot captured; real pointer drop and owner visual acceptance remain pending. This is frontend-only; no printed-page repetition claim.
+
+Follow-up verification: real Playwright pointer drag from library into footer passed (one textbox), disabling footer removed it, re-enabling restored the same one textbox. Evidence output/playwright/document-regions-pointer-qa.log and document-regions-footer-drop.png. Palette must be visible before pointer-down; canvas was scrolled during active drag. Earlier offscreen-source attempt was a test interaction failure, not a product exception. Owner visual acceptance still pending.

@@ -4,7 +4,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import globals from "globals";
 
 export default tseslint.config(
-  { ignores: ["**/dist/**", "**/node_modules/**", ".agents/skills/shadcn/**"] },
+  { ignores: ["**/dist/**", "**/node_modules/**", ".agents/skills/shadcn/**", ".playwright-cli/**"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   reactHooks.configs["recommended-latest"],

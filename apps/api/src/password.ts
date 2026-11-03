@@ -1,15 +1,15 @@
 import { scrypt, timingSafeEqual, randomBytes } from "node:crypto";
-import { promisify } from "node:util";
-const derive = promisify(scrypt);
 export async function passwordVerifier(password: string, salt: string) {
-  return (
-    (await derive(password, salt, 64, {
-      N: 131072,
-      r: 8,
-      p: 1,
-      maxmem: 256 * 1024 * 1024,
-    })) as Buffer
-  ).toString("hex");
+  const derived = await new Promise<Buffer>((resolve, reject) => {
+    scrypt(
+      password,
+      salt,
+      64,
+      { N: 131072, r: 8, p: 1, maxmem: 256 * 1024 * 1024 },
+      (error, key) => (error ? reject(error) : resolve(key)),
+    );
+  });
+  return derived.toString("hex");
 }
 export async function createPassword(password: string) {
   if (password.length < 12 || password.length > 256)

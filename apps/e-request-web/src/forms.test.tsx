@@ -14,6 +14,12 @@ import { I18nProvider, useI18n } from "@flowdocker/i18n";
 import { FormsPage, type FormsPageHandle } from "./forms";
 import { demoForms, formDraftStorageKey } from "./form-drafts";
 import { formRecoveryKey } from "./form-recovery";
+import type { FormDefinition } from "@flowdocker/form-builder";
+function savedPurchase() {
+  return (
+    JSON.parse(localStorage.getItem(formDraftStorageKey)!) as FormDefinition[]
+  ).find((form) => form.id === "demo-purchase-intake")!;
+}
 function Host() {
   const { setLocale } = useI18n();
   return (
@@ -87,9 +93,7 @@ describe("Form Studio host journeys", () => {
     expect(screen.getByRole("dialog", { name: "Unsaved draft" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Continue editing" }));
     fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
-    expect(
-      JSON.parse(localStorage.getItem(formDraftStorageKey)!)[0].title.vi,
-    ).toBe("Nháp đang sửa");
+    expect(savedPurchase().title.vi).toBe("Nháp đang sửa");
     expect(
       screen.queryByRole("textbox", { name: "Form name · Vietnamese" }),
     ).toBeNull();
@@ -130,7 +134,7 @@ describe("Form Studio host journeys", () => {
   });
   it("starts in the catalog, lists templates with saved forms and preserves saved edits", () => {
     const edited = {
-      ...demoForms[0],
+      ...demoForms.find((form) => form.id === "demo-purchase-intake")!,
       title: { vi: "Mẫu đã chỉnh", en: "Edited sample" },
     };
     const stored = JSON.stringify([edited]);
@@ -200,9 +204,7 @@ it("edits spacing directly in preview, undoes a gesture and persists metadata", 
   expect(preview.hasAttribute("data-form-spacing")).toBe(false);
   fireEvent.change(slider, { target: { value: "9" } });
   fireEvent.click(screen.getByRole("button", { name: "Lưu bản nháp" }));
-  expect(
-    JSON.parse(localStorage.getItem(formDraftStorageKey)!)[0].spacing.rowGap,
-  ).toBe(9);
+  expect(savedPurchase().spacing!.rowGap).toBe(9);
 });
 
 it("syncs code edits to canvas and retains the last valid form on invalid JSON", async () => {
@@ -303,9 +305,7 @@ it("syncs code edits to canvas and retains the last valid form on invalid JSON",
   );
   fireEvent.click(screen.getByRole("button", { name: "Lưu bản nháp" }));
   expect(sessionStorage.getItem(formRecoveryKey)).toBeNull();
-  expect(
-    JSON.parse(localStorage.getItem(formDraftStorageKey)!)[0].title.vi,
-  ).toBe("Code sync test");
+  expect(savedPurchase().title.vi).toBe("Code sync test");
 });
 
 it("confirms recovery discard and preserves saved forms", async () => {
@@ -383,9 +383,7 @@ it("reports unavailable session recovery while retaining local draft saving", ()
     ),
   ).toBeTruthy();
   fireEvent.click(screen.getByRole("button", { name: "Lưu bản nháp" }));
-  expect(
-    JSON.parse(localStorage.getItem(formDraftStorageKey)!)[0].title.vi,
-  ).toBe("Vẫn lưu được");
+  expect(savedPurchase().title.vi).toBe("Vẫn lưu được");
 });
 
 it("routes the live configuration issue panel to a recovered field and clears after repair", () => {

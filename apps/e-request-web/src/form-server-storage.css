@@ -1,0 +1,22 @@
+.fd-server-form-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fd-field-gap, 16px);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.fd-server-form-list > li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--fd-field-content-gap, 6px);
+  padding-block: var(--fd-field-content-gap, 6px);
+  border-bottom: 1px solid var(--fd-border);
+}
+.fd-server-form-list > li > div {
+  flex: 1 1 180px;
+  display: flex;
+  flex-direction: column;
+  overflow-wrap: anywhere;
+}

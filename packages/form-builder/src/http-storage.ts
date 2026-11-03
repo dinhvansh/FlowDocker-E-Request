@@ -59,6 +59,7 @@ export function createHttpFormRepository(options: {
         credentials: "omit",
         cache: "no-store",
         redirect: "error",
+        signal: AbortSignal.timeout(15000),
         headers: {
           authorization: `Bearer ${token}`,
           ...(body ? { "content-type": "application/json" } : {}),

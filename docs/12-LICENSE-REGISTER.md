@@ -65,3 +65,5 @@ Direct dependencies pinned: codemirror 6.0.2; @codemirror/lang-json 6.0.2; @code
 
 ## Backend foundation — 2026-11-03
 Installed direct runtime packages Fastify 5.12.8 and node-postgres (pg) 8.23.1 declare MIT in their installed manifests; dev runner tsx 4.23.15 declares MIT. Exact dependency graph is locked. Local PostgreSQL uses 16.6-alpine, subject to patch/image/SBOM review before release. npm audit --omit=dev reports zero runtime advisories on this run; full developer dependency audit still has 11 moderate advisories. This is not release or legal signoff.
+
+Local identity uses @fastify/rate-limit 10.3.0 (MIT per installed manifest), exact direct dependency pinned in package-lock. This does not replace production IAM/security review.

@@ -5,8 +5,9 @@
 
 Backend work has started separately: [local authoring API](apps/api/README.md)
 uses real PostgreSQL, expiring sessions, server authorization, RLS, versioned draft
-CRUD and transactional audit. The UI still uses browser-local storage; OAuth
-issuance, workflow execution, Teams and production deployment remain pending.
+CRUD and transactional audit. Form Studio now offers optional **Server storage**
+with local test login and real save/open/update/delete; existing local drafts are
+retained. OAuth, workflow execution, Teams and production deployment remain pending.
 Track verified slices in [backend delivery](docs/104-BACKEND-DELIVERY.md).
 
 FlowDocker E-Request is a proposed self-hosted enterprise request portal. Employees submit business requests from administrator-defined forms, and published, versioned workflows assign approvals with IF/ELSE branching. Approvers can act through the web portal or a custom Microsoft Teams bot; final records and PDFs are archived with access control and audit trails.

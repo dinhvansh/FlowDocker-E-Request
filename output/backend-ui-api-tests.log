@@ -1,0 +1,13 @@
+
+> backend:test
+> node --env-file=.env.backend.local --import tsx --test apps/api/src/api.integration.ts
+
+✔ real PostgreSQL authoring API: isolation, conflicts, revocation, audit and restart (1930.803ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2416.8202

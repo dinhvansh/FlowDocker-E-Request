@@ -1,5 +1,39 @@
 import { formMessages } from "./form-messages";
 export const en = {
+  "Lưu trên máy chủ": "Server storage",
+  "Biểu mẫu trên máy chủ": "Server forms",
+  "Lưu trên máy chủ là bản riêng. Các mẫu đã lưu trên máy này vẫn được giữ nguyên.":
+    "Server storage is separate. Forms saved on this device are retained.",
+  "Đang xử lý…": "Working…",
+  "Dùng tài khoản thử nghiệm cục bộ. Microsoft 365 chưa được kết nối. Tải lại trang sẽ cần đăng nhập lại.":
+    "Use a local test account. Microsoft 365 is not connected. Reloading the page requires signing in again.",
+  "Tên đăng nhập máy chủ": "Server username",
+  "Mật khẩu máy chủ": "Server password",
+  "Đăng nhập máy chủ": "Sign in to server",
+  "Cập nhật bản máy chủ": "Update server copy",
+  "Lưu mẫu đang mở lên máy chủ": "Save open form to server",
+  "Lưu thành bản sao mới": "Save as a new copy",
+  "Làm mới danh sách máy chủ": "Refresh server list",
+  "Đăng xuất máy chủ": "Sign out of server",
+  "Sửa lỗi cấu hình và hoàn tất phần mã đang nhập trước khi lưu lên máy chủ.":
+    "Fix configuration errors and finish pending code edits before saving to the server.",
+  "Chưa có biểu mẫu trên máy chủ.": "No forms on the server yet.",
+  "Mở bản làm việc": "Open working copy",
+  "Xác nhận xóa bản máy chủ": "Confirm server deletion",
+  "Xóa bản máy chủ": "Delete server copy",
+  "Tải thêm biểu mẫu máy chủ": "Load more server forms",
+  "Phiên đăng nhập đã hết. Bản đang sửa vẫn được giữ lại.":
+    "Your session expired. Your working draft is retained.",
+  "Bản máy chủ đã thay đổi. Hãy mở bản mới nhất hoặc lưu thành bản sao mới; bản đang sửa vẫn được giữ lại.":
+    "The server copy changed. Open the latest copy or save a new copy; your working draft is retained.",
+  "Tài khoản không có quyền sửa biểu mẫu trên máy chủ.":
+    "This account cannot edit server forms.",
+  "Không hoàn tất được thao tác. Kiểm tra kết nối hoặc tài khoản rồi thử lại. Bản đang sửa vẫn được giữ lại.":
+    "The operation failed. Check your connection or account and retry. Your working draft is retained.",
+  "Đã lưu bản nháp trên máy chủ. Bản cục bộ không bị thay đổi.":
+    "Draft saved to the server. Your local copy is unchanged.",
+  "Đã xóa bản máy chủ. Bản đang sửa và bản cục bộ vẫn được giữ lại.":
+    "Server copy deleted. Your working draft and local copy are retained.",
   "Chọn và chỉnh {{label}}": "Select and edit {{label}}",
   "Chỉnh nội dung trực tiếp": "Edit content directly",
   "Kéo đổi kích thước ảnh": "Drag to resize image",

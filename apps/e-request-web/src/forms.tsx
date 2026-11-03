@@ -1,4 +1,5 @@
 import { FormHistory } from "./form-history";
+import { FormServerStorage } from "./form-server-storage";
 import { FormTemplateDialog } from "./form-template-dialog";
 import {
   lazy,
@@ -456,6 +457,13 @@ export function FormsPage({
           )}
         </Notice>
       )}
+      <div className="fd-toolbar-actions">
+        <FormServerStorage
+          definition={draft}
+          canSave={!!draft && !issues.length && !codeDirty && !codeInvalid}
+          onOpen={request}
+        />
+      </div>
       <div className="fd-form-workbench" data-catalog={catalogOpen || !draft}>
         <FormCatalog
           forms={catalog}

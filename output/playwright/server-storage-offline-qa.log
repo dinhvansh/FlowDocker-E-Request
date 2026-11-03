@@ -1,0 +1,12 @@
+### Result
+{"offlineError":true,"workingDraftRetained":true,"mobile":true,"english":true}
+### Ran Playwright code
+```js
+await (async page => {   await page.getByLabel('Server username',{exact:true}).fill('<test-account>');   await page.getByLabel('Server password',{exact:true}).fill('<redacted>');   await page.getByRole('button',{name:'Sign in to server',exact:true}).click();   await page.getByRole('button',{name:'Save open form to server',exact:true}).waitFor();   const title=await page.locator('.fd-form-document-name h1').textContent();   try {     await page.context().setOffline(true);     await page.getByRole('button',{name:'Save open form to server',exact:true}).click();     await page.getByText('The operation failed. Check your connection or account and retry. Your working draft is retained.',{exact:true}).waitFor();     if(title!==await page.locator('.fd-form-document-name h1').textContent()) throw new Error('Draft changed during network failure');     await page.screenshot({path:'output/playwright/server-storage-offline-en-dark-mobile.png',animations:'disabled'});   } finally { await page.context().setOffline(false); }   await page.getByRole('button',{name:'Sign out of server',exact:true}).click();   await page.getByRole('button',{name:'Sign in to server',exact:true}).waitFor();   return {offlineError:true,workingDraftRetained:true,mobile:true,english:true}; })(page);
+```
+### Page
+- Page URL: http://127.0.0.1:5174/#forms
+- Page Title: FlowDocker · Platform Console
+- Console: 3 errors, 0 warnings
+### Events
+- New console entries: .playwright-cli\console-2026-11-03T16-28-58-502Z.log#L4
