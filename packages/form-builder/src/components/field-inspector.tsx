@@ -1,3 +1,4 @@
+import { FormSchemaIssues } from "./form-schema-issues";
 import { defaultSourcesForType } from "../schema";
 import { ContentBlockEditor } from "./content-block-editor";
 import { useI18n } from "@flowdocker/i18n";
@@ -9,7 +10,6 @@ import {
   Field,
   FieldGroup,
   Input,
-  Notice,
   Select,
 } from "@flowdocker/ui";
 import { AdvancedProperties, OptionsEditor } from "../editors";
@@ -87,6 +87,7 @@ export function FieldInspector({
   onAddColumn,
 }: FieldInspectorProps) {
   const { t, locale } = useI18n();
+  const fieldIssues = issues.filter((issue) => issue.fieldId === field.id);
   const staticBlock = ["content", "image", "divider"].includes(field.type);
   const activeSection =
     staticBlock && !["basic", "appearance", "logic"].includes(section)
@@ -110,6 +111,9 @@ export function FieldInspector({
         </small>
         <FieldConfigurationBadges field={field} onNavigate={onSectionChange} />
       </header>
+      {fieldIssues.length > 0 && (
+        <FormSchemaIssues fields={[field]} issues={fieldIssues} />
+      )}
       <Select
         label={t("Nhóm thuộc tính")}
         value={activeSection}
@@ -547,13 +551,6 @@ export function FieldInspector({
           onChange={(e) => onWidthChange(Number(e.target.value))}
         />
       </details>
-      {issues
-        .filter((issue) => issue.fieldId === field.id)
-        .map((issue, i) => (
-          <Notice key={i} tone="danger">
-            {t(issue.message, issue.params)}
-          </Notice>
-        ))}
     </>
   );
 }

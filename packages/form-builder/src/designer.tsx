@@ -1,3 +1,4 @@
+import { FieldIssueBadge } from "./components/field-issue-badge";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import { FormSpacingEditor } from "./components/form-spacing-editor";
@@ -291,12 +292,16 @@ function OutlineRow({
   depth,
   selected,
   onSelect,
+  onIssue,
+  issueCount,
   disabled,
 }: {
   field: FormField;
   depth: number;
   selected: boolean;
   onSelect(): void;
+  onIssue(): void;
+  issueCount: number;
   disabled: boolean;
 }) {
   const { t, locale } = useI18n();
@@ -331,6 +336,11 @@ function OutlineRow({
       <TableCell style={{ paddingLeft: 8 + depth * 14 }}>
         <strong>{field.label[locale] || field.key}</strong>
         <small className="fd-form-key">{field.key}</small>
+        <FieldIssueBadge
+          field={field}
+          count={issueCount}
+          onNavigate={onIssue}
+        />
       </TableCell>
       <TableCell>
         <span className="fd-field-type-label">
@@ -543,6 +553,17 @@ export function FormDesigner({
     }),
   );
   const issues = validateFormDefinition(definition);
+  const issueCounts = new Map<string, number>();
+  for (const issue of issues)
+    if (issue.fieldId)
+      issueCounts.set(issue.fieldId, (issueCounts.get(issue.fieldId) ?? 0) + 1);
+  const inspectIssue = (id: string) => {
+    setSelectedId(id);
+    setProperties("basic");
+    setInspectorOpen(true);
+    setPane("properties");
+    requestAnimationFrame(() => inspectorRef.current?.focus());
+  };
   const containers = rows.filter((row) => isContainer(row.field));
   const fieldTree = field ? flattenFields([field]) : [];
   const availableContainers = containers.filter(
@@ -1016,6 +1037,8 @@ export function FormDesigner({
                             key={row.field.id}
                             {...row}
                             selected={field?.id === row.field.id}
+                            issueCount={issueCounts.get(row.field.id) ?? 0}
+                            onIssue={() => inspectIssue(row.field.id)}
                             onSelect={() => setSelectedId(row.field.id)}
                             disabled={readOnly}
                           />
@@ -1058,6 +1081,7 @@ export function FormDesigner({
                   selectedId={field?.id}
                   readOnly={readOnly}
                   onSelect={setSelectedId}
+                  onIssue={inspectIssue}
                   onInspect={(id, section) => {
                     setSelectedId(id);
                     setProperties(section);

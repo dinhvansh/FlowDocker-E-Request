@@ -11,7 +11,7 @@ import { I18nProvider } from "@flowdocker/i18n";
 import { FormDesigner } from "./designer";
 import { FormPreview } from "./runtime";
 import { createPaymentDefinition } from "./payment-example";
-import type { FormDefinition } from "./schema";
+import { createField, type FormDefinition } from "./schema";
 beforeEach(() =>
   vi.stubGlobal(
     "ResizeObserver",
@@ -223,3 +223,75 @@ describe("live authoring canvas", () => {
     ).toBe("Nhà cung cấp");
   }, 60000);
 });
+
+it("shows nested configuration errors in canvas and outline and clears after repair/undo", () => {
+  const child = {
+    ...createField("text", []),
+    id: "bad",
+    key: "bad key",
+    label: { vi: "Trường sai", en: "Invalid field" },
+  };
+  const healthy = {
+    ...createField("text", []),
+    id: "healthy",
+    key: "healthy",
+    label: { vi: "Trường đúng", en: "Valid field" },
+  };
+  function IssueHost() {
+    const [definition, setDefinition] = useState<FormDefinition>({
+      id: "issue-form",
+      title: { vi: "Kiểm tra", en: "Check" },
+      version: 1,
+      status: "DRAFT",
+      fields: [
+        {
+          ...createField("columns", []),
+          id: "layout",
+          key: "layout",
+          children: [child, healthy],
+        },
+      ],
+    });
+    return (
+      <I18nProvider>
+        <FormDesigner definition={definition} onChange={setDefinition} />
+      </I18nProvider>
+    );
+  }
+  const result = render(<IssueHost />);
+  const canvas = within(
+    result.container.querySelector(".fd-live-form") as HTMLElement,
+  );
+  expect(
+    canvas.queryByRole("button", { name: /lỗi cấu hình của Trường đúng/ }),
+  ).toBeNull();
+  fireEvent.click(
+    canvas.getByRole("button", { name: "Mở 1 lỗi cấu hình của Trường sai" }),
+  );
+  expect(screen.getByRole("textbox", { name: "Mã trường" })).toHaveProperty(
+    "value",
+    "bad key",
+  );
+  const inspector = result.container.querySelector(".fd-form-properties")!;
+  expect(
+    inspector
+      .querySelector(".fd-form-schema-issues")!
+      .compareDocumentPosition(
+        inspector.querySelector('[aria-label="Nhóm thuộc tính"]')!,
+      ) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: "Danh sách trường" }));
+  expect(
+    screen.getAllByRole("button", { name: "Mở 1 lỗi cấu hình của Trường sai" }),
+  ).toHaveLength(2);
+  fireEvent.change(screen.getByRole("textbox", { name: "Mã trường" }), {
+    target: { value: "repaired" },
+  });
+  expect(
+    screen.queryByRole("button", { name: "Mở 1 lỗi cấu hình của Trường sai" }),
+  ).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Hoàn tác" }));
+  expect(
+    screen.getAllByRole("button", { name: "Mở 1 lỗi cấu hình của Trường sai" }),
+  ).toHaveLength(2);
+}, 60000);

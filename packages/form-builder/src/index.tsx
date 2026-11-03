@@ -55,3 +55,8 @@ export {
   FormSchemaIssues,
   type FormSchemaIssuesProps,
 } from "./components/form-schema-issues";
+
+export {
+  FieldIssueBadge,
+  type FieldIssueBadgeProps,
+} from "./components/field-issue-badge";

@@ -202,3 +202,7 @@ FormRenderer/FormPreview now list translated schema validation issues when previ
 ## 0.5.5 — Live configuration panel
 
 New reusable `FormSchemaIssues` accepts `issues: readonly FormIssue[]`, `fields: FormField[]`, and optional `onEditIssue(issue)`; it lists translated messages with nested field labels/keys and a valid state. No draft mutation. Runtime and E-Request authoring share the component. Optional `FormDesigner.inspectionRequest: {fieldId: string; revision: number}` opens/focuses the inspector; controlled hosts also set `selectedFieldId` to that field. Increment revision for repeated navigation to the same field. E-Request adds a compact live-count toggle next to Save; existing validation/save rules remain unchanged.
+
+## 0.5.6 — Inline configuration errors
+
+Reusable `FieldIssueBadge({field,count,onNavigate?})` displays actual authoring error counts; zero renders nothing. Canvas derives counts from `validateFormDefinition`; outline uses the same validator. Optional `FormCanvas.onIssue(id)` opens the inspector in FormDesigner. Child errors stay on their child; runtime input errors remain separate. The selected field's shared diagnostics now appear above property controls. No validation-rule or schema change.

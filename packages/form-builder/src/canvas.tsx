@@ -1,4 +1,5 @@
-import { useId, useRef, useState, type ReactNode } from "react";
+import { FieldIssueBadge } from "./components/field-issue-badge";
+import { useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "@flowdocker/i18n";
 import { spacingStyle } from "./spacing";
 import { FormBandView } from "./components/form-band";
@@ -22,6 +23,7 @@ import { RuntimeFields, type FormRendererProps } from "./runtime";
 import { defaultValues, prepareValues } from "./engine";
 import {
   fieldTypeLabels,
+  validateFormDefinition,
   isContainer,
   flattenFields,
   type FormDefinition,
@@ -49,16 +51,19 @@ export interface FormCanvasProps {
   onInspect?(id: string, section: ConfigurationSection): void;
   onDecorationChange?(decoration: FormDecoration): void;
   onTitleChange?(title: BilingualText): void;
+  onIssue?(id: string): void;
 }
 function FieldOverlay({
   field,
   children,
   selected,
+  issueCount,
   ...props
 }: Omit<FormCanvasProps, "definition" | "selectedId"> & {
   field: FormField;
   children: ReactNode;
   selected: boolean;
+  issueCount: number;
 }) {
   const { t, locale } = useI18n();
   const [editing, setEditing] = useState(false);
@@ -174,6 +179,13 @@ function FieldOverlay({
         >
           {t(fieldTypeLabels[field.type])}
         </button>
+        <FieldIssueBadge
+          field={field}
+          count={issueCount}
+          onNavigate={() =>
+            props.onIssue ? props.onIssue(field.id) : props.onSelect(field.id)
+          }
+        />
         {selected && (
           <div className="fd-canvas-inline-actions" ref={editActions}>
             {props.onPatch && (
@@ -289,6 +301,13 @@ function FieldOverlay({
 }
 /** Same field rendering path as FormRenderer; authoring reveals conditional fields. */
 export function FormCanvas({ definition, ...props }: FormCanvasProps) {
+  const issueCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const issue of validateFormDefinition(definition))
+      if (issue.fieldId)
+        counts.set(issue.fieldId, (counts.get(issue.fieldId) ?? 0) + 1);
+    return counts;
+  }, [definition]);
   const { t, locale } = useI18n();
   const id = useId();
   const [values, setValues] = useState<PreviewValues>(() =>
@@ -364,6 +383,7 @@ export function FormCanvas({ definition, ...props }: FormCanvasProps) {
               <FieldOverlay
                 {...props}
                 field={field}
+                issueCount={issueCounts.get(field.id) ?? 0}
                 selected={props.selectedId === field.id}
               >
                 {control}

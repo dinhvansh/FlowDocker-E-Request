@@ -230,3 +230,20 @@
   padding-bottom: 8px;
   font-weight: 700;
 }
+
+.fd-field-issue-link .fd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.fd-field-issue-link .fd-badge svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+button.fd-field-issue-link {
+  height: auto;
+  min-height: var(--fd-control-height, 36px);
+  padding: 2px 4px;
+  flex-shrink: 0;
+}

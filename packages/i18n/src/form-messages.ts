@@ -1,4 +1,6 @@
 export const formMessages = {
+  "Mở {{count}} lỗi cấu hình của {{field}}":
+    "Open configuration errors for {{field}} ({{count}})",
   "1 lỗi": "1 error",
   "Cần sửa 1 lỗi cấu hình": "Fix 1 configuration error",
   "Kiểm tra cấu hình biểu mẫu": "Check form configuration",
