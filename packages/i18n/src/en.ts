@@ -1072,4 +1072,11 @@ export const en = {
   "Chọn cột dữ liệu": "Choose a data column",
   "{{label}} ({{key}})": "{{label}} ({{key}})",
   "Cột không khả dụng: {{column}}": "Unavailable column: {{column}}",
+  "Giá trị không còn trong danh sách": "Value no longer in the list",
+  "Giá trị so sánh đã lưu không còn trong danh sách. Hãy chọn lại.":
+    "The saved comparison value is no longer in the list. Choose another value.",
+  "Nguồn lựa chọn phụ thuộc {{field}}. Đặt dữ liệu thử cho trường này để tải lựa chọn.":
+    "Choices depend on {{field}}. Set test data for this field to load choices.",
+  "Tìm lựa chọn...": "Search choices...",
+  "Không tìm thấy lựa chọn": "No matching choices",
 } as const;

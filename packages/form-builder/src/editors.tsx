@@ -1,3 +1,4 @@
+import { ConditionValueEditor } from "./components/condition-value-editor";
 import { CreatorDefaultEditor } from "./components/creator-default-editor";
 import { useMemo, useState } from "react";
 import { useI18n } from "@flowdocker/i18n";
@@ -20,56 +21,6 @@ import {
   DataSourceEditor,
   type FormDataSource,
 } from "./components/data-source-editor";
-function ConditionValue({
-  condition,
-  fields,
-  onChange,
-}: {
-  condition: FormRule["conditions"][number];
-  fields: FormField[];
-  onChange(value: string | number | boolean): void;
-}) {
-  const { t, locale } = useI18n();
-  const source = fields.find((field) => field.key === condition.field);
-  if (source?.type === "checkbox")
-    return (
-      <Select
-        label={t("Giá trị so sánh")}
-        value={String(condition.value ?? false)}
-        options={[
-          { value: "true", label: t("Có") },
-          { value: "false", label: t("Không") },
-        ]}
-        onValueChange={(value) => onChange(value === "true")}
-      />
-    );
-  if (source?.options.length)
-    return (
-      <Select
-        label={t("Giá trị so sánh")}
-        value={String(condition.value ?? "")}
-        options={source.options.map((option) => ({
-          value: option.value,
-          label: option.label[locale],
-        }))}
-        onValueChange={onChange}
-      />
-    );
-  const numeric = ["number", "currency"].includes(source?.type ?? "");
-  return (
-    <Input
-      type={numeric ? "number" : "text"}
-      value={String(condition.value ?? "")}
-      onChange={(event) =>
-        onChange(
-          numeric && event.target.value.trim()
-            ? Number(event.target.value)
-            : event.target.value,
-        )
-      }
-    />
-  );
-}
 export function OptionsEditor({
   field,
   onChange,
@@ -113,7 +64,11 @@ export function RuleEditor({
   rule,
   fields,
   onChange,
+  providers,
+  sourceDefaults,
 }: {
+  providers?: FormRendererProps["providers"];
+  sourceDefaults?: PreviewValues;
   label: string;
   rule?: FormRule;
   fields: FormField[];
@@ -157,14 +112,31 @@ export function RuleEditor({
                     value: field.key,
                     label: `${field.label[locale]} (${field.key})`,
                   }))}
-                  onValueChange={(field) =>
+                  onValueChange={(field) => {
+                    const source = fields.find((item) => item.key === field);
+                    const multiple =
+                      source?.multiple ||
+                      ["multiselect", "checkboxes", "tags"].includes(
+                        source?.type ?? "",
+                      );
                     onChange({
                       ...rule,
                       conditions: rule.conditions.map((item, position) =>
-                        position === index ? { ...item, field } : item,
+                        position === index
+                          ? {
+                              field,
+                              operator: ["empty", "notEmpty"].includes(
+                                item.operator,
+                              )
+                                ? item.operator
+                                : multiple
+                                  ? "contains"
+                                  : "eq",
+                            }
+                          : item,
                       ),
-                    })
-                  }
+                    });
+                  }}
                 />
               </Field>
               <Field label={t("Phép so sánh")}>
@@ -189,9 +161,23 @@ export function RuleEditor({
               </Field>
               {!["empty", "notEmpty"].includes(condition.operator) && (
                 <Field label={t("Giá trị so sánh")}>
-                  <ConditionValue
+                  <ConditionValueEditor
+                    key={condition.field}
                     condition={condition}
-                    fields={fields}
+                    source={
+                      fields.find(
+                        (source) => source.key === condition.field,
+                      ) ?? {
+                        id: "missing-condition-source",
+                        key: condition.field,
+                        label: { vi: condition.field, en: condition.field },
+                        required: false,
+                        type: "text",
+                        options: [],
+                      }
+                    }
+                    providers={providers}
+                    sourceDefaults={sourceDefaults}
                     onChange={(value) => {
                       onChange({
                         ...rule,
@@ -562,18 +548,24 @@ export function AdvancedProperties({
             label={t("Hiển thị khi")}
             rule={field.visibleWhen}
             fields={fields}
+            providers={providers}
+            sourceDefaults={sourceDefaults}
             onChange={(visibleWhen) => patch({ visibleWhen })}
           />
           <RuleEditor
             label={t("Bắt buộc khi")}
             rule={field.requiredWhen}
             fields={fields}
+            providers={providers}
+            sourceDefaults={sourceDefaults}
             onChange={(requiredWhen) => patch({ requiredWhen })}
           />
           <RuleEditor
             label={t("Vô hiệu hóa khi")}
             rule={field.disabledWhen}
             fields={fields}
+            providers={providers}
+            sourceDefaults={sourceDefaults}
             onChange={(disabledWhen) => patch({ disabledWhen })}
           />
           <Field label={t("Trường để so sánh chéo")}>

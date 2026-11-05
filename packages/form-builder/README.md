@@ -279,7 +279,20 @@ documentFieldOrder(fields) orders sibling fields. Existing legacy decoration
 and ordinary fields remain compatible; strict old clients must upgrade for these
 additive keys. E-Request's built-in logo demo and reusable tests exercise both areas.
 
-## HTTP storage adapter (0.5.11)
+## Typed condition operands (0.5.13)
+
+The field inspector and Logic Studio use the source field's static choices or
+injected provider for condition values. Search stays in the dropdown; rules store
+stable scalar IDs, not display labels. Existing provider dependency/value/label
+mapping is reused. Missing/loading/error/retry and unavailable saved values are
+explicit. Changing the source clears the old operand; multivalue sources default
+to contains. Date/time, number and boolean controls match their runtime types;
+currency keeps a decimal string. No schema migration, arbitrary event script,
+new directory connection or change to backend submission support. Nine focused
+tests and real synthetic browser flows are recorded in docs/112. Search covers
+the bounded loaded provider list (up to 500), not remote pagination.
+
+## HTTP storage adapter (0.5.11–0.5.12)
 
 0.5.12 adds `publicationPermission(): Promise<boolean>` and
 `publish(id, expectedVersion): Promise<{id, version, checksum}>` to the optional

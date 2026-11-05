@@ -74,3 +74,10 @@ mobile browser publication, conflict, immutable snapshot and denied-account
 journeys pass; 236 frontend tests and 3 backend tests pass. Forms adapter is
 0.5.12. Details/evidence docs/111. Workflow authoring/request/task UI, full schema
 submission and remaining service modules are still pending.
+
+Typed condition value UI (Forms 0.5.13): inspector/Logic Studio now reuse host
+choice providers for person and Master Data operands, save stable IDs and reset
+the operand on source changes. Date/time/number/boolean controls, loading/error/
+retry and missing saved choice states verified. 245 frontend tests pass; real
+synthetic VI/EN desktop/mobile UI verified (docs/112). No backend expansion or
+Teams connection; runtime submission and remaining service gates still pending.
